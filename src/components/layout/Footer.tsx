@@ -19,6 +19,9 @@ export function Footer() {
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (email.trim()) {
+      try {
+        localStorage.setItem('rad_newsletter_email', email.trim());
+      } catch {}
       setSubscribed(true);
       setEmail('');
     }

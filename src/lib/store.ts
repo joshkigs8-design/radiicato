@@ -74,7 +74,7 @@ class RadiicatoStore {
   private loadFromStorage() {
     if (this.initialized) return;
     try {
-      const CURRENT_STORE_VERSION = 'rad_v12_zero_mock_notifications';
+      const CURRENT_STORE_VERSION = 'rad_v13_zero_mock_reviews';
       const storedVersion = localStorage.getItem('rad_store_ver');
       if (storedVersion !== CURRENT_STORE_VERSION) {
         localStorage.clear();

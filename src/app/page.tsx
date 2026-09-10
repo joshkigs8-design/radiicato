@@ -58,6 +58,20 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, []);
 
+  // Atelier Newsletter Subscription State
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
+
+  const handleNewsletterSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail.trim()) return;
+    try {
+      localStorage.setItem('rad_newsletter_email', newsletterEmail.trim());
+    } catch {}
+    setNewsletterSubscribed(true);
+    setNewsletterEmail('');
+  };
+
   // Quick Add to Cart Handler
   const handleQuickAdd = (
     product: typeof brokenRecordProduct,
@@ -940,6 +954,56 @@ export default function HomePage() {
                 SHOP THE ARCHIVE
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          NEWSLETTER / ATELIER PRIVATE ACCESS SECTION
+          ========================================================================= */}
+      <section className="border-t border-[#E5E5E5] bg-[#FAFAF9] py-20 px-6 sm:px-12 lg:px-16">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#4D5936]/10 border border-[#4D5936]/20 text-[#4D5936] text-[10px] font-mono font-bold tracking-widest uppercase">
+            <Sparkles size={12} />
+            <span>ATELIER PRIVATE ACCESS</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#0A0A0A] font-display">
+            SUBSCRIBE TO THE RADIICATO DISPATCH
+          </h2>
+
+          <p className="text-xs sm:text-sm text-[#71717A] max-w-xl mx-auto font-light leading-relaxed">
+            Be the first to receive secret capsule passwords, underground drop dates, private lookbooks, and invitations to private Nairobi atelier listening sessions.
+          </p>
+
+          <div className="max-w-md mx-auto pt-2">
+            {newsletterSubscribed ? (
+              <div className="p-4 bg-[#F4F6F0] border border-[#D1D9C5] text-xs font-mono text-[#4D5936] font-bold flex items-center justify-center gap-2">
+                <Check size={16} />
+                <span>YOU ARE ON THE PRIVATE DROP LIST. WELCOME TO RADIICATO.</span>
+              </div>
+            ) : (
+              <form onSubmit={handleNewsletterSubscribe} className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="email"
+                  required
+                  placeholder="ENTER YOUR EMAIL FOR DROP ALERTS"
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  className="flex-1 bg-white border border-[#D4D4D8] px-4 py-3.5 text-xs tracking-wider uppercase text-black placeholder-[#A1A1AA] focus:outline-none focus:border-black font-mono shadow-sm"
+                />
+                <button
+                  type="submit"
+                  className="bg-[#0A0A0A] hover:bg-[#27272A] text-white px-8 py-3.5 text-xs font-bold tracking-widest uppercase transition-colors flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <span>SUBSCRIBE</span>
+                  <ArrowRight size={14} />
+                </button>
+              </form>
+            )}
+            <p className="text-[10px] font-mono text-[#A1A1AA] mt-3">
+              ZERO SPAM. ONLY PURE ARCHIVAL STREETWEAR DROPS. UNSUBSCRIBE ANYTIME.
+            </p>
           </div>
         </div>
       </section>

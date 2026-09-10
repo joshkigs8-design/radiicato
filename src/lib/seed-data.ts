@@ -389,47 +389,7 @@ export const INITIAL_COUPONS: Coupon[] = [
   },
 ];
 
-export const INITIAL_REVIEWS: Review[] = [
-  {
-    id: 'rev-1',
-    productId: 'prod-broken-record-tee',
-    productName: 'Radiicato "Broken Record" Heavyweight Tee',
-    customerName: 'Kariuki Mwangi',
-    customerEmail: 'k.mwangi@gmail.com',
-    rating: 5,
-    title: 'The MF DOOM shattered vinyl back is insane!',
-    comment: 'The 3D chrome logo badge on the front looks even better in person, and the shattered record on the back with all the tracks is pure genius. Heavyweight cotton has that perfect boxy drape.',
-    isVerifiedPurchase: true,
-    status: 'approved',
-    createdAt: '2026-03-02T14:30:00Z',
-  },
-  {
-    id: 'rev-2',
-    productId: 'prod-we-are-who-we-are-tee',
-    productName: 'Radiicato "We Are Who We Are" Boxy Tee',
-    customerName: 'Zainab Hussein',
-    customerEmail: 'zainab.h@gmail.com',
-    rating: 5,
-    title: 'Real Nairobi underground quality',
-    comment: 'The washed black vintage fade is top tier. The mascot graffiti on the chest and the WWWRR collage on the back get compliments every time I wear it out in Kilimani.',
-    isVerifiedPurchase: true,
-    status: 'approved',
-    createdAt: '2026-03-04T10:15:00Z',
-  },
-  {
-    id: 'rev-3',
-    productId: 'prod-broken-record-tee',
-    productName: 'Radiicato "Broken Record" Heavyweight Tee',
-    customerName: 'Brian Otieno',
-    customerEmail: 'brian.o@gmail.com',
-    rating: 5,
-    title: 'Worth every shilling',
-    comment: 'Best heavyweight white tee in Kenya hands down. Thick double-layered collar that does not bacon after washes. M-PESA STK push checkout took literally 5 seconds.',
-    isVerifiedPurchase: true,
-    status: 'approved',
-    createdAt: '2026-03-05T18:20:00Z',
-  },
-];
+export const INITIAL_REVIEWS: Review[] = [];
 
 export const INITIAL_ADMIN_USERS: AdminUser[] = [
   {

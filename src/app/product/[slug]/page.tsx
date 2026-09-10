@@ -54,6 +54,7 @@ export default function ProductDetailPage() {
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   // Unique colors in product
   const availableColors = useMemo(() => {
@@ -86,6 +87,9 @@ export default function ProductDetailPage() {
 
   // Reviews
   const reviews = product ? getReviewsForProduct(product.id) : [];
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+    : null;
 
   if (!product) {
     return (
@@ -137,16 +141,16 @@ export default function ProductDetailPage() {
 
   const handleSubmitReview = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reviewName || !reviewComment) return;
+    if (!reviewName.trim() || !reviewComment.trim()) return;
 
     addReview({
       productId: product.id,
       productName: product.name,
-      customerName: reviewName,
-      customerEmail: reviewEmail || 'shopper@radiicato.co.ke',
+      customerName: reviewName.trim(),
+      customerEmail: reviewEmail.trim() || 'shopper@radiicato.co.ke',
       rating: reviewRating,
-      title: reviewTitle || 'Verified Purchase',
-      comment: reviewComment,
+      title: reviewTitle.trim() || 'Verified Purchase',
+      comment: reviewComment.trim(),
       isVerifiedPurchase: true,
       status: 'approved',
     });
@@ -154,6 +158,11 @@ export default function ProductDetailPage() {
     setReviewSubmitted(true);
     setReviewComment('');
     setReviewTitle('');
+    setReviewName('');
+    setTimeout(() => {
+      setReviewSubmitted(false);
+      setShowReviewForm(false);
+    }, 2500);
   };
 
   // Related products
@@ -624,7 +633,10 @@ export default function ProductDetailPage() {
       {/* =========================================================================
           VERIFIED CUSTOMER REVIEWS
           ========================================================================= */}
-      <section className="mt-28 pt-16 border-t border-[#E5E5E5]">
+      {/* =========================================================================
+          VERIFIED CUSTOMER REVIEWS
+          ========================================================================= */}
+      <section id="reviews-section" className="mt-28 pt-16 border-t border-[#E5E5E5]">
         <div className="flex flex-col md:flex-row justify-between md:items-end pb-8 border-b border-[#E5E5E5] gap-4">
           <div>
             <span className="text-[10px] font-mono tracking-widest uppercase text-[#4D5936] font-bold">CLIENT TESTIMONIALS</span>
@@ -632,113 +644,163 @@ export default function ProductDetailPage() {
               COMMUNITY REVIEWS ({reviews.length})
             </h2>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex text-amber-500">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={16} className="fill-amber-500" />
-              ))}
-            </div>
-            <span className="text-xs font-mono text-black font-bold">5.0 / 5.0 RATING</span>
+          <div className="flex items-center gap-4 flex-wrap">
+            {avgRating ? (
+              <div className="flex items-center gap-2">
+                <div className="flex text-amber-500">
+                  {[...Array(Math.round(Number(avgRating)))].map((_, i) => (
+                    <Star key={i} size={16} className="fill-amber-500" />
+                  ))}
+                </div>
+                <span className="text-xs font-mono text-black font-bold">{avgRating} / 5.0 RATING</span>
+              </div>
+            ) : (
+              <span className="text-xs font-mono text-[#71717A] uppercase tracking-wider">NO REVIEWS YET</span>
+            )}
+            <button
+              onClick={() => setShowReviewForm(!showReviewForm)}
+              className="px-4 py-2 bg-[#0A0A0A] text-white hover:bg-[#27272A] text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
+            >
+              {showReviewForm ? 'CLOSE REVIEW FORM' : 'WRITE A REVIEW'}
+            </button>
           </div>
         </div>
 
-        {/* Existing Reviews List */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
-          {reviews.map((rev) => (
-            <div key={rev.id} className="p-6 bg-[#FAFAF9] border border-[#E5E5E5] space-y-4 shadow-xs">
-              <div className="flex justify-between items-center">
-                <div className="flex text-amber-500">
-                  {[...Array(rev.rating)].map((_, i) => (
-                    <Star key={i} size={14} className="fill-amber-500" />
-                  ))}
+        {/* Write a Review Form (Animated & Collapsible) */}
+        {showReviewForm && (
+          <div className="mt-8 p-6 sm:p-8 bg-[#FAFAF9] border border-[#E5E5E5] max-w-2xl shadow-sm">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">Leave an Atelier Review</h3>
+            <p className="text-xs text-[#71717A] mt-1 font-mono">Share your thoughts on textile weight, drape, and sizing.</p>
+
+            {reviewSubmitted ? (
+              <div className="mt-4 p-4 bg-[#F4F6F0] border border-[#DCE4D3] text-xs text-[#4D5936] font-bold flex items-center gap-2">
+                <Check size={16} />
+                <span>Thank you! Your review has been published to the atelier.</span>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmitReview} className="mt-6 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1">Your Name *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="E.G. JOSHUA KIGEN"
+                      value={reviewName}
+                      onChange={(e) => setReviewName(e.target.value)}
+                      className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1">Email (Private) *</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="E.G. JOSHUA@GMAIL.COM"
+                      value={reviewEmail}
+                      onChange={(e) => setReviewEmail(e.target.value)}
+                      className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
+                    />
+                  </div>
                 </div>
-                {rev.isVerifiedPurchase && (
-                  <span className="text-[10px] font-mono text-[#4D5936] font-bold flex items-center gap-1">
-                    <ShieldCheck size={12} /> VERIFIED BUYER
-                  </span>
-                )}
-              </div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]">&ldquo;{rev.title}&rdquo;</h4>
-              <p className="text-xs text-[#52525B] leading-relaxed font-light">{rev.comment}</p>
-              <div className="pt-2 border-t border-[#E5E5E5] text-[10px] font-mono text-[#71717A] flex justify-between">
-                <span>{rev.customerName}</span>
-                <span>{new Date(rev.createdAt).toLocaleDateString()}</span>
-              </div>
-            </div>
-          ))}
-        </div>
 
-        {/* Add Review Form */}
-        <div className="mt-12 p-8 bg-[#FAFAF9] border border-[#E5E5E5] max-w-2xl shadow-xs">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">Leave an Atelier Review</h3>
-          <p className="text-xs text-[#71717A] mt-1">Share your thoughts on textile weight, drape, and sizing.</p>
+                <div className="flex items-center gap-3 pt-1">
+                  <span className="text-xs font-mono text-[#71717A] uppercase font-semibold">Rating:</span>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => setReviewRating(num)}
+                        className="p-1 text-amber-500 hover:scale-110 transition-transform"
+                      >
+                        <Star size={20} className={num <= reviewRating ? 'fill-amber-500 text-amber-500' : 'text-[#D4D4D8]'} />
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-xs font-mono font-bold text-black ml-2">{reviewRating}.0 / 5.0</span>
+                </div>
 
-          {reviewSubmitted ? (
-            <div className="mt-4 p-4 bg-[#F4F6F0] border border-[#DCE4D3] text-xs text-[#4D5936] font-bold">
-              Thank you. Your review has been submitted and verified.
-            </div>
-          ) : (
-            <form onSubmit={handleSubmitReview} className="mt-6 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  required
-                  placeholder="YOUR NAME"
-                  value={reviewName}
-                  onChange={(e) => setReviewName(e.target.value)}
-                  className="bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
-                />
-                <input
-                  type="email"
-                  placeholder="EMAIL (PRIVATE)"
-                  value={reviewEmail}
-                  onChange={(e) => setReviewEmail(e.target.value)}
-                  className="bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
-                />
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1">Review Headline *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="HEADLINE (E.G. UNMATCHED HEAVYWEIGHT 280 GSM DRAPE)"
+                    value={reviewTitle}
+                    onChange={(e) => setReviewTitle(e.target.value)}
+                    className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1">Detailed Review *</label>
+                  <textarea
+                    rows={4}
+                    required
+                    placeholder="HOW DOES IT FIT? WHAT DO YOU THINK OF THE 3D METALLIC CHROME EMBLEM AND COMBED COTTON?"
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="bg-[#0A0A0A] text-white px-8 py-3.5 text-xs font-bold tracking-widest uppercase hover:bg-[#27272A] shadow-sm transition-colors"
+                >
+                  SUBMIT REVIEW
+                </button>
+              </form>
+            )}
+          </div>
+        )}
+
+        {/* Existing Reviews List or Clean Empty State */}
+        {reviews.length === 0 ? (
+          <div className="mt-8 p-12 bg-[#FAFAF9] border border-[#E5E5E5] text-center space-y-3">
+            <Sparkles size={24} className="mx-auto text-[#4D5936]" />
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">NO COMMUNITY REVIEWS YET</h3>
+            <p className="text-xs text-[#71717A] max-w-sm mx-auto font-mono">
+              Be the first to share your experience wearing this atelier garment.
+            </p>
+            {!showReviewForm && (
+              <div className="pt-2">
+                <button
+                  onClick={() => setShowReviewForm(true)}
+                  className="inline-block px-6 py-2.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#27272A] transition-colors"
+                >
+                  BE THE FIRST TO REVIEW
+                </button>
               </div>
-
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-mono text-[#71717A] uppercase font-semibold">Rating:</span>
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      onClick={() => setReviewRating(num)}
-                      className="p-1 text-amber-500"
-                    >
-                      <Star size={18} className={num <= reviewRating ? 'fill-amber-500' : 'text-[#D4D4D8]'} />
-                    </button>
-                  ))}
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+            {reviews.map((rev) => (
+              <div key={rev.id} className="p-6 bg-[#FAFAF9] border border-[#E5E5E5] space-y-4 shadow-xs">
+                <div className="flex justify-between items-center">
+                  <div className="flex text-amber-500">
+                    {[...Array(rev.rating)].map((_, i) => (
+                      <Star key={i} size={14} className="fill-amber-500" />
+                    ))}
+                  </div>
+                  {rev.isVerifiedPurchase && (
+                    <span className="text-[10px] font-mono text-[#4D5936] font-bold flex items-center gap-1">
+                      <ShieldCheck size={12} /> VERIFIED BUYER
+                    </span>
+                  )}
+                </div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]">&ldquo;{rev.title}&rdquo;</h4>
+                <p className="text-xs text-[#52525B] leading-relaxed font-light">{rev.comment}</p>
+                <div className="pt-2 border-t border-[#E5E5E5] text-[10px] font-mono text-[#71717A] flex justify-between">
+                  <span>{rev.customerName}</span>
+                  <span>{new Date(rev.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
-
-              <input
-                type="text"
-                placeholder="HEADLINE (E.G. UNMATCHED HEAVYWEIGHT DRAPE)"
-                value={reviewTitle}
-                onChange={(e) => setReviewTitle(e.target.value)}
-                className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
-              />
-
-              <textarea
-                rows={3}
-                required
-                placeholder="YOUR REVIEW"
-                value={reviewComment}
-                onChange={(e) => setReviewComment(e.target.value)}
-                className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
-              />
-
-              <button
-                type="submit"
-                className="bg-[#0A0A0A] text-white px-6 py-3 text-xs font-bold tracking-widest uppercase hover:bg-[#27272A] shadow-sm"
-              >
-                SUBMIT REVIEW
-              </button>
-            </form>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Related Products */}
