@@ -400,6 +400,17 @@ CREATE TABLE IF NOT EXISTS public.store_announcements (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- ------------------------------------------------------------------------------
+-- 20. NEWSLETTER & PRIVATE DROP SUBSCRIBERS
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.newsletter_subscribers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email TEXT UNIQUE NOT NULL,
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'unsubscribed')),
+    source TEXT DEFAULT 'storefront',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ==============================================================================
 -- DATABASE FUNCTIONS & TRIGGERS
 -- ==============================================================================
@@ -713,6 +724,19 @@ CREATE POLICY "Admins have full access to store_settings"
 DROP POLICY IF EXISTS "Admins have full access to store_announcements" ON public.store_announcements;
 CREATE POLICY "Admins have full access to store_announcements" 
     ON public.store_announcements TO authenticated 
+    USING (true) WITH CHECK (true);
+
+-- 4. Newsletter Policies
+ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can subscribe to newsletter" ON public.newsletter_subscribers;
+CREATE POLICY "Public can subscribe to newsletter" 
+    ON public.newsletter_subscribers FOR INSERT 
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admins have full access to newsletter_subscribers" ON public.newsletter_subscribers;
+CREATE POLICY "Admins have full access to newsletter_subscribers" 
+    ON public.newsletter_subscribers TO authenticated 
     USING (true) WITH CHECK (true);
 
 -- ------------------------------------------------------------------------------
