@@ -23,6 +23,10 @@ export default function AccountDashboardPage() {
 
   useEffect(() => {
     const checkUser = async () => {
+      if (!supabase) {
+        setIsLoadingAuth(false);
+        return;
+      }
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.user) {
@@ -40,7 +44,9 @@ export default function AccountDashboardPage() {
   const wishlistedProducts = products.filter((p) => wishlist.includes(p.id));
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     router.push('/login');
   };
 
