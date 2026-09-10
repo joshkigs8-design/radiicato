@@ -1,21 +1,56 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { 
   Package, Heart, User, MapPin, ArrowRight, ShieldCheck, 
-  ExternalLink, Clock, ShoppingBag 
+  ExternalLink, Clock, ShoppingBag, Loader2 
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES, formatDate } from '@/lib/utils';
 import { ProductCard } from '@/components/product/ProductCard';
+import { supabase } from '@/lib/supabase';
 
 export default function AccountDashboardPage() {
+  const router = useRouter();
   const { orders, wishlist, products } = useStore();
+  
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        router.push('/login');
+      } else {
+        setIsAuthenticated(true);
+        setUserEmail(session.user.email || '');
+      }
+      setIsLoadingAuth(false);
+    };
+    checkUser();
+  }, [router]);
 
   const recentOrders = orders.slice(0, 3);
   const wishlistedProducts = products.filter((p) => wishlist.includes(p.id));
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
+
+  if (isLoadingAuth || !isAuthenticated) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0A0A0A]" />
+      </div>
+    );
+  }
 
   return (
     <div className="pt-28 sm:pt-36 pb-32 px-6 sm:px-12 max-w-[1600px] mx-auto min-h-screen bg-white">
@@ -28,9 +63,15 @@ export default function AccountDashboardPage() {
           <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#0A0A0A] font-display mt-1">
             MY ACCOUNT
           </h1>
-          <p className="text-xs text-[#71717A] mt-2 font-mono">
-            LOGGED IN AS: KARIUKI MWANGI • K.MWANGI@GMAIL.COM
+          <p className="text-xs text-[#71717A] mt-2 font-mono uppercase">
+            LOGGED IN AS: {userEmail}
           </p>
+          <button 
+            onClick={handleLogout}
+            className="text-[10px] text-red-600 font-bold uppercase underline tracking-wider mt-2 hover:text-red-800"
+          >
+            Sign Out
+          </button>
         </div>
 
         {/* Quick Nav Links */}

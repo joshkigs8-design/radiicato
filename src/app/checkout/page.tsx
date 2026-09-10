@@ -39,6 +39,12 @@ export default function CheckoutPage() {
   const [streetAddress, setStreetAddress] = useState('');
   const [deliveryInstructions, setDeliveryInstructions] = useState('');
 
+  // Billing State
+  const [sameAsShipping, setSameAsShipping] = useState(true);
+  const [billingCounty, setBillingCounty] = useState('Nairobi');
+  const [billingTown, setBillingTown] = useState('');
+  const [billingStreetAddress, setBillingStreetAddress] = useState('');
+
   // Payment State
   const [paymentMethod, setPaymentMethod] = useState<PaymentProvider>('mpesa');
   const [mpesaPhone, setMpesaPhone] = useState('');
@@ -56,6 +62,31 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [stkPushStep, setStkPushStep] = useState<'idle' | 'prompting' | 'verifying' | 'success'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Auth State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+
+  React.useEffect(() => {
+    const checkUser = async () => {
+      const { supabase } = await import('@/lib/supabase');
+      if (!supabase) {
+        setIsLoadingAuth(false);
+        return;
+      }
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session?.user) {
+        setIsAuthenticated(true);
+        if (session.user.email) {
+          setEmail(session.user.email);
+        }
+      }
+      setIsLoadingAuth(false);
+    };
+    checkUser();
+  }, []);
 
   // Calculate Shipping fee based on selected County
   const shippingFee = useMemo(() => {
@@ -165,6 +196,9 @@ export default function CheckoutPage() {
           streetAddress,
           deliveryInstructions,
         },
+        internalNotes: !sameAsShipping 
+          ? `Billing Address: ${billingCounty}, ${billingTown}, ${billingStreetAddress}` 
+          : 'Billing Address: Same as delivery',
         items: cart.map((c) => ({
           id: `oi-${Date.now()}-${c.id}`,
           orderId: '',
@@ -206,6 +240,49 @@ export default function CheckoutPage() {
       setErrorMessage(msg);
     }
   };
+
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0A0A0A]" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="pt-36 pb-32 px-6 max-w-md mx-auto text-center space-y-6">
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/logo.png"
+            alt="RADIICATO"
+            width={160}
+            height={55}
+            className="h-10 w-auto object-contain"
+            priority
+          />
+        </div>
+        <h1 className="text-xl font-bold uppercase text-[#0A0A0A] font-display">Authentication Required</h1>
+        <p className="text-xs text-[#71717A] font-mono leading-relaxed">
+          Please sign in or create an account to securely complete your order and access your order history.
+        </p>
+        <div className="flex flex-col gap-3 pt-4">
+          <Link 
+            href="/login" 
+            className="w-full px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#27272A] transition-colors"
+          >
+            SIGN IN
+          </Link>
+          <Link 
+            href="/signup" 
+            className="w-full px-8 py-3.5 bg-white border border-[#E4E4E7] text-[#0A0A0A] text-xs font-bold uppercase tracking-widest hover:border-[#0A0A0A] transition-colors"
+          >
+            CREATE ACCOUNT
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
@@ -391,11 +468,84 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Step 3: Payment Method */}
+            {/* Step 3: Billing Details */}
             <div className="space-y-4 pt-4 border-t border-[#E4E4E7]">
               <div className="flex items-center gap-3">
                 <span className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white text-xs font-mono font-bold flex items-center justify-center">
                   3
+                </span>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
+                  BILLING ADDRESS
+                </h2>
+              </div>
+              
+              <div className="pt-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sameAsShipping}
+                    onChange={(e) => setSameAsShipping(e.target.checked)}
+                    className="rounded border-[#E4E4E7] text-[#0A0A0A] focus:ring-[#0A0A0A]"
+                  />
+                  <span className="text-xs font-mono text-[#0A0A0A] uppercase tracking-wider">Same as delivery address</span>
+                </label>
+              </div>
+
+              {!sameAsShipping && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
+                      COUNTY *
+                    </label>
+                    <select
+                      value={billingCounty}
+                      onChange={(e) => setBillingCounty(e.target.value)}
+                      className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    >
+                      {KENYAN_COUNTIES.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
+                      TOWN / SUBURB *
+                    </label>
+                    <input
+                      type="text"
+                      required={!sameAsShipping}
+                      placeholder="E.G. KILIMANI"
+                      value={billingTown}
+                      onChange={(e) => setBillingTown(e.target.value)}
+                      className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
+                      STREET ADDRESS / BUILDING / APARTMENT *
+                    </label>
+                    <input
+                      type="text"
+                      required={!sameAsShipping}
+                      placeholder="E.G. APARTMENT 4B"
+                      value={billingStreetAddress}
+                      onChange={(e) => setBillingStreetAddress(e.target.value)}
+                      className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Step 4: Payment Method */}
+            <div className="space-y-4 pt-4 border-t border-[#E4E4E7]">
+              <div className="flex items-center gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white text-xs font-mono font-bold flex items-center justify-center">
+                  4
                 </span>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
                   PAYMENT GATEWAY

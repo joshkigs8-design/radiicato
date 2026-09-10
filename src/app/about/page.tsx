@@ -59,32 +59,7 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Narrative Section 2: Nairobi Roots */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 py-20 items-center border-b border-[#E4E4E7]">
-        <div className="lg:col-span-6 lg:order-2 relative aspect-[4/5] bg-[#F4F4F5] overflow-hidden border border-[#E4E4E7]">
-          <Image
-            src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1200"
-            alt="Nairobi Street Culture"
-            fill
-            className="object-cover filter contrast-105"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-          />
-        </div>
-        <div className="lg:col-span-6 lg:order-1 space-y-6 lg:pr-6">
-          <span className="text-xs font-mono text-[#71717A] uppercase font-bold">02 / ORIGIN</span>
-          <h2 className="text-2xl sm:text-4xl font-black uppercase text-[#0A0A0A] font-display">
-            BRED IN THE UNDERGROUND OF NAIROBI
-          </h2>
-          <div className="space-y-4 text-sm text-[#71717A] leading-relaxed font-light">
-            <p>
-              Nairobi is one of the world’s most dynamic creative hubs—a city alive with sound system culture, underground visual arts, and rebellious individuality. Radiicato channels this raw energy into every graphic screen-print and metallic hardware detail.
-            </p>
-            <p>
-              From our studio in Parklands, we oversee every phase of production: custom yarn milling, garment dye baths, hand-distressing, and precision screen-printing.
-            </p>
-          </div>
-        </div>
-      </div>
+
 
       {/* CTAs */}
       <div className="pt-20 text-center space-y-6">

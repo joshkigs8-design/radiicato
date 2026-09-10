@@ -100,7 +100,7 @@ class RadiicatoStore {
   private collections: Collection[] = INITIAL_COLLECTIONS;
   private orders: Order[] = INITIAL_ORDERS;
   private cart: CartItem[] = [];
-  private wishlist: string[] = ['prod-broken-record-tee', 'prod-we-are-who-we-are-tee'];
+  private wishlist: string[] = [];
   private coupons: Coupon[] = INITIAL_COUPONS;
   private reviews: Review[] = INITIAL_REVIEWS;
   private lookbook: LookbookItem[] = INITIAL_LOOKBOOK;
