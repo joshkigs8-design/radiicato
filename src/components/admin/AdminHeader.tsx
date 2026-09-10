@@ -57,20 +57,24 @@ export function AdminHeader() {
               </div>
 
               <div className="max-h-64 overflow-y-auto space-y-2 divide-y divide-[#F3F4F6]">
-                {notifications.slice(0, 5).map((n) => (
-                  <div
-                    key={n.id}
-                    onClick={() => {
-                      markNotificationRead(n.id);
-                    }}
-                    className={`pt-2 text-xs cursor-pointer ${
-                      n.isRead ? 'opacity-60' : 'font-medium text-[#111827]'
-                    }`}
-                  >
-                    <p className="text-[11px] font-bold text-[#111827]">{n.title}</p>
-                    <p className="text-[10px] text-[#6B7280] line-clamp-2">{n.message}</p>
-                  </div>
-                ))}
+                {notifications.length === 0 ? (
+                  <p className="text-[11px] text-[#6B7280] py-4 text-center">No new operational alerts</p>
+                ) : (
+                  notifications.slice(0, 5).map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={() => {
+                        markNotificationRead(n.id);
+                      }}
+                      className={`pt-2 text-xs cursor-pointer ${
+                        n.isRead ? 'opacity-60' : 'font-medium text-[#111827]'
+                      }`}
+                    >
+                      <p className="text-[11px] font-bold text-[#111827]">{n.title}</p>
+                      <p className="text-[10px] text-[#6B7280] line-clamp-2">{n.message}</p>
+                    </div>
+                  ))
+                )}
               </div>
 
               <div className="pt-2 border-t border-[#E5E7EB] text-center">

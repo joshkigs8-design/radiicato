@@ -58,21 +58,7 @@ export default function AdminNotificationsPage() {
     showToast('Storefront notification published successfully!');
   };
 
-  // Quick Presets
-  const applyPreset = (preset: {
-    title: string;
-    message: string;
-    badge: string;
-    type: 'delivery' | 'drop' | 'promo' | 'general';
-    linkUrl: string;
-  }) => {
-    addStoreAnnouncement({
-      ...preset,
-      isActive: true,
-      priority: 1,
-    });
-    showToast(`Activated: ${preset.title}`);
-  };
+
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto pb-20">
@@ -176,105 +162,7 @@ export default function AdminNotificationsPage() {
             </div>
           </div>
 
-          {/* Quick Presets */}
-          <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-[#111827] uppercase tracking-wider">
-              1-Click Delivery & Capsule Announcement Presets
-            </h3>
-            <p className="text-xs text-[#6B7280]">
-              Instantly broadcast pre-configured promotional and logistics messages to the customer header:
-            </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <button
-                onClick={() => applyPreset({
-                  title: 'Free Express Nairobi Delivery',
-                  message: 'FREE EXPRESS DELIVERY ACROSS NAIROBI FOR ORDERS OVER KES 10,000 • SAME-DAY DISPATCH VIA FARGO',
-                  badge: 'FREE DELIVERY',
-                  type: 'delivery',
-                  linkUrl: '/shipping',
-                })}
-                className="p-3.5 border border-[#E5E7EB] hover:border-[#4D5936] rounded-lg text-left transition-all hover:shadow-sm group bg-[#FAFAF9]"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-[#4D5936] bg-[#4D5936]/10 px-1.5 py-0.5 rounded">
-                    DELIVERY PROMO
-                  </span>
-                  <Truck size={14} className="text-[#6B7280] group-hover:text-[#4D5936]" />
-                </div>
-                <h4 className="text-xs font-bold text-[#111827] mt-1.5">Free Express Nairobi Delivery</h4>
-                <p className="text-[11px] text-[#6B7280] mt-0.5 font-mono line-clamp-1">
-                  Orders over KES 10,000 • Same-day Fargo dispatch
-                </p>
-              </button>
-
-              <button
-                onClick={() => applyPreset({
-                  title: 'Broken Record Drop 01 Live',
-                  message: 'DROP 01 // BROKEN RECORD (ATELIER WHITE 280 GSM) IS LIVE • 100 PIECES ALLOCATED',
-                  badge: 'LIMITED DROP',
-                  type: 'drop',
-                  linkUrl: '/collections/broken-record',
-                })}
-                className="p-3.5 border border-[#E5E7EB] hover:border-[#4D5936] rounded-lg text-left transition-all hover:shadow-sm group bg-[#FAFAF9]"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-[#4D5936] bg-[#4D5936]/10 px-1.5 py-0.5 rounded">
-                    DROP 01
-                  </span>
-                  <Sparkles size={14} className="text-[#6B7280] group-hover:text-[#4D5936]" />
-                </div>
-                <h4 className="text-xs font-bold text-[#111827] mt-1.5">Broken Record White Tee Live</h4>
-                <p className="text-[11px] text-[#6B7280] mt-0.5 font-mono line-clamp-1">
-                  280 GSM • MF DOOM shattered vinyl reverse • KES 1,000
-                </p>
-              </button>
-
-              <button
-                onClick={() => applyPreset({
-                  title: 'We Are Who We Are Dispatch',
-                  message: 'DROP 02 // WE ARE WHO WE ARE (WASHED BLACK 280 GSM) NOW DISPATCHING NATIONWIDE',
-                  badge: 'IN STOCK',
-                  type: 'drop',
-                  linkUrl: '/collections/we-are-who-we-are',
-                })}
-                className="p-3.5 border border-[#E5E7EB] hover:border-[#4D5936] rounded-lg text-left transition-all hover:shadow-sm group bg-[#FAFAF9]"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-[#4D5936] bg-[#4D5936]/10 px-1.5 py-0.5 rounded">
-                    DROP 02
-                  </span>
-                  <Sparkles size={14} className="text-[#6B7280] group-hover:text-[#4D5936]" />
-                </div>
-                <h4 className="text-xs font-bold text-[#111827] mt-1.5">We Are Who We Are Black Tee</h4>
-                <p className="text-[11px] text-[#6B7280] mt-0.5 font-mono line-clamp-1">
-                  Washed Black • Mascot graffiti &amp; collage • KES 800
-                </p>
-              </button>
-
-              <button
-                onClick={() => applyPreset({
-                  title: 'Skull Caps Dropping Soon',
-                  message: 'COMING SOON: RADIICATO HEAVYWEIGHT RIBBED KNIT SKULL CAPS IN OBSIDIAN & OLIVE (KES 500)',
-                  badge: 'COMING SOON',
-                  type: 'drop',
-                  linkUrl: '/collections/skull-caps',
-                })}
-                className="p-3.5 border border-[#E5E7EB] hover:border-[#4D5936] rounded-lg text-left transition-all hover:shadow-sm group bg-[#FAFAF9]"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-[#4D5936] bg-[#4D5936]/10 px-1.5 py-0.5 rounded">
-                    DROP 03 TEASER
-                  </span>
-                  <Sparkles size={14} className="text-[#6B7280] group-hover:text-[#4D5936]" />
-                </div>
-                <h4 className="text-xs font-bold text-[#111827] mt-1.5">Heavyweight Ribbed Skull Caps</h4>
-                <p className="text-[11px] text-[#6B7280] mt-0.5 font-mono line-clamp-1">
-                  Double knit acrylic-merino • Chrome insignia • KES 500
-                </p>
-              </button>
-            </div>
-          </div>
 
           {/* Create Custom Announcement Accordion */}
           <div className="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
@@ -402,56 +290,67 @@ export default function AdminNotificationsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E5E7EB] text-[#111827]">
-                  {storeAnnouncements.map((ann) => (
-                    <tr key={ann.id} className="hover:bg-[#F9FAFB] transition-colors">
-                      <td className="py-3 px-4">
-                        <button
-                          onClick={() => toggleStoreAnnouncement(ann.id)}
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase transition-colors ${
-                            ann.isActive
-                              ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]'
-                              : 'bg-[#F3F4F6] text-[#6B7280] border border-[#E5E7EB]'
-                          }`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              ann.isActive ? 'bg-[#10B981] animate-pulse' : 'bg-[#9CA3AF]'
-                            }`}
-                          ></span>
-                          <span>{ann.isActive ? 'ACTIVE' : 'INACTIVE'}</span>
-                        </button>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="font-bold text-[#111827] block">{ann.title}</span>
-                        <span className="text-[10px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded">
-                          {ann.badge}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 font-mono text-[11px] text-[#4B5563] max-w-xs truncate">
-                        {ann.message}
-                      </td>
-                      <td className="py-3 px-4 font-mono text-[11px] text-[#6B7280]">
-                        {ann.linkUrl || '/shipping'}
-                      </td>
-                      <td className="py-3 px-4 text-right space-x-2">
-                        {!ann.isActive && (
-                          <button
-                            onClick={() => setActiveStoreAnnouncement(ann.id)}
-                            className="text-xs font-semibold text-[#4D5936] hover:underline"
-                          >
-                            Set Active
-                          </button>
-                        )}
-                        <button
-                          onClick={() => deleteStoreAnnouncement(ann.id)}
-                          className="p-1 text-[#9CA3AF] hover:text-[#EF4444] transition-colors"
-                          title="Delete announcement"
-                        >
-                          <Trash2 size={13} />
-                        </button>
+                  {storeAnnouncements.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-12 text-center text-xs text-[#6B7280]">
+                        <p className="font-semibold text-[#111827]">No active storefront broadcasts</p>
+                        <p className="text-[11px] text-[#9CA3AF] mt-1">
+                          Click &quot;New Broadcast&quot; above to compose and publish custom delivery or drop alerts.
+                        </p>
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    storeAnnouncements.map((ann) => (
+                      <tr key={ann.id} className="hover:bg-[#F9FAFB] transition-colors">
+                        <td className="py-3 px-4">
+                          <button
+                            onClick={() => toggleStoreAnnouncement(ann.id)}
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase transition-colors ${
+                              ann.isActive
+                                ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]'
+                                : 'bg-[#F3F4F6] text-[#6B7280] border border-[#E5E7EB]'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                ann.isActive ? 'bg-[#10B981] animate-pulse' : 'bg-[#9CA3AF]'
+                              }`}
+                            ></span>
+                            <span>{ann.isActive ? 'ACTIVE' : 'INACTIVE'}</span>
+                          </button>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="font-bold text-[#111827] block">{ann.title}</span>
+                          <span className="text-[10px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded">
+                            {ann.badge}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 font-mono text-[11px] text-[#4B5563] max-w-xs truncate">
+                          {ann.message}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-[11px] text-[#6B7280]">
+                          {ann.linkUrl || '/shipping'}
+                        </td>
+                        <td className="py-3 px-4 text-right space-x-2">
+                          {!ann.isActive && (
+                            <button
+                              onClick={() => setActiveStoreAnnouncement(ann.id)}
+                              className="text-xs font-semibold text-[#4D5936] hover:underline"
+                            >
+                              Set Active
+                            </button>
+                          )}
+                          <button
+                            onClick={() => deleteStoreAnnouncement(ann.id)}
+                            className="p-1 text-[#9CA3AF] hover:text-[#EF4444] transition-colors"
+                            title="Delete announcement"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

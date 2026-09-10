@@ -20,57 +20,8 @@ import {
 // Zero Mockup Orders (Ready for genuine live orders)
 const INITIAL_ORDERS: Order[] = [];
 
-// Storefront Announcements & Free Delivery Notifications
-export const INITIAL_STORE_ANNOUNCEMENTS: StoreAnnouncement[] = [
-  {
-    id: 'ann-delivery-1',
-    title: 'Free Express Nairobi Delivery',
-    message: 'FREE EXPRESS DELIVERY ACROSS NAIROBI FOR ORDERS OVER KES 10,000 • SAME-DAY DISPATCH VIA FARGO',
-    badge: 'FREE DELIVERY',
-    type: 'delivery',
-    linkUrl: '/shipping',
-    isActive: true,
-    priority: 1,
-    createdAt: '2026-03-01T00:00:00Z',
-    updatedAt: '2026-03-01T00:00:00Z',
-  },
-  {
-    id: 'ann-drop-1',
-    title: 'Broken Record Drop 01',
-    message: 'DROP 01 // BROKEN RECORD (ATELIER WHITE 280 GSM) IS LIVE • 100 PIECES ALLOCATED',
-    badge: 'LIMITED DROP',
-    type: 'drop',
-    linkUrl: '/collections/broken-record',
-    isActive: false,
-    priority: 2,
-    createdAt: '2026-03-01T00:00:00Z',
-    updatedAt: '2026-03-01T00:00:00Z',
-  },
-  {
-    id: 'ann-drop-2',
-    title: 'We Are Who We Are Capsule',
-    message: 'DROP 02 // WE ARE WHO WE ARE (WASHED BLACK 280 GSM) NOW DISPATCHING NATIONWIDE',
-    badge: 'IN STOCK',
-    type: 'drop',
-    linkUrl: '/collections/we-are-who-we-are',
-    isActive: false,
-    priority: 3,
-    createdAt: '2026-03-01T00:00:00Z',
-    updatedAt: '2026-03-01T00:00:00Z',
-  },
-  {
-    id: 'ann-drop-3',
-    title: 'Skull Caps Teaser',
-    message: 'COMING SOON: RADIICATO HEAVYWEIGHT RIBBED KNIT SKULL CAPS IN OBSIDIAN & OLIVE',
-    badge: 'COMING SOON',
-    type: 'drop',
-    linkUrl: '/collections/skull-caps',
-    isActive: false,
-    priority: 4,
-    createdAt: '2026-03-01T00:00:00Z',
-    updatedAt: '2026-03-01T00:00:00Z',
-  },
-];
+// Storefront Announcements & Free Delivery Notifications (Managed dynamically via Admin & Supabase)
+export const INITIAL_STORE_ANNOUNCEMENTS: StoreAnnouncement[] = [];
 
 const INITIAL_HOMEPAGE_CMS: HomepageCMS = {
   heroHeadline: 'WEAR THE DIFFERENCE.',
@@ -80,8 +31,8 @@ const INITIAL_HOMEPAGE_CMS: HomepageCMS = {
   heroSecondaryCtaText: 'EXPLORE COLLECTIONS',
   heroSecondaryCtaLink: '/collections',
   heroImageUrl: '/images/broken-record.jpg',
-  announcementText: 'FREE EXPRESS DELIVERY ACROSS NAIROBI FOR ORDERS OVER KES 10,000 • SAME-DAY DISPATCH VIA FARGO',
-  isAnnouncementActive: true,
+  announcementText: '',
+  isAnnouncementActive: false,
   featuredCollectionId: 'col-broken-record',
   brandStoryTitle: 'CRAFTED FOR KENYAN STREET CULTURE.',
   brandStoryParagraph1: 'Founded in Nairobi, Radiicato is an ongoing study in non-conformity, architectural silhouettes, and raw underground craftsmanship. We reject fast-fashion dilution in favor of heavyweight 280 GSM combed organic cotton, 3D chrome metallic hardware, and subversive graphics made for Kenyan youth.',
@@ -123,7 +74,7 @@ class RadiicatoStore {
   private loadFromStorage() {
     if (this.initialized) return;
     try {
-      const CURRENT_STORE_VERSION = 'rad_v9_single_admin_clean_announcements';
+      const CURRENT_STORE_VERSION = 'rad_v12_zero_mock_notifications';
       const storedVersion = localStorage.getItem('rad_store_ver');
       if (storedVersion !== CURRENT_STORE_VERSION) {
         localStorage.clear();
