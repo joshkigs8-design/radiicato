@@ -16,8 +16,8 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { loginAdmin, switchAdminRole, adminUsers } = useStore();
 
-  const [email, setEmail] = useState('admin@radiicato.co.ke');
-  const [password, setPassword] = useState('Atelier-Admin-2026!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -46,39 +46,48 @@ export default function AdminLoginPage() {
             router.push('/admin');
           }, 400);
           return;
-        } else if (authError) {
-          console.warn('Supabase Auth note:', authError.message);
+        } else if (authError && trimmedEmail === 'joshkigs8@gmail.com' && password === 'Josh3940.') {
+          // Auto-provision in Supabase Auth on first login if not yet registered
+          try {
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+              email: trimmedEmail,
+              password: password,
+              options: {
+                data: {
+                  full_name: 'Joshua Kigen',
+                  role: 'super_admin',
+                },
+              },
+            });
+            if (!signUpError && signUpData.user) {
+              loginAdmin(trimmedEmail, 'SUPER_ADMIN');
+              setSuccess(true);
+              setTimeout(() => {
+                router.push('/admin');
+              }, 400);
+              return;
+            }
+          } catch (signUpErr) {
+            console.warn('Auto sign-up attempt error:', signUpErr);
+          }
         }
       } catch (authErr) {
         console.warn('Supabase login error:', authErr);
       }
     }
 
-    // 2. Atelier Store session authentication
-    const res = loginAdmin(trimmedEmail);
-    if (!res.success) {
-      setError(res.error || 'Authentication failed. Please verify your credentials.');
-      setLoading(false);
-      return;
-    }
-
-    setSuccess(true);
-    setTimeout(() => {
-      router.push('/admin');
-    }, 400);
-  };
-
-  const handleQuickLogin = (role: AdminRole, demoEmail: string) => {
-    setError(null);
-    setLoading(true);
-    setEmail(demoEmail);
-    setTimeout(() => {
-      loginAdmin(demoEmail, role);
+    // 2. Direct verification for owner credentials
+    if (trimmedEmail === 'joshkigs8@gmail.com' && password === 'Josh3940.') {
+      loginAdmin(trimmedEmail, 'SUPER_ADMIN');
       setSuccess(true);
       setTimeout(() => {
         router.push('/admin');
       }, 400);
-    }, 400);
+      return;
+    }
+
+    setError('Invalid credentials. Access is strictly restricted to the atelier owner.');
+    setLoading(false);
   };
 
   return (
@@ -117,12 +126,12 @@ export default function AdminLoginPage() {
                 RADIICATO
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 bg-[#4D5936] text-white rounded font-bold uppercase tracking-wider">
-                ATELIER OS
+                OWNER PORTAL
               </span>
             </div>
 
             <p className="text-xs text-[#A1A1AA] font-mono">
-              SECURE MANAGEMENT TERMINAL // NAIROBI
+              AUTHORIZED ATELIER MANAGEMENT TERMINAL
             </p>
           </div>
 
@@ -145,9 +154,8 @@ export default function AdminLoginPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             {/* Email Field */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] flex items-center justify-between">
-                <span>Official Work Email</span>
-                <span className="text-[10px] text-[#71717A]">staff@radiicato.co.ke</span>
+              <label className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] block">
+                Owner Email Address
               </label>
               <div className="relative">
                 <input
@@ -155,7 +163,7 @@ export default function AdminLoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@radiicato.co.ke"
+                  placeholder="joshkigs8@gmail.com"
                   className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all"
                 />
               </div>
@@ -216,41 +224,11 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          {/* New Staff Registration / Sign Up Link */}
-          <div className="pt-2 text-center border-t border-[#27272A]">
-            <p className="text-xs text-[#A1A1AA]">
-              New atelier team member?{' '}
-              <Link
-                href="/admin/signup"
-                className="text-[#849B5C] hover:text-[#A3BE75] font-semibold transition-colors underline"
-              >
-                Onboard Staff / Sign Up &rarr;
-              </Link>
+          {/* Security Notice */}
+          <div className="pt-3 text-center border-t border-[#27272A]">
+            <p className="text-[10px] font-mono text-[#71717A] uppercase tracking-wider">
+              SOLE OWNER TERMINAL // UNAUTHORIZED ACCESS IS PROHIBITED &amp; LOGGED
             </p>
-          </div>
-
-          {/* 1-Click Role Switcher for Staging & Review */}
-          <div className="pt-4 border-t border-[#27272A] space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase text-[#71717A] tracking-wider flex items-center gap-1.5">
-                <Terminal size={12} />
-                <span>SINGLE ATELIER OWNER // 1-CLICK QUICK ACCESS</span>
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('SUPER_ADMIN', 'admin@radiicato.co.ke')}
-              className="w-full p-3 border border-[#27272A] hover:border-[#4D5936] bg-[#18181B] hover:bg-[#202024] rounded-lg text-left transition-colors group"
-            >
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-[9px] font-mono text-[#10B981] font-bold">UNRESTRICTED ATELIER ACCESS</span>
-                <Sparkles size={12} className="text-[#10B981]" />
-              </div>
-              <p className="font-semibold text-white group-hover:text-[#A3BE75] text-xs">
-                Radiicato Founder &amp; Creative Director (Super Admin)
-              </p>
-              <p className="text-[10px] text-[#71717A] font-mono">admin@radiicato.co.ke</p>
-            </button>
           </div>
         </div>
 

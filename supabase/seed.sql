@@ -341,13 +341,13 @@ ON CONFLICT (id) DO UPDATE SET
 
 -- ------------------------------------------------------------------------------
 -- 12. SINGLE ATELIER OWNER / SUPER ADMIN INITIALIZER
--- Grants Super Admin role to admin@radiicato.co.ke
+-- Grants Super Admin role to joshkigs8@gmail.com
 -- ------------------------------------------------------------------------------
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
         UPDATE public.profiles
-        SET role = 'super_admin', full_name = 'Radiicato Founder & Creative Director'
-        WHERE email = 'admin@radiicato.co.ke';
+        SET role = 'super_admin', full_name = 'Joshua Kigen'
+        WHERE email = 'joshkigs8@gmail.com';
     END IF;
 END $$;

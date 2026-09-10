@@ -394,10 +394,10 @@ export const INITIAL_REVIEWS: Review[] = [];
 export const INITIAL_ADMIN_USERS: AdminUser[] = [
   {
     id: 'adm-owner-1',
-    name: 'Radiicato Founder & Creative Director',
-    email: 'admin@radiicato.co.ke',
+    name: 'Joshua Kigen',
+    email: 'joshkigs8@gmail.com',
     role: 'SUPER_ADMIN',
-    lastLogin: '2026-09-09T21:00:00Z',
+    lastLogin: '2026-09-10T10:00:00Z',
     status: 'active',
   },
 ];

@@ -103,7 +103,7 @@ export default function AdminSignUpPage() {
     setLoading(true);
 
     const trimmedEmail = email.trim().toLowerCase();
-    const isSuperAdminEmail = trimmedEmail === 'admin@radiicato.co.ke';
+    const isSuperAdminEmail = trimmedEmail === 'joshkigs8@gmail.com';
     const assignedRole = isSuperAdminEmail ? 'SUPER_ADMIN' : role;
 
     // 1. Authenticate & Register with Supabase Auth
@@ -151,10 +151,6 @@ export default function AdminSignUpPage() {
         router.push('/admin');
       }, 700);
     }, 600);
-  };
-
-  const handleQuickFillCode = () => {
-    setInviteCode('RAD-ATELIER-2026');
   };
 
   return (
@@ -243,7 +239,7 @@ export default function AdminSignUpPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@radiicato.co.ke"
+                  placeholder="joshkigs8@gmail.com"
                   className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all"
                 />
               </div>
@@ -287,13 +283,6 @@ export default function AdminSignUpPage() {
                   <KeyRound size={12} className="text-[#A3BE75]" />
                   <span>Atelier Invite / Security Token</span>
                 </span>
-                <button
-                  type="button"
-                  onClick={handleQuickFillCode}
-                  className="text-[10px] text-[#A3BE75] hover:underline font-mono normal-case"
-                >
-                  Use Code: RAD-ATELIER-2026
-                </button>
               </div>
               <input
                 type="text"

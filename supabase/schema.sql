@@ -395,7 +395,7 @@ CREATE TABLE IF NOT EXISTS public.store_announcements (
     priority INT NOT NULL DEFAULT 1,
     starts_at TIMESTAMPTZ DEFAULT NOW(),
     expires_at TIMESTAMPTZ,
-    created_by TEXT DEFAULT 'admin@radiicato.co.ke',
+    created_by TEXT DEFAULT 'joshkigs8@gmail.com',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -525,12 +525,12 @@ BEGIN
     INSERT INTO public.profiles (id, full_name, email, role)
     VALUES (
         NEW.id,
-        COALESCE(NEW.raw_user_meta_data->>'full_name', CASE WHEN NEW.email = 'admin@radiicato.co.ke' THEN 'Radiicato Founder & Creative Director' ELSE split_part(NEW.email, '@', 1) END),
+        COALESCE(NEW.raw_user_meta_data->>'full_name', CASE WHEN NEW.email = 'joshkigs8@gmail.com' THEN 'Joshua Kigen' ELSE split_part(NEW.email, '@', 1) END),
         NEW.email,
-        CASE WHEN NEW.email = 'admin@radiicato.co.ke' THEN 'super_admin' ELSE COALESCE(NEW.raw_user_meta_data->>'role', 'customer') END
+        CASE WHEN NEW.email = 'joshkigs8@gmail.com' THEN 'super_admin' ELSE COALESCE(NEW.raw_user_meta_data->>'role', 'customer') END
     )
     ON CONFLICT (id) DO UPDATE SET
-        role = CASE WHEN EXCLUDED.email = 'admin@radiicato.co.ke' THEN 'super_admin' ELSE EXCLUDED.role END,
+        role = CASE WHEN EXCLUDED.email = 'joshkigs8@gmail.com' THEN 'super_admin' ELSE EXCLUDED.role END,
         full_name = EXCLUDED.full_name,
         updated_at = NOW();
     RETURN NEW;

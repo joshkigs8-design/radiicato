@@ -16,7 +16,7 @@ export default function AdminForgotPasswordPage() {
   const { requestPasswordReset, completePasswordReset, adminUsers } = useStore();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [email, setEmail] = useState('admin@radiicato.co.ke');
+  const [email, setEmail] = useState('');
   const [recoveryCode, setRecoveryCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -205,23 +205,16 @@ export default function AdminForgotPasswordPage() {
           {step === 1 && (
             <form onSubmit={handleRequestToken} className="space-y-4">
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA]">
-                  <span>Registered Staff Email</span>
-                  <button
-                    type="button"
-                    onClick={() => setEmail('admin@radiicato.co.ke')}
-                    className="text-[10px] text-[#A3BE75] hover:underline normal-case font-mono"
-                  >
-                    Quick-Fill: Super Admin
-                  </button>
-                </div>
+                <label className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] block">
+                  Owner Email Address
+                </label>
                 <div className="relative">
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@radiicato.co.ke"
+                    placeholder="joshkigs8@gmail.com"
                     className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all"
                   />
                 </div>
@@ -244,20 +237,6 @@ export default function AdminForgotPasswordPage() {
           {/* STEP 2: Enter Token & New Password */}
           {step === 2 && (
             <form onSubmit={handleResetPassword} className="space-y-4">
-              {/* Simulated Token Banner for fast demo review */}
-              {simulatedToken && (
-                <div className="p-3 bg-[#4D5936]/15 border border-[#4D5936]/40 rounded-lg text-xs space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono uppercase text-[#A3BE75] font-bold">
-                      SIMULATED ATELIER DISPATCH
-                    </span>
-                    <span className="text-[9px] font-mono text-[#71717A]">DEV TEST SIMULATOR</span>
-                  </div>
-                  <p className="text-white text-xs">
-                    Security Token issued: <span className="font-mono font-bold text-[#A3BE75]">{simulatedToken}</span>
-                  </p>
-                </div>
-              )}
 
               {/* Code Field */}
               <div className="space-y-1.5">
