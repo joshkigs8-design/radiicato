@@ -44,62 +44,60 @@ export default function CartPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="pt-36 pb-32 px-6 max-w-lg mx-auto text-center space-y-6 min-h-[60vh] flex flex-col justify-center items-center bg-white text-[#0A0A0A]">
-        <div className="w-16 h-16 rounded-full border border-[#E5E5E5] flex items-center justify-center text-[#71717A]">
+      <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-[60vh] flex flex-col justify-center items-center bg-white text-[#0A0A0A]">
+        <div className="w-16 h-16 border border-[#E4E4E7] flex items-center justify-center text-[#E4E4E7] mb-6">
           <Tag size={28} />
         </div>
-        <h1 className="text-2xl font-black uppercase tracking-wider text-[#0A0A0A] font-display">Your Bag Is Empty</h1>
-        <p className="text-xs text-[#71717A] max-w-xs">
+        <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A] mb-4">Your Bag Is Empty</h1>
+        <p className="text-sm text-[#71717A] max-w-xs text-center mb-8">
           Explore our foundational silhouettes, heavyweight hoodies, and limited drops.
         </p>
         <Link
           href="/shop"
-          className="inline-block bg-[#0A0A0A] text-white px-8 py-3.5 text-xs font-bold tracking-widest uppercase hover:bg-[#27272A] transition-colors shadow-sm"
+          className="inline-block border border-[#0A0A0A] text-[#0A0A0A] px-8 py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase hover:bg-[#0A0A0A] hover:text-white transition-colors"
         >
-          DISCOVER SHOP
+          Discover Shop
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-6 sm:px-12 max-w-[1600px] mx-auto min-h-screen bg-white text-[#0A0A0A]">
-      <div className="pb-8 border-b border-[#E5E5E5] mb-12">
-        <span className="text-[10px] font-mono tracking-widest uppercase text-[#4D5936] font-bold">YOUR SELECTIONS</span>
-        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#0A0A0A] font-display mt-1">
-          SHOPPING BAG ({cartSummary.itemsCount})
+    <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-screen bg-white text-[#0A0A0A]">
+      <div className="mb-8">
+        <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A]">
+          YOUR BAG
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Left Column: Cart Items List */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           {/* Free Shipping Notice */}
-          <div className="p-4 bg-[#F4F6F0] border border-[#DCE4D3] space-y-2">
+          <div className="py-4 border-b border-[#E4E4E7]">
             {remainingForFree > 0 ? (
-              <p className="text-xs text-[#52525B]">
-                Add <span className="text-black font-bold">{formatKES(remainingForFree)}</span> more to unlock{' '}
-                <span className="text-[#4D5936] font-bold">Free Express Shipping across Nairobi</span>.
+              <p className="text-[10px] font-mono uppercase tracking-wider text-[#71717A]">
+                Add <span className="text-[#0A0A0A] font-bold">{formatKES(remainingForFree)}</span> more for free express shipping.
               </p>
             ) : (
-              <p className="text-xs text-[#4D5936] font-bold flex items-center gap-2">
-                <ShieldCheck size={16} /> You have unlocked FREE Express Delivery!
+              <p className="text-[10px] font-mono uppercase tracking-wider text-[#0A0A0A] font-bold flex items-center gap-1.5">
+                <ShieldCheck size={14} /> Free Express Delivery Unlocked
               </p>
             )}
-            <div className="w-full bg-[#E0E8D9] h-1.5 rounded-full overflow-hidden">
+            <div className="w-full bg-[#F4F4F5] h-0.5 mt-2 overflow-hidden">
               <div
-                className="bg-[#4D5936] h-full transition-all duration-500 rounded-full"
+                className="bg-[#0A0A0A] h-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
           </div>
 
           {/* Items Table */}
-          <div className="divide-y divide-[#E5E5E5] border-y border-[#E5E5E5]">
+          <div className="border-t border-[#E4E4E7]">
             {cart.map((item) => (
-              <div key={item.id} className="py-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
-                <div className="flex gap-4 items-center">
-                  <div className="relative w-24 h-32 bg-[#F4F4F5] overflow-hidden flex-shrink-0 border border-[#E5E5E5]">
+              <div key={item.id} className="py-6 border-b border-[#E4E4E7] flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
+                <div className="flex gap-6 items-center w-full sm:w-auto">
+                  <div className="relative w-24 h-32 bg-[#F4F4F5] overflow-hidden flex-shrink-0">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -112,36 +110,36 @@ export default function CartPage() {
                   <div className="space-y-1">
                     <Link
                       href={`/product/${item.slug}`}
-                      className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A] hover:text-[#4D5936] font-display"
+                      className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A] hover:text-[#71717A] transition-colors"
                     >
                       {item.name}
                     </Link>
-                    <div className="flex items-center gap-2 text-xs text-[#71717A]">
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-[#71717A] uppercase mt-1">
                       <span className="flex items-center gap-1">
                         <span
-                          className="w-2.5 h-2.5 rounded-full border border-[#D4D4D8] inline-block"
+                          className="w-2.5 h-2.5 border border-[#E4E4E7] inline-block"
                           style={{ backgroundColor: item.colorHex }}
                         />
                         {item.colorName}
                       </span>
                       <span>•</span>
-                      <span className="font-mono bg-[#F4F4F5] border border-[#E5E5E5] px-2 py-0.5 rounded text-[11px] text-black font-bold">
+                      <span>
                         SIZE {item.size}
                       </span>
                     </div>
-                    <p className="text-xs font-mono text-[#0A0A0A] font-bold pt-1">
-                      {formatKES(item.price)} each
+                    <p className="text-xs font-mono text-[#0A0A0A] pt-2">
+                      {formatKES(item.price)}
                     </p>
 
-                    <div className="pt-2 flex gap-4 text-[11px] text-[#71717A]">
+                    <div className="pt-2 flex gap-4 text-[10px] font-mono text-[#71717A]">
                       <button
                         onClick={() => {
                           toggleWishlist(item.productId);
                           removeFromCart(item.id);
                         }}
-                        className="hover:text-black uppercase tracking-wider underline font-medium"
+                        className="hover:text-[#0A0A0A] uppercase tracking-wider transition-colors"
                       >
-                        Move to Wishlist
+                        Save for later
                       </button>
                     </div>
                   </div>
@@ -149,20 +147,20 @@ export default function CartPage() {
 
                 {/* Quantity Controls & Total */}
                 <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4">
-                  <div className="flex items-center border border-[#D4D4D8] bg-white shadow-xs">
+                  <div className="flex items-center border border-[#E4E4E7]">
                     <button
                       onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                      className="p-2 text-[#52525B] hover:text-black transition-colors"
+                      className="w-8 h-8 text-[#71717A] hover:text-[#0A0A0A] flex items-center justify-center transition-colors"
                     >
-                      <Minus size={14} />
+                      <Minus size={12} />
                     </button>
-                    <span className="px-3 text-xs font-mono font-bold text-black">{item.quantity}</span>
+                    <span className="w-8 h-8 text-xs font-mono text-center flex items-center justify-center text-[#0A0A0A]">{item.quantity}</span>
                     <button
                       onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
                       disabled={item.quantity >= item.maxStock}
-                      className="p-2 text-[#52525B] hover:text-black transition-colors disabled:opacity-30"
+                      className="w-8 h-8 text-[#71717A] hover:text-[#0A0A0A] flex items-center justify-center transition-colors disabled:opacity-30"
                     >
-                      <Plus size={14} />
+                      <Plus size={12} />
                     </button>
                   </div>
 
@@ -172,7 +170,7 @@ export default function CartPage() {
                     </p>
                     <button
                       onClick={() => removeFromCart(item.id)}
-                      className="text-xs text-[#71717A] hover:text-red-600 mt-1 inline-flex items-center gap-1 font-medium"
+                      className="text-[10px] font-mono text-[#A1A1AA] hover:text-[#0A0A0A] mt-2 inline-flex items-center gap-1 uppercase tracking-wider transition-colors"
                     >
                       <Trash2 size={12} /> Remove
                     </button>
@@ -184,15 +182,15 @@ export default function CartPage() {
         </div>
 
         {/* Right Column: Order Summary */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="p-8 bg-[#FAFAF9] border border-[#E5E5E5] space-y-6 shadow-xs">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A] border-b border-[#E5E5E5] pb-4">
+        <div className="lg:col-span-1">
+          <div className="p-8 border border-[#E4E4E7] space-y-6 sticky top-32">
+            <h2 className="text-[11px] font-mono font-semibold tracking-[0.15em] uppercase text-[#0A0A0A] mb-6">
               ORDER SUMMARY
             </h2>
 
             {/* Promo Code Form */}
             <form onSubmit={handleApplyPromo} className="space-y-2">
-              <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A] block font-semibold">
+              <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A] block">
                 PROMOTIONAL CODE
               </label>
               <div className="flex gap-2">
@@ -201,62 +199,56 @@ export default function CartPage() {
                   placeholder="E.G. FIRSTDROP"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
-                  className="flex-1 bg-white border border-[#D4D4D8] px-3 py-2.5 text-xs uppercase text-black placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-black shadow-xs"
+                  className="flex-1 bg-white border border-[#E4E4E7] px-3 py-2 text-[11px] uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
                 />
                 <button
                   type="submit"
-                  className="bg-[#0A0A0A] hover:bg-[#27272A] text-white text-xs font-bold px-4 uppercase tracking-wider shadow-xs"
+                  className="bg-[#0A0A0A] text-white text-[11px] font-mono font-bold px-4 uppercase tracking-[0.1em] hover:opacity-80 transition-opacity"
                 >
                   APPLY
                 </button>
               </div>
               {appliedDiscount && (
-                <p className="text-xs text-[#4D5936] font-mono font-bold">
+                <p className="text-[10px] font-mono text-[#0A0A0A] uppercase tracking-wider mt-2">
                   Code {appliedDiscount.code} applied (-{formatKES(appliedDiscount.amount)})
                 </p>
               )}
               {couponError && (
-                <p className="text-xs text-red-600 font-mono font-medium">{couponError}</p>
+                <p className="text-[10px] font-mono text-red-600 uppercase tracking-wider mt-2">{couponError}</p>
               )}
             </form>
 
             {/* Calculations */}
-            <div className="space-y-3 pt-4 border-t border-[#E5E5E5] text-xs">
-              <div className="flex justify-between text-[#52525B]">
-                <span>Bag Subtotal</span>
-                <span className="font-mono text-black font-bold">{formatKES(cartSummary.subtotal)}</span>
+            <div className="space-y-2 pt-6">
+              <div className="flex justify-between text-sm py-2">
+                <span className="text-[#71717A]">Subtotal</span>
+                <span className="font-mono text-[#0A0A0A]">{formatKES(cartSummary.subtotal)}</span>
               </div>
               {appliedDiscount && (
-                <div className="flex justify-between text-[#4D5936]">
-                  <span>Discount ({appliedDiscount.code})</span>
-                  <span className="font-mono font-bold">-{formatKES(appliedDiscount.amount)}</span>
+                <div className="flex justify-between text-sm py-2">
+                  <span className="text-[#71717A]">Discount ({appliedDiscount.code})</span>
+                  <span className="font-mono text-[#0A0A0A]">- {formatKES(appliedDiscount.amount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-[#52525B]">
-                <span>Shipping</span>
-                <span className="font-mono text-black">Calculated at next step</span>
+              <div className="flex justify-between text-sm py-2">
+                <span className="text-[#71717A]">Shipping</span>
+                <span className="text-[#0A0A0A] text-xs font-mono uppercase tracking-wider">Calculated next</span>
               </div>
-              <div className="flex justify-between text-base font-bold text-[#0A0A0A] pt-4 border-t border-[#E5E5E5]">
-                <span className="uppercase tracking-wider">Estimated Total</span>
-                <span className="font-mono text-lg">{formatKES(finalTotal)}</span>
+              <div className="flex justify-between text-lg font-mono font-bold text-[#0A0A0A] border-t border-[#0A0A0A] pt-4 mt-4">
+                <span className="text-[11px] uppercase tracking-wider flex items-end">Estimated Total</span>
+                <span>{formatKES(finalTotal)}</span>
               </div>
             </div>
 
             {/* Checkout Button */}
-            <div className="pt-2">
+            <div className="pt-4">
               <Link
                 href="/checkout"
-                className="w-full bg-[#0A0A0A] text-white hover:bg-[#27272A] transition-all py-4 px-6 text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 group shadow-sm"
+                className="w-full bg-[#0A0A0A] text-white py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
               >
                 <span>PROCEED TO CHECKOUT</span>
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={14} />
               </Link>
-            </div>
-
-            <div className="pt-4 text-[11px] text-[#71717A] space-y-1.5 border-t border-[#E5E5E5]">
-              <p>• Secured checkout with Safaricom M-PESA & Paystack</p>
-              <p>• Authentic limited run garments directly from atelier</p>
-              <p>• Hassle-free 7-day exchange window</p>
             </div>
           </div>
         </div>

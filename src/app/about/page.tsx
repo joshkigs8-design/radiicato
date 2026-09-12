@@ -3,79 +3,71 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 
 export default function AboutPage() {
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-6 sm:px-12 max-w-[1400px] mx-auto min-h-screen bg-white">
-      {/* Editorial Manifesto Header */}
-      <div className="max-w-4xl space-y-6 pb-16 border-b border-[#E4E4E7]">
-        <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#4D5936] font-bold">
-          BRAND MANIFESTO / NAIROBI ROOTS
-        </span>
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight text-[#0A0A0A] font-display leading-[0.95]">
-          WEAR THE DIFFERENCE.
-        </h1>
-        <p className="text-lg sm:text-xl text-[#71717A] font-light leading-relaxed">
-          Radiicato is an independent streetwear atelier established in Nairobi, Kenya. We exist at the intersection of non-conformist rebellion, architectural silhouettes, and heavyweight textile craftsmanship.
-        </p>
-      </div>
+    <main className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 bg-white min-h-screen">
+      <div className="max-w-[1400px] mx-auto">
+        <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">BRAND MANIFESTO / NAIROBI ROOTS</p>
+        <h1 className="text-display-md font-black uppercase mb-8">ENGINEERED IN NAIROBI</h1>
 
-      {/* Narrative Section 1 with Real Founder Image */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 py-20 items-center border-b border-[#E4E4E7]">
-        <div className="lg:col-span-6 relative aspect-[3/4] sm:aspect-[4/5] bg-[#0A0A0A] overflow-hidden border border-[#E4E4E7] shadow-lg group">
-          <Image
-            src="/owner.jpg"
-            alt="Radiicato Founder & Creative Director on Nairobi Rooftop"
-            fill
-            className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
-          <div className="absolute bottom-4 left-4 right-4 text-white">
-            <span className="text-[10px] font-mono tracking-widest uppercase bg-[#4D5936] px-2 py-0.5 font-bold">
-              FOUNDER & CREATIVE DIRECTOR
-            </span>
-            <p className="text-xs font-mono text-zinc-300 mt-1">NAIROBI HQ // SKYLINE ATELIER</p>
-          </div>
-        </div>
-        <div className="lg:col-span-6 space-y-6 lg:pl-6">
-          <span className="text-xs font-mono text-[#4D5936] uppercase font-bold">01 / THE VISION &amp; FOUNDER</span>
-          <h2 className="text-2xl sm:text-4xl font-black uppercase text-[#0A0A0A] font-display">
-            BUILT FROM RAW PASSION ON NAIROBI ROOFTOPS
-          </h2>
-          <div className="space-y-4 text-sm text-[#71717A] leading-relaxed font-light">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 pb-20 border-b border-[#E4E4E7]">
+          <div className="space-y-6 text-sm text-[#71717A] leading-relaxed">
+            <p>
+              Radiicato is an independent streetwear atelier established in Nairobi, Kenya. We exist at the intersection of non-conformist rebellion, architectural silhouettes, and heavyweight textile craftsmanship.
+            </p>
             <p>
               In an era dominated by fleeting algorithms and flimsy disposable garments, Radiicato was founded by a visionary creative in Nairobi who refused to conform to generic fast-fashion templates.
             </p>
             <p>
-              Standing atop Nairobi&apos;s skyline, every Radiicato garment is born out of genuine underground culture: drop shoulders, structured double-layered collars, heavyweight 280 GSM combed organic cotton, and hand-finished 3D liquid chrome hardware.
+              Standing atop Nairobi's skyline, every Radiicato garment is born out of genuine underground culture: drop shoulders, structured double-layered collars, heavyweight 280 GSM combed organic cotton, and hand-finished 3D liquid chrome hardware.
             </p>
             <p>
-              We don&apos;t chase international trends—we define them right here from Kenya, proving that raw African streetwear holds undeniable presence anywhere on earth.
+              We don't chase international trends—we define them right here from Kenya, proving that raw African streetwear holds undeniable presence anywhere on earth.
+            </p>
+          </div>
+          <div className="relative aspect-[3/4] bg-[#F4F4F5] border border-[#E4E4E7]">
+            <Image
+              src="/images/products/broken-record-full.jpg"
+              alt="Radiicato Founder & Creative Director on Nairobi Rooftop"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-20 border-b border-[#E4E4E7]">
+          <div className="space-y-3">
+            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">01 / THE VISION & FOUNDER</h3>
+            <p className="text-sm text-[#71717A]">
+              Built from raw passion on Nairobi rooftops. We refuse fast-fashion dilution. Cut for creatives who refuse to conform.
+            </p>
+          </div>
+          <div className="space-y-3">
+            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">02 / HEAVYWEIGHT CRAFT</h3>
+            <p className="text-sm text-[#71717A]">
+              280 GSM combed organic cotton. Drop shoulders. Structured double-layered collars. Unapologetic silhouettes engineered for longevity.
+            </p>
+          </div>
+          <div className="space-y-3">
+            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">03 / LIQUID CHROME</h3>
+            <p className="text-sm text-[#71717A]">
+              Hand-finished 3D hardware. Every garment is an architectural statement designed to disrupt the global streetwear landscape.
             </p>
           </div>
         </div>
-      </div>
 
-
-
-      {/* CTAs */}
-      <div className="pt-20 text-center space-y-6">
-        <h3 className="text-2xl sm:text-3xl font-black uppercase text-[#0A0A0A] font-display">
-          DISCOVER THE CURRENT ARCHIVE
-        </h3>
-        <div>
+        <div className="pt-20 text-center">
           <Link
             href="/shop"
-            className="inline-flex items-center gap-3 bg-[#0A0A0A] text-white px-8 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-[#27272A] transition-colors shadow-md"
+            className="btn-primary"
           >
-            <span>SHOP THE COLLECTION</span>
-            <ArrowRight size={14} />
+            SHOP COLLECTION
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

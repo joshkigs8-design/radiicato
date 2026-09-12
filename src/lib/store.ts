@@ -378,7 +378,7 @@ class RadiicatoStore {
   private loadFromStorage() {
     if (this.initialized) return;
     try {
-      const CURRENT_STORE_VERSION = 'rad_v16_skull_caps_live_cinematic';
+      const CURRENT_STORE_VERSION = 'rad_v17_white_canvas_editorial';
       const storedVersion = localStorage.getItem('rad_store_ver');
       if (storedVersion !== CURRENT_STORE_VERSION) {
         localStorage.clear();

@@ -1,6 +1,14 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { StoreLayoutWrapper } from '@/components/layout/StoreLayoutWrapper';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  weight: ['400', '500', '600', '700', '900'],
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://radiicato.co.ke';
 
@@ -166,7 +174,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         <script
           type="application/ld+json"
@@ -177,7 +185,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className="bg-white text-[#0A0A0A] antialiased selection:bg-[#4D5936] selection:text-white">
+      <body className={`${inter.className} bg-white text-[#0A0A0A] antialiased`}>
         <StoreLayoutWrapper>
           {children}
         </StoreLayoutWrapper>

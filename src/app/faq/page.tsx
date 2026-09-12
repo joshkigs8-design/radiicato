@@ -48,55 +48,53 @@ export default function FAQPage() {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
 
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-6 sm:px-12 max-w-4xl mx-auto min-h-screen bg-white">
+    <main className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 bg-white min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <div className="pb-10 border-b border-[#E4E4E7] mb-12">
-        <span className="text-[10px] font-mono tracking-widest uppercase text-[#4D5936] font-bold">CLIENT KNOWLEDGE BASE</span>
-        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#0A0A0A] font-display mt-1">
-          FREQUENTLY ASKED QUESTIONS
-        </h1>
-        <p className="text-xs sm:text-sm text-[#71717A] max-w-lg mt-2 font-light">
+      <div className="max-w-3xl mx-auto">
+        <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">CLIENT KNOWLEDGE BASE</p>
+        <h1 className="text-display-sm font-black uppercase mb-8">FREQUENTLY ASKED QUESTIONS</h1>
+        <p className="text-sm text-[#71717A] mb-12">
           Essential details regarding sizing drape, heavyweight textiles, Kenyan dispatch, and exchange protocols.
         </p>
-      </div>
 
-      <div className="divide-y divide-[#E4E4E7] border-y border-[#E4E4E7]">
-        {FAQS.map((faq, idx) => {
-          const isOpen = openIdx === idx;
-          return (
-            <div key={idx} className="py-6">
-              <button
-                onClick={() => setOpenIdx(isOpen ? null : idx)}
-                className="w-full flex justify-between items-center text-left gap-4 text-sm font-bold uppercase tracking-wider text-[#0A0A0A]"
-              >
-                <span>{faq.q}</span>
-                {isOpen ? <ChevronUp size={18} className="text-[#4D5936]" /> : <ChevronDown size={18} className="text-[#71717A]" />}
-              </button>
-              {isOpen && (
-                <p className="mt-3 text-xs sm:text-sm text-[#71717A] leading-relaxed font-light">
-                  {faq.a}
-                </p>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="mt-16 p-8 bg-[#FAFAF9] border border-[#E4E4E7] flex flex-col sm:flex-row justify-between items-center gap-6 shadow-sm">
-        <div>
-          <h3 className="text-sm font-bold uppercase text-[#0A0A0A] font-display">Still have questions?</h3>
-          <p className="text-xs text-[#71717A] mt-1">Reach our client care concierge in Nairobi.</p>
+        <div className="border-t border-[#E4E4E7]">
+          {FAQS.map((faq, idx) => {
+            const isOpen = openIdx === idx;
+            return (
+              <div key={idx} className="border-b border-[#E4E4E7]">
+                <button
+                  onClick={() => setOpenIdx(isOpen ? null : idx)}
+                  className="w-full flex justify-between items-center text-left gap-4 py-5"
+                >
+                  <span className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">{faq.q}</span>
+                  {isOpen ? <ChevronUp size={18} className="text-[#0A0A0A]" /> : <ChevronDown size={18} className="text-[#71717A]" />}
+                </button>
+                {isOpen && (
+                  <p className="text-sm text-[#71717A] leading-relaxed pb-5">
+                    {faq.a}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
-        <Link
-          href="/contact"
-          className="bg-[#0A0A0A] text-white px-7 py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-[#27272A] transition-colors shadow-sm"
-        >
-          CONTACT CONCIERGE
-        </Link>
+
+        <div className="mt-16 border border-[#E4E4E7] p-8 text-center space-y-4">
+          <h3 className="text-sm font-bold uppercase text-[#0A0A0A] tracking-wider">Still have questions?</h3>
+          <p className="text-sm text-[#71717A]">Reach our client care concierge in Nairobi.</p>
+          <div className="pt-4">
+            <Link
+              href="/contact"
+              className="btn-primary inline-flex"
+            >
+              CONTACT CONCIERGE
+            </Link>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

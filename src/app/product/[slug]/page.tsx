@@ -99,7 +99,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="pt-36 pb-32 px-6 text-center max-w-lg mx-auto space-y-4 bg-white text-[#0A0A0A]">
-        <h1 className="text-2xl font-bold uppercase text-[#0A0A0A] font-display">Product Not Found</h1>
+        <h1 className="text-2xl font-bold uppercase text-[#0A0A0A]">Product Not Found</h1>
         <p className="text-xs text-[#71717A]">The requested garment could not be found in our current archives.</p>
         <Link href="/shop" className="inline-block px-6 py-2.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase hover:bg-[#27272A]">
           Return to Shop
@@ -293,7 +293,7 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-6 sm:px-12 max-w-[1600px] mx-auto min-h-screen bg-white text-[#0A0A0A]">
+    <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-screen bg-white text-[#0A0A0A]">
       {/* Schema.org Structured Data */}
       <script
         type="application/ld+json"
@@ -305,22 +305,22 @@ export default function ProductDetailPage() {
       />
 
       {/* Breadcrumb */}
-      <nav className="pb-8 text-xs font-mono tracking-wider uppercase text-[#71717A] flex items-center gap-2">
+      <nav className="pb-8 text-[10px] font-mono tracking-[0.15em] uppercase text-[#A1A1AA] flex items-center gap-2">
         <Link href="/" className="hover:text-black transition-colors">ARCHIVE</Link>
         <span>/</span>
         <Link href="/shop" className="hover:text-black transition-colors">SHOP</Link>
         <span>/</span>
-        <span className="text-black font-bold">{product.name}</span>
+        <span className="text-[#0A0A0A] font-bold">{product.name}</span>
       </nav>
 
       {/* Main Grid Layout: Left Gallery + Right Product Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-12">
         {/* =========================================================================
             LEFT COLUMN: EDITORIAL GALLERY
             ========================================================================= */}
-        <div className="lg:col-span-7 space-y-4">
+        <div className="space-y-4">
           {/* Main Large Image */}
-          <div className="relative aspect-[3/4] w-full bg-[#F4F4F5] overflow-hidden border border-[#E5E5E5] shadow-xs">
+          <div className="relative aspect-[3/4] w-full bg-[#F4F4F5] overflow-hidden border border-[#E4E4E7] shadow-xs">
             {primaryImage && (
               <Image
                 src={primaryImage.url}
@@ -335,33 +335,33 @@ export default function ProductDetailPage() {
             {/* Badge overlay */}
             <div className="absolute top-4 left-4 flex flex-col gap-2">
               {product.isLimitedDrop && (
-                <span className="bg-[#4D5936] text-white text-[10px] font-mono tracking-widest uppercase px-3 py-1 shadow-sm">
+                <span className="bg-[#0A0A0A] text-white text-[10px] font-mono tracking-widest uppercase px-3 py-1 shadow-sm">
                   LIMITED DROP ({product.dropPieceCount || 50} PIECES)
                 </span>
               )}
               {product.salePrice && (
-                <span className="bg-[#991B1B] text-white text-[10px] font-mono tracking-widest uppercase px-3 py-1 shadow-sm">
+                <span className="bg-[#0A0A0A] text-white text-[10px] font-mono tracking-widest uppercase px-3 py-1 shadow-sm">
                   SALE ARCHIVE
                 </span>
               )}
             </div>
 
             {/* Subtle View count proof */}
-            <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md border border-[#E5E5E5] px-3 py-1.5 text-[11px] font-mono text-[#0A0A0A] flex items-center gap-2 shadow-xs">
-              <Eye size={13} className="text-[#4D5936]" />
+            <div className="absolute bottom-4 right-4 bg-white/90 border border-[#E4E4E7] px-3 py-1.5 text-[11px] font-mono text-[#0A0A0A] flex items-center gap-2 shadow-xs">
+              <Eye size={13} className="text-[#0A0A0A]" />
               <span>18 people viewing this piece</span>
             </div>
           </div>
 
-          {/* Thumbnails */}
+          {/* Thumbnails Stack */}
           {product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               {product.images.map((img, idx) => (
                 <button
                   key={img.id}
                   onClick={() => setSelectedImageIndex(idx)}
                   className={`relative aspect-[3/4] bg-[#F4F4F5] overflow-hidden border transition-all ${
-                    selectedImageIndex === idx ? 'border-black ring-1 ring-black' : 'border-[#E5E5E5] opacity-70 hover:opacity-100'
+                    selectedImageIndex === idx ? 'border-[#0A0A0A]' : 'border-transparent opacity-70 hover:opacity-100'
                   }`}
                 >
                   <Image
@@ -369,7 +369,7 @@ export default function ProductDetailPage() {
                     alt={img.altText || `View ${idx + 1}`}
                     fill
                     className="object-cover"
-                    sizes="120px"
+                    sizes="50vw"
                   />
                 </button>
               ))}
@@ -380,15 +380,15 @@ export default function ProductDetailPage() {
         {/* =========================================================================
             RIGHT COLUMN: PRODUCT DETAILS & BUYING CONTROLS
             ========================================================================= */}
-        <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-32 h-fit">
+        <div className="space-y-8 lg:sticky lg:top-28 lg:self-start">
           {/* Header */}
-          <div className="space-y-3 border-b border-[#E5E5E5] pb-6">
+          <div className="space-y-3 border-b border-[#E4E4E7] pb-6">
             <div className="flex justify-between items-center text-xs font-mono text-[#71717A] uppercase">
               <span>SKU: {activeVariant?.sku || product.sku}</span>
-              <span className="text-[#4D5936] font-bold">AUTHENTIC GARMENT</span>
+              <span className="text-[#0A0A0A] font-bold">AUTHENTIC GARMENT</span>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-[#0A0A0A] font-display">
+            <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
               {product.name}
             </h1>
 
@@ -413,7 +413,7 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            <p className="text-xs sm:text-sm text-[#52525B] leading-relaxed pt-2 font-light">
+            <p className="text-sm text-[#71717A] leading-relaxed pt-2">
               {product.shortDescription}
             </p>
           </div>
@@ -421,9 +421,9 @@ export default function ProductDetailPage() {
           {/* Color Selection */}
           <div className="space-y-3">
             <div className="flex justify-between text-xs font-mono uppercase text-[#71717A]">
-              <span>COLORWAY: <strong className="text-black font-bold">{currentColor}</strong></span>
+              <span>COLORWAY: <strong className="text-[#0A0A0A] font-bold">{currentColor}</strong></span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex gap-2 flex-wrap">
               {availableColors.map((color) => (
                 <button
                   key={color.name}
@@ -431,13 +431,13 @@ export default function ProductDetailPage() {
                     setSelectedColor(color.name);
                     setSelectedSize(''); // Reset size when color changes
                   }}
-                  className={`p-1 rounded-full border transition-all ${
-                    currentColor === color.name ? 'border-black scale-110' : 'border-transparent opacity-70 hover:opacity-100'
+                  className={`w-12 h-12 border flex items-center justify-center transition-all ${
+                    currentColor === color.name ? 'border-[#0A0A0A] bg-[#0A0A0A]' : 'border-[#E4E4E7] hover:border-[#0A0A0A] bg-white'
                   }`}
                   title={color.name}
                 >
                   <span
-                    className="w-5 h-5 rounded-full border border-[#D4D4D8] block shadow-xs"
+                    className="w-5 h-5 rounded-full border border-[#E4E4E7] block"
                     style={{ backgroundColor: color.hex }}
                   />
                 </button>
@@ -451,13 +451,13 @@ export default function ProductDetailPage() {
               <span>SELECT SIZE</span>
               <button
                 onClick={() => setSizeGuideOpen(true)}
-                className="text-black underline hover:text-[#4D5936] transition-colors flex items-center gap-1 text-[11px] font-bold"
+                className="text-[#0A0A0A] underline hover:text-[#0A0A0A] transition-colors flex items-center gap-1 text-[11px] font-bold"
               >
                 <Ruler size={13} /> Size Guide
               </button>
             </div>
 
-            <div className="grid grid-cols-4 gap-2">
+            <div className="flex gap-2 flex-wrap">
               {variantsForColor.map((variant) => {
                 const isSelected = activeVariant?.id === variant.id;
                 const isOut = variant.stockQuantity <= 0;
@@ -467,12 +467,12 @@ export default function ProductDetailPage() {
                     key={variant.id}
                     disabled={isOut}
                     onClick={() => setSelectedSize(variant.size)}
-                    className={`py-3 text-xs font-mono font-medium border transition-all ${
+                    className={`w-12 h-12 border flex items-center justify-center text-[11px] font-mono font-semibold tracking-wider transition-all ${
                       isSelected
-                        ? 'bg-black text-white border-black font-bold shadow-xs'
+                        ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]'
                         : isOut
-                        ? 'border-[#E5E5E5] text-[#A1A1AA] line-through cursor-not-allowed bg-[#FAFAFA]'
-                        : 'border-[#D4D4D8] text-black hover:border-black bg-white'
+                        ? 'border-[#E4E4E7] opacity-30 line-through bg-white text-[#A1A1AA] cursor-not-allowed'
+                        : 'border-[#E4E4E7] hover:border-[#0A0A0A] bg-white text-[#0A0A0A]'
                     }`}
                   >
                     {variant.size}
@@ -493,7 +493,7 @@ export default function ProductDetailPage() {
                   LOW STOCK: Only {activeVariant?.stockQuantity} pieces left in our Nairobi atelier.
                 </p>
               ) : (
-                <p className="text-xs font-mono text-[#4D5936] flex items-center gap-1.5 font-bold">
+                <p className="text-xs font-mono text-[#0A0A0A] flex items-center gap-1.5 font-bold">
                   <Check size={14} /> In Stock & Ready for Dispatch
                 </p>
               )}
@@ -504,7 +504,7 @@ export default function ProductDetailPage() {
           <div className="space-y-3 pt-2">
             <div className="flex gap-3">
               {/* Stepper */}
-              <div className="flex items-center border border-[#D4D4D8] bg-white px-3 shadow-xs">
+              <div className="flex items-center border border-[#E4E4E7] bg-white px-3 shadow-xs">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1 || isOutOfStock}
@@ -526,11 +526,11 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleAddToCart}
                 disabled={isOutOfStock || isAdded}
-                className={`flex-1 py-4 px-6 text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-all shadow-sm ${
+                className={`w-full bg-[#0A0A0A] text-white py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase hover:opacity-80 transition-opacity flex items-center justify-center gap-2 ${
                   isAdded
-                    ? 'bg-[#4D5936] text-white'
+                    ? 'bg-[#0A0A0A] text-white'
                     : isOutOfStock
-                    ? 'bg-[#F4F4F5] text-[#A1A1AA] cursor-not-allowed border border-[#E5E5E5]'
+                    ? 'bg-[#F4F4F5] text-[#A1A1AA] cursor-not-allowed border border-[#E4E4E7]'
                     : 'bg-[#0A0A0A] text-white hover:bg-[#27272A]'
                 }`}
               >
@@ -549,10 +549,10 @@ export default function ProductDetailPage() {
               {/* Wishlist Button */}
               <button
                 onClick={() => toggleWishlist(product.id)}
-                className={`p-4 border transition-colors shadow-xs ${
+                className={`w-full border border-[#E4E4E7] py-3 text-[11px] font-mono tracking-wider uppercase hover:border-[#0A0A0A] flex justify-center items-center gap-2 mt-2 ${
                   inWish
                     ? 'border-black bg-black text-white'
-                    : 'border-[#D4D4D8] bg-white text-black hover:border-black'
+                    : 'border-[#E4E4E7] bg-white text-black hover:border-black'
                 }`}
                 title={inWish ? 'Remove from wishlist' : 'Add to wishlist'}
               >
@@ -564,7 +564,7 @@ export default function ProductDetailPage() {
             {!isOutOfStock && (
               <button
                 onClick={handleBuyNow}
-                className="w-full py-3.5 border border-[#384227] hover:border-black bg-[#F4F6F0] hover:bg-[#4D5936] text-[#4D5936] hover:text-white text-xs font-bold tracking-widest uppercase transition-colors shadow-xs"
+                className="w-full py-3.5 border border-[#0A0A0A] hover:border-black bg-[#F4F4F5] hover:bg-[#0A0A0A] text-[#0A0A0A] hover:text-white text-xs font-bold tracking-widest uppercase transition-colors shadow-xs"
               >
                 BUY NOW WITH M-PESA / CARD
               </button>
@@ -572,7 +572,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Sticky Mobile Add to Cart Bar */}
-          <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-[#E5E5E5] z-40 flex items-center gap-3 shadow-lg">
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-[#E4E4E7] z-40 flex items-center gap-3 shadow-lg">
             <div className="flex-1">
               <span className="text-[10px] font-mono text-[#71717A] uppercase block truncate">{product.name}</span>
               <span className="text-xs font-mono font-bold text-black">
@@ -591,18 +591,18 @@ export default function ProductDetailPage() {
           {/* =========================================================================
               EXPANDABLE ACCORDIONS
               ========================================================================= */}
-          <div className="border-t border-[#E5E5E5] pt-4 space-y-3">
+          <div className="space-y-0">
             {/* Description & Materials */}
-            <div className="border-b border-[#E5E5E5] pb-3">
+            <div className="border-t border-[#E4E4E7]">
               <button
                 onClick={() => toggleAccordion('details')}
-                className="w-full flex justify-between items-center text-xs font-bold uppercase tracking-wider text-[#0A0A0A] py-2"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
               >
                 <span>FABRIC & MATERIAL SPECIFICATIONS</span>
-                {openAccordions.details ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openAccordions.details ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.details && (
-                <div className="pt-2 text-xs text-[#52525B] space-y-2 leading-relaxed font-light">
+                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
                   <p>{product.description}</p>
                   <p className="font-mono text-black text-[11px] font-bold">TEXTILE: {product.material}</p>
                 </div>
@@ -610,16 +610,16 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Silhouette & Fit */}
-            <div className="border-b border-[#E5E5E5] pb-3">
+            <div className="border-t border-[#E4E4E7]">
               <button
                 onClick={() => toggleAccordion('fit')}
-                className="w-full flex justify-between items-center text-xs font-bold uppercase tracking-wider text-[#0A0A0A] py-2"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
               >
                 <span>SILHOUETTE & FIT ADVISORY</span>
-                {openAccordions.fit ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openAccordions.fit ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.fit && (
-                <div className="pt-2 text-xs text-[#52525B] space-y-2 leading-relaxed">
+                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
                   <p>{product.fit}</p>
                   <p className="text-[11px] text-[#71717A]">
                     Engineered with drop shoulders and structured armhole drape. Model is 6&apos;1&quot; (185 cm) wearing size L.
@@ -629,32 +629,32 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Garment Care */}
-            <div className="border-b border-[#E5E5E5] pb-3">
+            <div className="border-t border-[#E4E4E7]">
               <button
                 onClick={() => toggleAccordion('care')}
-                className="w-full flex justify-between items-center text-xs font-bold uppercase tracking-wider text-[#0A0A0A] py-2"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
               >
                 <span>CARE & WASH INSTRUCTIONS</span>
-                {openAccordions.care ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openAccordions.care ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.care && (
-                <div className="pt-2 text-xs text-[#52525B] leading-relaxed">
+                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
                   <p>{product.careInstructions}</p>
                 </div>
               )}
             </div>
 
             {/* Shipping & Delivery in Kenya */}
-            <div className="border-b border-[#E5E5E5] pb-3">
+            <div className="border-t border-[#E4E4E7]">
               <button
                 onClick={() => toggleAccordion('shipping')}
-                className="w-full flex justify-between items-center text-xs font-bold uppercase tracking-wider text-[#0A0A0A] py-2"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
               >
                 <span>KENYAN & GLOBAL DELIVERY</span>
-                {openAccordions.shipping ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openAccordions.shipping ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.shipping && (
-                <div className="pt-2 text-xs text-[#52525B] space-y-2 leading-relaxed">
+                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
                   <p>
                     <strong className="text-black">Nairobi:</strong> Same-day dispatch on orders placed before 2:00 PM EAT.
                   </p>
@@ -669,16 +669,16 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Returns & Exchanges */}
-            <div className="border-b border-[#E5E5E5] pb-3">
+            <div className="border-t border-[#E4E4E7]">
               <button
                 onClick={() => toggleAccordion('returns')}
-                className="w-full flex justify-between items-center text-xs font-bold uppercase tracking-wider text-[#0A0A0A] py-2"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
               >
                 <span>7-DAY EXCHANGE POLICY</span>
-                {openAccordions.returns ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openAccordions.returns ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.returns && (
-                <div className="pt-2 text-xs text-[#52525B] leading-relaxed">
+                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
                   <p>
                     Complimentary size exchanges within 7 days of delivery across Nairobi. Garments must be unworn with original metallic tags attached.
                   </p>
@@ -695,20 +695,20 @@ export default function ProductDetailPage() {
       {/* =========================================================================
           VERIFIED CUSTOMER REVIEWS
           ========================================================================= */}
-      <section id="reviews-section" className="mt-28 pt-16 border-t border-[#E5E5E5]">
-        <div className="flex flex-col md:flex-row justify-between md:items-end pb-8 border-b border-[#E5E5E5] gap-4">
+      <section id="reviews-section" className="mt-28 pt-16 border-t border-[#E4E4E7]">
+        <div className="flex flex-col md:flex-row justify-between md:items-end pb-8 border-b border-[#E4E4E7] gap-4">
           <div>
-            <span className="text-[10px] font-mono tracking-widest uppercase text-[#4D5936] font-bold">CLIENT TESTIMONIALS</span>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#0A0A0A] font-display mt-1">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-[#0A0A0A] font-bold">CLIENT TESTIMONIALS</span>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#0A0A0A] mt-1">
               COMMUNITY REVIEWS ({reviews.length})
             </h2>
           </div>
           <div className="flex items-center gap-4 flex-wrap">
             {avgRating ? (
               <div className="flex items-center gap-2">
-                <div className="flex text-amber-500">
+                <div className="flex text-[#0A0A0A]">
                   {[...Array(Math.round(Number(avgRating)))].map((_, i) => (
-                    <Star key={i} size={16} className="fill-amber-500" />
+                    <Star key={i} size={16} className="fill-[#0A0A0A]" />
                   ))}
                 </div>
                 <span className="text-xs font-mono text-black font-bold">{avgRating} / 5.0 RATING</span>
@@ -727,13 +727,13 @@ export default function ProductDetailPage() {
 
         {/* Write a Review Form (Animated & Collapsible) */}
         {showReviewForm && (
-          <div className="mt-8 p-6 sm:p-8 bg-[#FAFAF9] border border-[#E5E5E5] max-w-2xl shadow-sm">
+          <div className="mt-8 mt-8 max-w-2xl">
             <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">Leave an Atelier Review</h3>
             <p className="text-xs text-[#71717A] mt-1 font-mono">Share your thoughts on textile weight, drape, and sizing.</p>
 
             {reviewSubmitted ? (
-              <div className="mt-4 p-5 bg-[#F4F6F0] border border-[#DCE4D3] text-xs text-[#4D5936] flex items-center gap-3 animate-in fade-in duration-200">
-                <div className="w-8 h-8 rounded-full bg-[#4D5936] text-white flex items-center justify-center shrink-0">
+              <div className="mt-4 p-5 bg-[#F4F4F5] border border-[#DCE4D3] text-xs text-[#0A0A0A] flex items-center gap-3 animate-in fade-in duration-200">
+                <div className="w-8 h-8 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center shrink-0">
                   <Check size={18} />
                 </div>
                 <div>
@@ -754,7 +754,7 @@ export default function ProductDetailPage() {
                       placeholder="E.G. JOSHUA KIGEN"
                       value={reviewName}
                       onChange={(e) => setReviewName(e.target.value)}
-                      className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
+                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm focus:outline-none focus:border-[#0A0A0A] transition-colors placeholder-[#A1A1AA]"
                     />
                   </div>
                   <div>
@@ -765,7 +765,7 @@ export default function ProductDetailPage() {
                       placeholder="E.G. JOSHUA@GMAIL.COM"
                       value={reviewEmail}
                       onChange={(e) => setReviewEmail(e.target.value)}
-                      className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
+                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm focus:outline-none focus:border-[#0A0A0A] transition-colors placeholder-[#A1A1AA]"
                     />
                   </div>
                 </div>
@@ -778,9 +778,9 @@ export default function ProductDetailPage() {
                         key={num}
                         type="button"
                         onClick={() => setReviewRating(num)}
-                        className="p-1 text-amber-500 hover:scale-110 transition-transform"
+                        className="p-1 text-[#0A0A0A] hover:scale-110 transition-transform"
                       >
-                        <Star size={20} className={num <= reviewRating ? 'fill-amber-500 text-amber-500' : 'text-[#D4D4D8]'} />
+                        <Star size={20} className={num <= reviewRating ? 'fill-[#0A0A0A] text-[#0A0A0A]' : 'text-[#E4E4E7]'} />
                       </button>
                     ))}
                   </div>
@@ -795,7 +795,7 @@ export default function ProductDetailPage() {
                     placeholder="HEADLINE (E.G. UNMATCHED HEAVYWEIGHT 280 GSM DRAPE)"
                     value={reviewTitle}
                     onChange={(e) => setReviewTitle(e.target.value)}
-                    className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
+                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm focus:outline-none focus:border-[#0A0A0A] transition-colors placeholder-[#A1A1AA]"
                   />
                 </div>
 
@@ -807,7 +807,7 @@ export default function ProductDetailPage() {
                     placeholder="HOW DOES IT FIT? WHAT DO YOU THINK OF THE 3D METALLIC CHROME EMBLEM AND COMBED COTTON?"
                     value={reviewComment}
                     onChange={(e) => setReviewComment(e.target.value)}
-                    className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
+                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm focus:outline-none focus:border-[#0A0A0A] transition-colors placeholder-[#A1A1AA]"
                   />
                   <p className="text-[10px] font-mono text-[#71717A] mt-1">Minimum 5 characters required.</p>
                 </div>
@@ -840,8 +840,8 @@ export default function ProductDetailPage() {
 
         {/* Existing Reviews List or Clean Empty State */}
         {reviews.length === 0 ? (
-          <div className="mt-8 p-12 bg-[#FAFAF9] border border-[#E5E5E5] text-center space-y-3">
-            <Sparkles size={24} className="mx-auto text-[#4D5936]" />
+          <div className="mt-8 p-12 bg-[#FAFAF9] border border-[#E4E4E7] text-center space-y-3">
+            <Sparkles size={24} className="mx-auto text-[#0A0A0A]" />
             <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">NO COMMUNITY REVIEWS YET</h3>
             <p className="text-xs text-[#71717A] max-w-sm mx-auto font-mono">
               Be the first to share your experience wearing this atelier garment.
@@ -860,22 +860,22 @@ export default function ProductDetailPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
             {reviews.map((rev) => (
-              <div key={rev.id} className="p-6 bg-[#FAFAF9] border border-[#E5E5E5] space-y-4 shadow-xs">
+              <div key={rev.id} className="border-b border-[#E4E4E7] py-6 space-y-4">
                 <div className="flex justify-between items-center">
-                  <div className="flex text-amber-500">
+                  <div className="flex text-[#0A0A0A]">
                     {[...Array(rev.rating)].map((_, i) => (
-                      <Star key={i} size={14} className="fill-amber-500" />
+                      <Star key={i} size={14} className="fill-[#0A0A0A]" />
                     ))}
                   </div>
                   {rev.isVerifiedPurchase && (
-                    <span className="text-[10px] font-mono text-[#4D5936] font-bold flex items-center gap-1">
+                    <span className="text-[10px] font-mono text-[#0A0A0A] font-bold flex items-center gap-1">
                       <ShieldCheck size={12} /> VERIFIED BUYER
                     </span>
                   )}
                 </div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]">&ldquo;{rev.title}&rdquo;</h4>
                 <p className="text-xs text-[#52525B] leading-relaxed font-light">{rev.comment}</p>
-                <div className="pt-2 border-t border-[#E5E5E5] text-[10px] font-mono text-[#71717A] flex justify-between">
+                <div className="pt-2 border-t border-[#E4E4E7] text-[10px] font-mono text-[#71717A] flex justify-between">
                   <span>{rev.customerName}</span>
                   <span>{new Date(rev.createdAt).toLocaleDateString()}</span>
                 </div>
@@ -887,10 +887,10 @@ export default function ProductDetailPage() {
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <section className="mt-28 pt-16 border-t border-[#E5E5E5]">
-          <div className="pb-8 border-b border-[#E5E5E5] mb-12">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-[#4D5936] font-bold">CURATED HARMONY</span>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#0A0A0A] font-display mt-1">
+        <section className="mt-28 pt-16 border-t border-[#E4E4E7]">
+          <div className="pb-8 border-b border-[#E4E4E7] mb-12">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-[#0A0A0A] font-bold">CURATED HARMONY</span>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#0A0A0A] mt-1">
               PAIR WITH THIS PIECE
             </h2>
           </div>
@@ -905,7 +905,7 @@ export default function ProductDetailPage() {
       {/* Size Guide Modal */}
       {sizeGuideOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white border border-[#E5E5E5] max-w-xl w-full p-8 text-[#0A0A0A] relative shadow-2xl">
+          <div className="bg-white border border-[#E4E4E7] max-w-xl w-full p-8 text-[#0A0A0A] relative shadow-2xl">
             <button
               onClick={() => setSizeGuideOpen(false)}
               className="absolute top-4 right-4 text-[#71717A] hover:text-black"
@@ -916,16 +916,16 @@ export default function ProductDetailPage() {
             <p className="text-xs text-[#52525B] mt-1 font-mono">Measurements in centimeters (cm). Garments cut boxy & oversized.</p>
 
             <div className="mt-6 overflow-x-auto">
-              <table className="w-full text-xs font-mono text-left border border-[#E5E5E5]">
+              <table className="w-full text-xs font-mono text-left border border-[#E4E4E7]">
                 <thead className="bg-[#F4F4F5] text-[#0A0A0A]">
                   <tr>
-                    <th className="p-2.5 border-b border-[#E5E5E5]">SIZE</th>
-                    <th className="p-2.5 border-b border-[#E5E5E5]">CHEST (PIT-TO-PIT)</th>
-                    <th className="p-2.5 border-b border-[#E5E5E5]">LENGTH</th>
-                    <th className="p-2.5 border-b border-[#E5E5E5]">SLEEVE</th>
+                    <th className="p-2.5 border-b border-[#E4E4E7]">SIZE</th>
+                    <th className="p-2.5 border-b border-[#E4E4E7]">CHEST (PIT-TO-PIT)</th>
+                    <th className="p-2.5 border-b border-[#E4E4E7]">LENGTH</th>
+                    <th className="p-2.5 border-b border-[#E4E4E7]">SLEEVE</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E5E5E5]">
+                <tbody className="divide-y divide-[#E4E4E7]">
                   <tr><td className="p-2.5 font-bold">S</td><td className="p-2.5">58 cm</td><td className="p-2.5">72 cm</td><td className="p-2.5">23 cm</td></tr>
                   <tr><td className="p-2.5 font-bold">M</td><td className="p-2.5">61 cm</td><td className="p-2.5">74 cm</td><td className="p-2.5">24 cm</td></tr>
                   <tr><td className="p-2.5 font-bold">L</td><td className="p-2.5">64 cm</td><td className="p-2.5">76 cm</td><td className="p-2.5">25 cm</td></tr>
@@ -945,7 +945,7 @@ export default function ProductDetailPage() {
       {/* Floating Review Success Toast */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#0A0A0A] text-white px-5 py-3.5 shadow-2xl border border-[#27272A] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-3 duration-300">
-          <div className="w-5 h-5 rounded-full bg-[#4D5936] text-white flex items-center justify-center shrink-0">
+          <div className="w-5 h-5 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center shrink-0">
             <Check size={12} />
           </div>
           <span className="text-xs font-mono tracking-wider">{toastMessage}</span>

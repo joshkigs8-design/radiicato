@@ -338,7 +338,7 @@ export default function CheckoutPage() {
         <div className="flex flex-col gap-3 pt-4">
           <Link 
             href="/login" 
-            className="w-full px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#27272A] transition-colors"
+            className="w-full px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-colors"
           >
             SIGN IN
           </Link>
@@ -370,7 +370,7 @@ export default function CheckoutPage() {
         <p className="text-xs text-[#71717A]">Add archival items to your bag before proceeding to checkout.</p>
         <Link 
           href="/shop" 
-          className="inline-block px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#27272A] transition-colors"
+          className="inline-block px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-colors"
         >
           Return to Shop
         </Link>
@@ -379,7 +379,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-6 sm:px-12 max-w-[1400px] mx-auto min-h-screen">
+    <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1200px] mx-auto min-h-screen">
       {/* Top Header with official logo and secure checkout indicators */}
       <div className="pb-8 border-b border-[#E4E4E7] mb-10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <Link
@@ -400,7 +400,7 @@ export default function CheckoutPage() {
           />
         </Link>
 
-        <div className="flex items-center gap-2 text-[11px] font-mono text-[#4D5936] font-semibold">
+        <div className="flex items-center gap-2 text-[11px] font-mono text-[#0A0A0A] font-semibold">
           <Lock size={13} /> 256-BIT ENCRYPTED CHECKOUT
         </div>
       </div>
@@ -412,7 +412,7 @@ export default function CheckoutPage() {
             {/* Step 1: Customer Info */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white text-xs font-mono font-bold flex items-center justify-center">
+                <span className="w-8 h-8 border border-[#0A0A0A] flex items-center justify-center text-[10px] font-mono bg-[#0A0A0A] text-white">
                   1
                 </span>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
@@ -431,7 +431,7 @@ export default function CheckoutPage() {
                     placeholder="E.G. JOSHUA KIGEN"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                   />
                 </div>
 
@@ -445,7 +445,7 @@ export default function CheckoutPage() {
                     placeholder="E.G. JOSHUA@GMAIL.COM"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                   />
                 </div>
 
@@ -455,11 +455,11 @@ export default function CheckoutPage() {
                       KENYAN PHONE NUMBER (M-PESA / DISPATCH) *
                     </label>
                     {phone && isValidKenyanPhone(phone) ? (
-                      <span className="text-[10px] font-mono text-[#4D5936] font-bold flex items-center gap-1">
+                      <span className="text-[10px] font-mono text-[#0A0A0A] font-bold flex items-center gap-1">
                         <Check size={12} /> {formatDisplayKenyanPhone(phone)}
                       </span>
                     ) : phone && phone.length >= 3 ? (
-                      <span className="text-[10px] font-mono text-amber-600 flex items-center gap-1">
+                      <span className="text-[10px] font-mono text-red-600 flex items-center gap-1">
                         <AlertCircle size={11} /> 07XX / 01XX / +254
                       </span>
                     ) : null}
@@ -472,7 +472,7 @@ export default function CheckoutPage() {
                     onChange={(e) => setPhone(e.target.value)}
                     className={`w-full bg-white border p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none transition-colors ${
                       phone && !isValidKenyanPhone(phone) && phone.length >= 4
-                        ? 'border-amber-400 focus:border-amber-600'
+                        ? 'border-red-400 focus:border-red-600'
                         : 'border-[#E4E4E7] focus:border-[#0A0A0A]'
                     }`}
                   />
@@ -486,7 +486,7 @@ export default function CheckoutPage() {
             {/* Step 2: Delivery Details */}
             <div className="space-y-4 pt-4 border-t border-[#E4E4E7]">
               <div className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white text-xs font-mono font-bold flex items-center justify-center">
+                <span className="w-8 h-8 border border-[#0A0A0A] flex items-center justify-center text-[10px] font-mono bg-[#0A0A0A] text-white">
                   2
                 </span>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
@@ -502,7 +502,7 @@ export default function CheckoutPage() {
                   <select
                     value={county}
                     onChange={(e) => setCounty(e.target.value)}
-                    className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] appearance-none"
                   >
                     {KENYAN_COUNTIES.map((c) => (
                       <option key={c} value={c}>
@@ -522,7 +522,7 @@ export default function CheckoutPage() {
                     placeholder="E.G. KILIMANI / WESTLANDS / NYALI / KAREN"
                     value={town}
                     onChange={(e) => setTown(e.target.value)}
-                    className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                   />
                 </div>
 
@@ -536,7 +536,7 @@ export default function CheckoutPage() {
                     placeholder="E.G. APARTMENT 4B, APEX PLAZA, WOOD AVENUE"
                     value={streetAddress}
                     onChange={(e) => setStreetAddress(e.target.value)}
-                    className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                   />
                 </div>
 
@@ -549,7 +549,7 @@ export default function CheckoutPage() {
                     placeholder="E.G. GATE CODE 2049, CALL ON ARRIVAL, LEAVE AT CONCIERGE"
                     value={deliveryInstructions}
                     onChange={(e) => setDeliveryInstructions(e.target.value)}
-                    className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                   />
                 </div>
               </div>
@@ -558,7 +558,7 @@ export default function CheckoutPage() {
             {/* Step 3: Billing Details */}
             <div className="space-y-4 pt-4 border-t border-[#E4E4E7]">
               <div className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white text-xs font-mono font-bold flex items-center justify-center">
+                <span className="w-8 h-8 border border-[#0A0A0A] flex items-center justify-center text-[10px] font-mono bg-[#0A0A0A] text-white">
                   3
                 </span>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
@@ -572,7 +572,7 @@ export default function CheckoutPage() {
                     type="checkbox"
                     checked={sameAsShipping}
                     onChange={(e) => setSameAsShipping(e.target.checked)}
-                    className="rounded border-[#E4E4E7] text-[#0A0A0A] focus:ring-[#0A0A0A] w-4 h-4"
+                    className="w-4 h-4 rounded-none border-[#E4E4E7] accent-[#0A0A0A]"
                   />
                   <span className="text-xs font-mono text-[#0A0A0A] uppercase tracking-wider font-medium">
                     Billing address matches delivery address
@@ -582,7 +582,7 @@ export default function CheckoutPage() {
 
               {sameAsShipping ? (
                 <div className="p-3.5 bg-[#FAFAF9] border border-[#E4E4E7] text-[11px] font-mono text-[#71717A] flex items-center gap-2">
-                  <Info size={14} className="text-[#4D5936] shrink-0" />
+                  <Info size={14} className="text-[#0A0A0A] shrink-0" />
                   <span>
                     VAT receipt and billing records will reflect delivery address: {streetAddress ? `${streetAddress}, ` : ''}{town ? `${town}, ` : ''}{county} County.
                   </span>
@@ -596,7 +596,7 @@ export default function CheckoutPage() {
                     <select
                       value={billingCounty}
                       onChange={(e) => setBillingCounty(e.target.value)}
-                      className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] appearance-none"
                     >
                       {KENYAN_COUNTIES.map((c) => (
                         <option key={c} value={c}>
@@ -616,7 +616,7 @@ export default function CheckoutPage() {
                       placeholder="E.G. KILIMANI / NAIROBI CBD"
                       value={billingTown}
                       onChange={(e) => setBillingTown(e.target.value)}
-                      className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                     />
                   </div>
 
@@ -630,7 +630,7 @@ export default function CheckoutPage() {
                       placeholder="E.G. SUITE 204, APEX PLAZA, WOOD AVENUE"
                       value={billingStreetAddress}
                       onChange={(e) => setBillingStreetAddress(e.target.value)}
-                      className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                     />
                   </div>
                 </div>
@@ -640,7 +640,7 @@ export default function CheckoutPage() {
             {/* Step 4: Payment Method */}
             <div className="space-y-4 pt-4 border-t border-[#E4E4E7]">
               <div className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white text-xs font-mono font-bold flex items-center justify-center">
+                <span className="w-8 h-8 border border-[#0A0A0A] flex items-center justify-center text-[10px] font-mono bg-[#0A0A0A] text-white">
                   4
                 </span>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
@@ -655,15 +655,15 @@ export default function CheckoutPage() {
                   onClick={() => setPaymentMethod('mpesa')}
                   className={`p-4 border flex flex-col items-start gap-2 transition-all ${
                     paymentMethod === 'mpesa'
-                      ? 'border-[#4D5936] bg-[#4D5936]/5 text-[#0A0A0A] shadow-sm'
+                      ? 'border-[#0A0A0A] bg-[#FAFAFA] text-[#0A0A0A] '
                       : 'border-[#E4E4E7] bg-white text-[#71717A] hover:border-[#A1A1AA]'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-[#0A0A0A]">
-                      <Smartphone size={16} className="text-[#4D5936]" /> SAFARICOM M-PESA
+                      <Smartphone size={16} className="text-[#0A0A0A]" /> SAFARICOM M-PESA
                     </span>
-                    <span className="text-[9px] font-mono bg-[#4D5936]/15 text-[#4D5936] font-bold px-1.5 py-0.5 rounded">
+                    <span className="text-[9px] font-mono bg-[#E4E4E7] text-[#0A0A0A] font-bold px-1.5 py-0.5 rounded-none">
                       INSTANT STK PUSH
                     </span>
                   </div>
@@ -677,15 +677,15 @@ export default function CheckoutPage() {
                   onClick={() => setPaymentMethod('card')}
                   className={`p-4 border flex flex-col items-start gap-2 transition-all ${
                     paymentMethod === 'card'
-                      ? 'border-[#4D5936] bg-[#4D5936]/5 text-[#0A0A0A] shadow-sm'
+                      ? 'border-[#0A0A0A] bg-[#FAFAFA] text-[#0A0A0A] '
                       : 'border-[#E4E4E7] bg-white text-[#71717A] hover:border-[#A1A1AA]'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-[#0A0A0A]">
-                      <CreditCard size={16} className="text-[#4D5936]" /> CARD / PAYSTACK
+                      <CreditCard size={16} className="text-[#0A0A0A]" /> CARD / PAYSTACK
                     </span>
-                    <span className="text-[9px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded font-bold">
+                    <span className="text-[9px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded-none font-bold">
                       VISA / MC
                     </span>
                   </div>
@@ -706,11 +706,11 @@ export default function CheckoutPage() {
                       {(() => {
                         const target = useDifferentMpesaPhone && mpesaPhone.trim() ? mpesaPhone.trim() : (mpesaPhone.trim() || phone.trim());
                         return isValidKenyanPhone(target) ? (
-                          <span className="text-[10px] font-mono text-[#4D5936] font-bold flex items-center gap-1">
+                          <span className="text-[10px] font-mono text-[#0A0A0A] font-bold flex items-center gap-1">
                             <Check size={12} /> {formatDisplayKenyanPhone(target)}
                           </span>
                         ) : target && target.length >= 4 ? (
-                          <span className="text-[10px] font-mono text-amber-600 flex items-center gap-1">
+                          <span className="text-[10px] font-mono text-red-600 flex items-center gap-1">
                             <AlertCircle size={11} /> Format: 07XX / 01XX / +254
                           </span>
                         ) : null;
@@ -726,7 +726,7 @@ export default function CheckoutPage() {
                           setMpesaPhone(e.target.value);
                           if (!useDifferentMpesaPhone) setUseDifferentMpesaPhone(true);
                         }}
-                        className="w-full bg-white border border-[#E4E4E7] p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                        className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                       />
                       
                       <div className="flex items-center justify-between text-[10px] font-mono text-[#71717A]">
@@ -743,7 +743,7 @@ export default function CheckoutPage() {
                               setMpesaPhone('');
                               setUseDifferentMpesaPhone(false);
                             }}
-                            className="text-[#4D5936] underline hover:text-black"
+                            className="text-[#0A0A0A] underline hover:text-black"
                           >
                             Reset to contact phone
                           </button>
@@ -755,7 +755,7 @@ export default function CheckoutPage() {
                   {/* Clear M-PESA Payment Instructions */}
                   <div className="pt-4 border-t border-[#E4E4E7] space-y-4">
                     <div className="flex items-center gap-2">
-                      <ShieldCheck size={16} className="text-[#4D5936]" />
+                      <ShieldCheck size={16} className="text-[#0A0A0A]" />
                       <h4 className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A] font-mono">
                         M-PESA PAYMENT INSTRUCTIONS
                       </h4>
@@ -763,7 +763,7 @@ export default function CheckoutPage() {
 
                     {/* Step-by-step STK guidance */}
                     <div className="bg-white p-4 border border-[#E4E4E7] space-y-2.5 text-xs text-[#52525B]">
-                      <span className="text-[10px] font-mono uppercase text-[#4D5936] font-bold block">
+                      <span className="text-[10px] font-mono uppercase text-[#0A0A0A] font-bold block">
                         OPTION A: INSTANT STK PUSH (RECOMMENDED)
                       </span>
                       <ol className="space-y-1.5 list-decimal list-inside font-mono text-[11px] leading-relaxed">
@@ -781,7 +781,7 @@ export default function CheckoutPage() {
                         <span className="text-[10px] font-mono uppercase text-[#71717A] font-bold">
                           OPTION B: MANUAL PAYBILL / TILL FALLBACK
                         </span>
-                        <span className="text-[9px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded">
+                        <span className="text-[9px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded-none">
                           IF STK DELAYS
                         </span>
                       </div>
@@ -797,7 +797,7 @@ export default function CheckoutPage() {
                             <button
                               type="button"
                               onClick={() => handleCopy('729831', 'paybill')}
-                              className="text-[10px] font-mono text-[#4D5936] hover:underline flex items-center gap-1 font-bold"
+                              className="text-[10px] font-mono text-[#0A0A0A] hover:underline flex items-center gap-1 font-bold"
                             >
                               {copiedField === 'paybill' ? <Check size={11} /> : <Copy size={11} />}
                               {copiedField === 'paybill' ? 'COPIED' : 'COPY'}
@@ -814,7 +814,7 @@ export default function CheckoutPage() {
                             <button
                               type="button"
                               onClick={() => handleCopy('982410', 'till')}
-                              className="text-[10px] font-mono text-[#4D5936] hover:underline flex items-center gap-1 font-bold"
+                              className="text-[10px] font-mono text-[#0A0A0A] hover:underline flex items-center gap-1 font-bold"
                             >
                               {copiedField === 'till' ? <Check size={11} /> : <Copy size={11} />}
                               {copiedField === 'till' ? 'COPIED' : 'COPY'}
@@ -841,7 +841,7 @@ export default function CheckoutPage() {
                       placeholder="4000 1234 5678 9010"
                       value={cardNumber}
                       onChange={(e) => setCardNumber(e.target.value)}
-                      className="w-full bg-white border border-[#E4E4E7] p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -854,7 +854,7 @@ export default function CheckoutPage() {
                         placeholder="12/28"
                         value={cardExpiry}
                         onChange={(e) => setCardExpiry(e.target.value)}
-                        className="w-full bg-white border border-[#E4E4E7] p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                        className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                       />
                     </div>
                     <div>
@@ -867,7 +867,7 @@ export default function CheckoutPage() {
                         placeholder="•••"
                         value={cardCvv}
                         onChange={(e) => setCardCvv(e.target.value)}
-                        className="w-full bg-white border border-[#E4E4E7] p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                        className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
                       />
                     </div>
                   </div>
@@ -888,7 +888,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full bg-[#0A0A0A] text-white hover:bg-[#27272A] transition-all py-4 px-6 text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-3 disabled:opacity-50 shadow-md"
+                className="w-full bg-[#0A0A0A] text-white hover:opacity-80 transition-all py-4 px-6 text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-3 disabled:opacity-50 "
               >
                 {isProcessing ? (
                   <>
@@ -953,13 +953,13 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={handleApplyPromo}
-                    className="bg-[#0A0A0A] hover:bg-[#27272A] text-white text-xs px-4 py-2 uppercase font-bold transition-colors"
+                    className="bg-[#0A0A0A] hover:opacity-80 text-white text-xs px-4 py-2 uppercase font-bold transition-colors"
                   >
                     Apply
                   </button>
                 </div>
                 {appliedDiscount && (
-                  <p className="text-[11px] text-[#4D5936] font-mono font-bold">
+                  <p className="text-[11px] text-[#0A0A0A] font-mono font-bold">
                     Code {appliedDiscount.code} applied (-{formatKES(appliedDiscount.amount)})
                   </p>
                 )}
@@ -975,7 +975,7 @@ export default function CheckoutPage() {
                   <span className="font-mono text-[#0A0A0A] font-semibold">{formatKES(cartSummary.subtotal)}</span>
                 </div>
                 {appliedDiscount && (
-                  <div className="flex justify-between text-[#4D5936] font-semibold">
+                  <div className="flex justify-between text-[#0A0A0A] font-semibold">
                     <span>Discount</span>
                     <span className="font-mono">-{formatKES(appliedDiscount.amount)}</span>
                   </div>
@@ -984,7 +984,7 @@ export default function CheckoutPage() {
                   <span>Delivery ({county})</span>
                   <span className="font-mono text-[#0A0A0A] font-semibold">
                     {shippingFee === 0 ? (
-                      <span className="text-[#4D5936] font-bold">FREE DELIVERY</span>
+                      <span className="text-[#0A0A0A] font-bold">FREE DELIVERY</span>
                     ) : (
                       formatKES(shippingFee)
                     )}
@@ -1006,26 +1006,26 @@ export default function CheckoutPage() {
           <div className="bg-white border border-[#E4E4E7] shadow-2xl max-w-md w-full p-7 text-center space-y-5 transform transition-all duration-300">
             {/* Stage Indicator */}
             <div className="flex items-center justify-center gap-2 pb-2 border-b border-[#F4F4F5] text-[10px] font-mono uppercase tracking-widest text-[#71717A]">
-              <span className={`px-2 py-0.5 rounded ${stkPushStep === 'prompting' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
+              <span className={`px-2 py-0.5 rounded-none ${stkPushStep === 'prompting' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
                 1. STK PROMPT
               </span>
               <span>→</span>
-              <span className={`px-2 py-0.5 rounded ${stkPushStep === 'verifying' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
+              <span className={`px-2 py-0.5 rounded-none ${stkPushStep === 'verifying' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
                 2. DARAJA VERIFY
               </span>
               <span>→</span>
-              <span className={`px-2 py-0.5 rounded ${stkPushStep === 'success' ? 'bg-[#4D5936] text-white font-bold' : 'text-[#A1A1AA]'}`}>
+              <span className={`px-2 py-0.5 rounded-none ${stkPushStep === 'success' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
                 3. CONFIRMED
               </span>
             </div>
 
-            <div className="w-16 h-16 rounded-full bg-[#4D5936]/10 border border-[#4D5936]/20 mx-auto flex items-center justify-center text-[#4D5936] transition-all">
+            <div className="w-16 h-16 rounded-none bg-[#0A0A0A]/10 border border-[#0A0A0A]/20 mx-auto flex items-center justify-center text-[#0A0A0A] transition-all">
               {stkPushStep === 'success' ? (
-                <CheckCircle2 size={36} className="text-[#4D5936]" />
+                <CheckCircle2 size={36} className="text-[#0A0A0A]" />
               ) : stkPushStep === 'verifying' ? (
-                <Loader2 size={32} className="animate-spin text-[#4D5936]" />
+                <Loader2 size={32} className="animate-spin text-[#0A0A0A]" />
               ) : (
-                <Smartphone size={32} className="animate-pulse text-[#4D5936]" />
+                <Smartphone size={32} className="animate-pulse text-[#0A0A0A]" />
               )}
             </div>
 
@@ -1037,7 +1037,7 @@ export default function CheckoutPage() {
                   ? 'Verifying M-PESA Payment...'
                   : 'M-PESA Payment Verified!'}
               </h3>
-              <p className="text-[11px] font-mono text-[#4D5936] font-bold">
+              <p className="text-[11px] font-mono text-[#0A0A0A] font-bold">
                 AMOUNT: {formatKES(orderTotal)}
               </p>
             </div>

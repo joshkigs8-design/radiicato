@@ -40,11 +40,11 @@ export function LookbookModal({ items, selectedIndex, isOpen = true, onClose, on
   if (!currentItem) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 z-50 p-2 text-[#8E8E93] hover:text-white transition-colors"
+        className="absolute top-6 right-6 z-50 p-2 text-[#A1A1AA] hover:text-white transition-colors"
         aria-label="Close lookbook"
       >
         <X size={28} />
@@ -53,59 +53,44 @@ export function LookbookModal({ items, selectedIndex, isOpen = true, onClose, on
       {/* Nav Chevrons */}
       <button
         onClick={handlePrev}
-        className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-50 p-3 text-white/50 hover:text-white bg-black/40 hover:bg-black/80 rounded-full transition-all"
+        className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-50 p-3 text-white hover:opacity-70 transition-opacity"
         aria-label="Previous image"
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft size={36} />
       </button>
       <button
         onClick={handleNext}
-        className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-50 p-3 text-white/50 hover:text-white bg-black/40 hover:bg-black/80 rounded-full transition-all"
+        className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-50 p-3 text-white hover:opacity-70 transition-opacity"
         aria-label="Next image"
       >
-        <ChevronRight size={24} />
+        <ChevronRight size={36} />
       </button>
 
       {/* Main Exhibition Container */}
-      <div className="max-w-6xl w-full mx-auto px-6 py-12 flex flex-col lg:flex-row gap-8 items-center h-full max-h-[90vh]">
+      <div className="max-w-7xl w-full mx-auto px-16 py-12 flex flex-col items-center justify-center h-full max-h-screen relative">
         {/* Big Editorial Image */}
-        <div className="relative flex-1 w-full h-[60vh] lg:h-[80vh] bg-[#111] overflow-hidden border border-[#222]">
+        <div className="relative w-full h-full max-h-[75vh] flex justify-center items-center">
           <Image
             src={currentItem.imageUrl}
             alt={currentItem.title}
             fill
-            className="object-cover"
+            className="object-contain"
             priority
-            sizes="(max-width: 1024px) 100vw, 70vw"
+            sizes="100vw"
           />
         </div>
 
-        {/* Story Sidebar */}
-        <div className="w-full lg:w-80 flex flex-col justify-between text-white space-y-6">
-          <div className="space-y-3">
-            <span className="text-[10px] font-mono tracking-widest text-[#536344] uppercase">
-              LOOKBOOK EXHIBIT {selectedIndex + 1} / {items.length}
-            </span>
-            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-wider font-display">
-              {currentItem.title}
-            </h2>
-            <p className="text-xs text-[#A1A1AA] leading-relaxed">
-              {currentItem.description}
-            </p>
-          </div>
-
-          {currentItem.collectionSlug && (
-            <div className="pt-4 border-t border-[#1F1F1F]">
-              <Link
-                href={`/collections/${currentItem.collectionSlug}`}
-                onClick={onClose}
-                className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase bg-white text-black px-5 py-3 hover:bg-[#E5E5EA] transition-colors"
-              >
-                <span>EXPLORE COLLECTION</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-          )}
+        {/* Caption */}
+        <div className="absolute bottom-12 left-0 right-0 text-center px-16">
+          <span className="text-[10px] font-mono tracking-wider uppercase text-white/70 block mb-2">
+            {selectedIndex + 1} / {items.length}
+          </span>
+          <h2 className="text-lg font-bold text-white uppercase tracking-widest mb-1">
+            {currentItem.title}
+          </h2>
+          <p className="text-sm text-white/70">
+            {currentItem.description}
+          </p>
         </div>
       </div>
     </div>

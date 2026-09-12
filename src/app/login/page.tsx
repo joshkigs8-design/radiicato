@@ -49,7 +49,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#0A0A0A] flex flex-col justify-center items-center p-6 sm:pt-28 pb-32">
+    <main className="min-h-screen bg-white text-[#0A0A0A] flex flex-col justify-center items-center p-5 sm:px-8 py-32">
       <div className="max-w-sm w-full space-y-8">
         <div className="text-center space-y-4">
           <Link href="/" className="inline-block">
@@ -62,24 +62,24 @@ export default function LoginPage() {
               priority
             />
           </Link>
-          <h1 className="text-xl font-bold uppercase tracking-widest text-[#0A0A0A] font-display">
+          <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A]">
             ACCOUNT LOGIN
           </h1>
-          <p className="text-xs text-[#71717A] uppercase tracking-wider font-mono">
+          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#71717A]">
             ACCESS YOUR ORDER ARCHIVE & DETAILS
           </p>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+          <div className="p-4 bg-white border border-[#E4E4E7] text-sm text-red-600 flex items-center gap-2">
             <AlertCircle size={16} />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-mono tracking-[0.12em] uppercase text-[#71717A]">
               EMAIL ADDRESS *
             </label>
             <input
@@ -87,13 +87,13 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+              className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
             />
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
+              <label className="text-[10px] font-mono tracking-[0.12em] uppercase text-[#71717A]">
                 PASSWORD *
               </label>
               <Link 
@@ -108,14 +108,14 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white border border-[#E4E4E7] p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+              className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#0A0A0A] text-white hover:bg-[#27272A] transition-all py-3.5 px-6 text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-3 disabled:opacity-50"
+            className="btn-primary w-full flex items-center justify-center gap-3 disabled:opacity-50 mt-6"
           >
             {loading ? (
               <Loader2 size={16} className="animate-spin" />
@@ -129,8 +129,8 @@ export default function LoginPage() {
         </form>
 
         <div className="pt-6 border-t border-[#E4E4E7] text-center">
-          <p className="text-xs text-[#71717A] uppercase tracking-wider font-mono">
-            DON&apos;T HAVE AN ACCOUNT?{' '}
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[#71717A]">
+            DON'T HAVE AN ACCOUNT?{' '}
             <Link href="/signup" className="text-[#0A0A0A] font-bold hover:underline">
               SIGN UP
             </Link>
@@ -141,7 +141,7 @@ export default function LoginPage() {
           <Lock size={12} /> SECURE LOGIN // 256-BIT ENCRYPTION
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

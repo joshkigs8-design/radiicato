@@ -23,7 +23,7 @@ function OrderSuccessContent() {
         particleCount: 50,
         spread: 60,
         origin: { y: 0.6 },
-        colors: ['#4D5936', '#0A0A0A', '#E4E4E7', '#71717A'],
+        colors: ['#0A0A0A', '#E4E4E7', '#71717A', '#FFFFFF'],
       });
     } catch {
       // Ignore if canvas-confetti fails
@@ -55,7 +55,7 @@ function OrderSuccessContent() {
         </p>
         <Link 
           href="/shop" 
-          className="inline-block px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#27272A] transition-colors"
+          className="inline-block px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity"
         >
           Continue Shopping
         </Link>
@@ -64,16 +64,16 @@ function OrderSuccessContent() {
   }
 
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-6 sm:px-12 max-w-4xl mx-auto min-h-screen">
+    <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-screen">
       {/* Success Badge */}
       <div className="text-center space-y-4 pb-12 border-b border-[#E4E4E7]">
-        <div className="w-16 h-16 rounded-full bg-[#4D5936]/10 border border-[#4D5936]/20 mx-auto flex items-center justify-center text-[#4D5936]">
+        <div className="w-16 h-16 border border-[#0A0A0A] mx-auto flex items-center justify-center text-[#0A0A0A]">
           <CheckCircle2 size={36} />
         </div>
-        <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#4D5936] font-bold block">
+        <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#71717A] font-bold block mt-6">
           TRANSACTION VERIFIED & LOGGED
         </span>
-        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#0A0A0A] font-display">
+        <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A]">
           ORDER CONFIRMED
         </h1>
         <p className="text-xs sm:text-sm text-[#71717A] max-w-md mx-auto font-light leading-relaxed">
@@ -81,14 +81,14 @@ function OrderSuccessContent() {
           <strong className="text-[#0A0A0A] font-semibold">{order.email}</strong>.
         </p>
         <div className="pt-2">
-          <span className="inline-block bg-[#FAFAF9] border border-[#E4E4E7] px-4 py-2 text-sm font-mono font-bold text-[#0A0A0A] tracking-widest shadow-sm">
+          <span className="inline-block bg-[#FAFAFA] border border-[#E4E4E7] px-4 py-2 text-sm font-mono font-bold text-[#0A0A0A] tracking-widest">
             ORDER ID: {order.orderNumber}
           </span>
         </div>
       </div>
 
       {/* Printable Invoice Container */}
-      <div className="mt-12 bg-[#FAFAF9] border border-[#E4E4E7] p-6 sm:p-10 space-y-8 shadow-sm">
+      <div className="mt-12 border border-[#E4E4E7] p-6 sm:p-10 space-y-8 max-w-4xl mx-auto">
         {/* Invoice Top Strip with Official Logo */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center pb-6 border-b border-[#E4E4E7] gap-4">
           <div className="flex items-center gap-4">
@@ -110,7 +110,7 @@ function OrderSuccessContent() {
           <div className="flex items-center gap-3">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 border border-[#E4E4E7] bg-white hover:border-[#0A0A0A] text-xs font-mono uppercase text-[#0A0A0A] flex items-center gap-2 transition-colors shadow-sm"
+              className="px-4 py-2 border border-[#E4E4E7] bg-white hover:border-[#0A0A0A] text-xs font-mono uppercase text-[#0A0A0A] flex items-center gap-2 transition-colors"
             >
               <Printer size={13} /> Print / Save PDF Invoice
             </button>
@@ -125,7 +125,7 @@ function OrderSuccessContent() {
           </div>
           <div>
             <span className="text-[#71717A] uppercase block font-medium">PAYMENT METHOD</span>
-            <span className="text-[#4D5936] font-semibold mt-1 block uppercase">
+            <span className="text-[#0A0A0A] font-semibold mt-1 block uppercase">
               {order.paymentMethod === 'mpesa' ? 'Safaricom M-PESA STK' : 'Card / Paystack'}
             </span>
             {order.paymentDetails?.mpesaReceiptNumber && (
@@ -136,7 +136,7 @@ function OrderSuccessContent() {
           </div>
           <div>
             <span className="text-[#71717A] uppercase block font-medium">FULFILLMENT STATUS</span>
-            <span className="text-amber-700 font-semibold mt-1 block uppercase">
+            <span className="text-[#0A0A0A] font-semibold mt-1 block uppercase">
               {order.fulfillmentStatus}
             </span>
           </div>
@@ -160,7 +160,7 @@ function OrderSuccessContent() {
 
         {/* Order Items Table */}
         <div className="space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]">ITEMS RESERVED</h3>
+          <h3 className="text-[11px] font-mono font-semibold uppercase tracking-[0.15em] text-[#0A0A0A]">ITEMS RESERVED</h3>
           <div className="divide-y divide-[#E4E4E7] border-y border-[#E4E4E7]">
             {order.items.map((item) => (
               <div key={item.id} className="py-4 flex items-center justify-between gap-4">
@@ -178,7 +178,7 @@ function OrderSuccessContent() {
                   </div>
                   <div>
                     <h4 className="text-xs font-semibold uppercase text-[#0A0A0A]">{item.productName}</h4>
-                    <p className="text-[10px] font-mono text-[#71717A]">
+                    <p className="text-[10px] font-mono text-[#71717A] uppercase">
                       {item.variantTitle} • QTY: {item.quantity}
                     </p>
                   </div>
@@ -197,7 +197,7 @@ function OrderSuccessContent() {
               <span className="text-[#0A0A0A] font-medium">{formatKES(order.subtotal)}</span>
             </div>
             {order.discount > 0 && (
-              <div className="flex justify-between text-[#4D5936] font-medium">
+              <div className="flex justify-between text-[#0A0A0A] font-medium">
                 <span>Discount ({order.discountCode}):</span>
                 <span>-{formatKES(order.discount)}</span>
               </div>
@@ -206,7 +206,7 @@ function OrderSuccessContent() {
               <span>Shipping Fee:</span>
               <span className="text-[#0A0A0A] font-medium">{formatKES(order.shippingFee)}</span>
             </div>
-            <div className="flex justify-between text-sm font-bold text-[#0A0A0A] pt-2 border-t border-[#E4E4E7]">
+            <div className="flex justify-between text-sm font-bold text-[#0A0A0A] pt-4 mt-2 border-t border-[#0A0A0A]">
               <span>Total Paid:</span>
               <span className="text-base font-black">{formatKES(order.total)}</span>
             </div>
@@ -215,17 +215,17 @@ function OrderSuccessContent() {
       </div>
 
       {/* Bottom Navigation CTAs */}
-      <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
+      <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center max-w-4xl mx-auto">
         <Link
           href="/account/orders"
-          className="text-xs font-mono uppercase tracking-wider text-[#71717A] hover:text-[#0A0A0A] flex items-center gap-1.5 transition-colors font-medium"
+          className="text-[10px] font-mono uppercase tracking-[0.1em] text-[#71717A] hover:text-[#0A0A0A] flex items-center gap-1.5 transition-colors font-medium"
         >
           <span>View In Customer Portal</span>
           <ArrowRight size={13} />
         </Link>
         <Link
           href="/shop"
-          className="bg-[#0A0A0A] text-white px-8 py-3.5 text-xs font-bold tracking-widest uppercase hover:bg-[#27272A] transition-colors shadow-md"
+          className="border border-[#0A0A0A] text-[#0A0A0A] px-8 py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase hover:bg-[#0A0A0A] hover:text-white transition-colors"
         >
           Continue Shopping
         </Link>
@@ -237,7 +237,7 @@ function OrderSuccessContent() {
 export default function OrderSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="pt-36 pb-32 px-6 text-center text-xs font-mono text-[#71717A] uppercase">
+      <div className="pt-36 pb-32 px-6 text-center text-[10px] font-mono text-[#71717A] uppercase">
         VERIFYING ATELIER TRANSACTION...
       </div>
     }>

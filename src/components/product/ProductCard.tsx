@@ -42,7 +42,7 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Image Container */}
-        <div className="relative aspect-[3/4] w-full bg-[#F4F4F5] overflow-hidden border border-[#E5E5E5] transition-colors group-hover:border-black shadow-sm">
+        <div className="relative aspect-[3/4] w-full bg-[#F4F4F5] overflow-hidden border border-transparent group-hover:border-[#0A0A0A] transition-all duration-500">
           {/* Primary & Hover Image Crossfade */}
           <Link href={`/product/${product.slug}`} className="absolute inset-0">
             {primaryImg && (
@@ -51,7 +51,7 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
                 alt={product.name}
                 fill
                 className={`object-cover object-center transition-all duration-700 ease-out ${
-                  hoverImg && isHovered ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+                  hoverImg && isHovered ? 'opacity-0 scale-[1.035]' : 'opacity-100 scale-100'
                 }`}
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
@@ -62,7 +62,7 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
                 alt={`${product.name} alternate view`}
                 fill
                 className={`object-cover object-center transition-all duration-700 ease-out ${
-                  isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
+                  isHovered ? 'opacity-100 scale-[1.035]' : 'opacity-0 scale-100'
                 }`}
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
@@ -72,19 +72,19 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none z-10">
             {isSoldOut ? (
-              <span className="bg-black/90 backdrop-blur-md text-white border border-black text-[9px] font-mono tracking-widest uppercase px-2 py-0.5">
+              <span className="bg-[#0A0A0A] text-white text-[9px] font-mono tracking-[0.15em] uppercase px-2.5 py-1">
                 SOLD OUT
               </span>
             ) : product.isLimitedDrop ? (
-              <span className="bg-[#4D5936] backdrop-blur-md text-white border border-[#384227] text-[9px] font-mono tracking-widest uppercase px-2 py-0.5 shadow-sm">
+              <span className="bg-[#0A0A0A] text-white text-[9px] font-mono tracking-[0.15em] uppercase px-2.5 py-1">
                 LIMITED DROP ({product.dropPieceCount || 50} PCS)
               </span>
             ) : product.salePrice ? (
-              <span className="bg-[#991B1B] backdrop-blur-md text-white border border-[#7F1D1D] text-[9px] font-mono tracking-widest uppercase px-2 py-0.5 shadow-sm">
+              <span className="bg-[#0A0A0A] text-white text-[9px] font-mono tracking-[0.15em] uppercase px-2.5 py-1">
                 SALE
               </span>
             ) : product.isFeatured ? (
-              <span className="bg-black/90 backdrop-blur-md text-white border border-black text-[9px] font-mono tracking-widest uppercase px-2 py-0.5 shadow-sm">
+              <span className="bg-[#0A0A0A] text-white text-[9px] font-mono tracking-[0.15em] uppercase px-2.5 py-1">
                 CORE DROP
               </span>
             ) : null}
@@ -97,10 +97,10 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
               e.stopPropagation();
               toggleWishlist(product.id);
             }}
-            className={`absolute top-3 right-3 z-10 p-2 rounded-full backdrop-blur-md transition-all shadow-sm ${
+            className={`absolute top-3 right-3 z-10 p-2 rounded-full transition-all ${
               inWish
-                ? 'bg-black text-white'
-                : 'bg-white/90 text-black hover:bg-white border border-[#E5E5E5]'
+                ? 'bg-[#0A0A0A] text-white'
+                : 'bg-white text-[#0A0A0A] border border-[#E4E4E7]'
             }`}
             aria-label="Toggle wishlist"
           >
@@ -109,14 +109,14 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
 
           {/* Quick Add Overlay on Hover (Desktop) */}
           {!isSoldOut && (
-            <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-white/90 via-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex justify-center z-10">
+            <div className="absolute inset-x-0 bottom-0 p-3 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex justify-center z-10">
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setQuickAddOpen(true);
                 }}
-                className="w-full bg-[#0A0A0A] hover:bg-[#27272A] text-white py-2.5 px-3 text-[11px] font-bold tracking-widest uppercase flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                className="w-full bg-[#0A0A0A] text-white hover:opacity-80 py-2.5 px-3 text-[10px] font-bold tracking-[0.14em] uppercase flex items-center justify-center gap-1.5 transition-colors"
               >
                 <Plus size={14} />
                 <span>QUICK ADD</span>
@@ -126,14 +126,14 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
         </div>
 
         {/* Product Details info */}
-        <div className="pt-3 pb-1 space-y-1.5">
+        <div className="pt-3.5 pb-2 space-y-1.5">
           {/* Swatches */}
           <div className="flex items-center gap-1.5">
             {distinctColors.map((color) => (
               <span
                 key={color.id}
                 title={color.colorName}
-                className="w-2.5 h-2.5 rounded-full border border-[#D4D4D8] inline-block shadow-xs"
+                className="w-2.5 h-2.5 rounded-full border border-[#E4E4E7] inline-block shadow-xs"
                 style={{ backgroundColor: color.colorHex }}
               />
             ))}
@@ -143,21 +143,21 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
           </div>
 
           {/* Title */}
-          <Link href={`/product/${product.slug}`} className="block group-hover:text-[#4D5936] transition-colors">
-            <h3 className="text-xs sm:text-sm font-bold tracking-wider uppercase text-[#0A0A0A] line-clamp-1 font-display">
+          <Link href={`/product/${product.slug}`} className="block group-hover:opacity-70 transition-opacity">
+            <h3 className="text-[11px] font-mono font-semibold tracking-[0.12em] uppercase text-[#0A0A0A] line-clamp-1">
               {product.name}
             </h3>
           </Link>
 
           {/* Price */}
-          <div className="flex items-baseline gap-2 text-xs font-mono">
+          <div className="flex items-baseline gap-2 text-[11px] font-mono font-bold text-[#0A0A0A]">
             {product.salePrice ? (
               <>
-                <span className="text-[#0A0A0A] font-bold">{formatKES(product.salePrice)}</span>
-                <span className="text-[#71717A] line-through text-[11px]">{formatKES(product.price)}</span>
+                <span>{formatKES(product.salePrice)}</span>
+                <span className="text-[#71717A] line-through font-normal">{formatKES(product.price)}</span>
               </>
             ) : (
-              <span className="text-[#0A0A0A] font-bold">{formatKES(product.price)}</span>
+              <span>{formatKES(product.price)}</span>
             )}
           </div>
         </div>
@@ -174,4 +174,3 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
     </>
   );
 }
-
