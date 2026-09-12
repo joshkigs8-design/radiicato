@@ -149,6 +149,7 @@ export interface Order {
   email: string;
   phone: string;
   shippingAddress: ShippingAddress;
+  billingAddress?: ShippingAddress;
   items: OrderItem[];
   subtotal: number;
   discount: number;
@@ -159,6 +160,8 @@ export interface Order {
   paymentStatus: PaymentStatus;
   fulfillmentStatus: OrderStatus;
   trackingNumber?: string;
+  carrier?: string; // e.g. Fargo Courier / G4S Kenya / Speedaf
+  dispatchDate?: string;
   internalNotes?: string;
   paymentDetails?: PaymentDetails;
   timeline: OrderTimelineEvent[];

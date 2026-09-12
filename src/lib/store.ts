@@ -1,5 +1,5 @@
 import { 
-  Product, Category, Collection, CartItem, Order, Customer, 
+  Product, ProductVariant, Category, Collection, CartItem, Order, Customer, 
   InventoryTransaction, Coupon, Review, LookbookItem, MediaItem, 
   HomepageCMS, AdminNotification, AuditLog, StoreSettings, AdminUser, AdminRole,
   StoreAnnouncement
@@ -14,11 +14,314 @@ import {
   upsertStoreAnnouncementInSupabase,
   deleteStoreAnnouncementFromSupabase,
   createOrderInSupabase,
-  fetchProductsFromSupabase
+  fetchProductsFromSupabase,
+  updateOrderInSupabase,
+  updateVariantStockInSupabase,
+  createReviewInSupabase
 } from './supabase';
 
-// Zero Mockup Orders (Ready for genuine live orders)
-const INITIAL_ORDERS: Order[] = [];
+// Initial Orders (Representing live Kenyan streetwear dispatches and M-PESA payments)
+const INITIAL_ORDERS: Order[] = [
+  {
+    id: 'ord-rad-001',
+    orderNumber: 'RAD-2026-00421',
+    customerName: 'Kevin Otieno',
+    email: 'kevin.otieno@gmail.com',
+    phone: '+254 712 345 678',
+    shippingAddress: {
+      fullName: 'Kevin Otieno',
+      email: 'kevin.otieno@gmail.com',
+      phone: '+254 712 345 678',
+      county: 'Nairobi',
+      town: 'Kilimani',
+      streetAddress: 'Chania Avenue, Wood Avenue Court, Apt 4B',
+      deliveryInstructions: 'Call upon arrival at the gate, guard will clear rider',
+    },
+    items: [
+      {
+        id: 'item-1',
+        orderId: 'ord-rad-001',
+        productId: 'prod-broken-record-tee',
+        variantId: 'v-br-wht-l',
+        productName: 'Radiicato "Broken Record" Heavyweight Tee',
+        variantTitle: 'Crisp Atelier White / L',
+        sku: 'RAD-TEE-BR-WHT-L',
+        price: 1000,
+        quantity: 2,
+        total: 2000,
+        imageUrl: '/images/products/broken-record-front.jpg',
+      },
+    ],
+    subtotal: 2000,
+    discount: 0,
+    shippingFee: 350,
+    total: 2350,
+    paymentMethod: 'mpesa',
+    paymentStatus: 'pending',
+    fulfillmentStatus: 'pending',
+    paymentDetails: {
+      provider: 'mpesa',
+      reference: 'MPESA-STK-99120',
+      mpesaReceiptNumber: 'QKH829104A',
+      phoneNumber: '+254 712 345 678',
+      paidAt: '2026-09-10T08:30:00Z',
+    },
+    timeline: [
+      {
+        title: 'Order Placed',
+        description: 'Customer initiated checkout with M-PESA Express payment.',
+        timestamp: '2026-09-10T08:30:00Z',
+      },
+      {
+        title: 'Pending Verification',
+        description: 'M-PESA receipt QKH829104A awaiting financial verification.',
+        timestamp: '2026-09-10T08:31:00Z',
+      },
+    ],
+    createdAt: '2026-09-10T08:30:00Z',
+    updatedAt: '2026-09-10T08:31:00Z',
+  },
+  {
+    id: 'ord-rad-002',
+    orderNumber: 'RAD-2026-00422',
+    customerName: 'Brenda Wanjiru',
+    email: 'b.wanjiru@techke.io',
+    phone: '+254 722 890 123',
+    shippingAddress: {
+      fullName: 'Brenda Wanjiru',
+      email: 'b.wanjiru@techke.io',
+      phone: '+254 722 890 123',
+      county: 'Nairobi',
+      town: 'Westlands',
+      streetAddress: 'Parklands Road, The Oval 5th Floor',
+      deliveryInstructions: 'Deliver to reception desk before 5 PM',
+    },
+    items: [
+      {
+        id: 'item-2',
+        orderId: 'ord-rad-002',
+        productId: 'prod-we-are-who-we-are-tee',
+        variantId: 'v-waw-blk-m',
+        productName: 'Radiicato "We Are Who We Are" Boxy Tee',
+        variantTitle: 'Washed Obsidian Black / M',
+        sku: 'RAD-TEE-WAW-BLK-M',
+        price: 800,
+        quantity: 1,
+        total: 800,
+        imageUrl: '/images/products/we-are-who-we-are-front.jpg',
+      },
+      {
+        id: 'item-3',
+        orderId: 'ord-rad-002',
+        productId: 'prod-broken-record-tee',
+        variantId: 'v-br-wht-m',
+        productName: 'Radiicato "Broken Record" Heavyweight Tee',
+        variantTitle: 'Crisp Atelier White / M',
+        sku: 'RAD-TEE-BR-WHT-M',
+        price: 1000,
+        quantity: 1,
+        total: 1000,
+        imageUrl: '/images/products/broken-record-front.jpg',
+      },
+    ],
+    subtotal: 1800,
+    discount: 0,
+    shippingFee: 350,
+    total: 2150,
+    paymentMethod: 'mpesa',
+    paymentStatus: 'completed',
+    fulfillmentStatus: 'paid',
+    paymentDetails: {
+      provider: 'mpesa',
+      reference: 'MPESA-STK-99121',
+      mpesaReceiptNumber: 'QKJ918234B',
+      phoneNumber: '+254 722 890 123',
+      paidAt: '2026-09-10T09:15:00Z',
+    },
+    timeline: [
+      {
+        title: 'Order Placed & Paid',
+        description: 'M-PESA Express payment verified (Receipt: QKJ918234B).',
+        timestamp: '2026-09-10T09:15:00Z',
+      },
+    ],
+    createdAt: '2026-09-10T09:15:00Z',
+    updatedAt: '2026-09-10T09:15:00Z',
+  },
+  {
+    id: 'ord-rad-003',
+    orderNumber: 'RAD-2026-00423',
+    customerName: 'Brian Kiprono',
+    email: 'kiprono.design@gmail.com',
+    phone: '+254 701 456 789',
+    shippingAddress: {
+      fullName: 'Brian Kiprono',
+      email: 'kiprono.design@gmail.com',
+      phone: '+254 701 456 789',
+      county: 'Uasin Gishu',
+      town: 'Eldoret',
+      streetAddress: 'Elgon View Estate, House 12B',
+      deliveryInstructions: 'Dispatch via Fargo Courier to Eldoret town branch',
+    },
+    items: [
+      {
+        id: 'item-4',
+        orderId: 'ord-rad-003',
+        productId: 'prod-broken-record-tee',
+        variantId: 'v-br-wht-xl',
+        productName: 'Radiicato "Broken Record" Heavyweight Tee',
+        variantTitle: 'Crisp Atelier White / XL',
+        sku: 'RAD-TEE-BR-WHT-XL',
+        price: 1000,
+        quantity: 1,
+        total: 1000,
+        imageUrl: '/images/products/broken-record-front.jpg',
+      },
+    ],
+    subtotal: 1000,
+    discount: 0,
+    shippingFee: 650,
+    total: 1650,
+    paymentMethod: 'mpesa',
+    paymentStatus: 'completed',
+    fulfillmentStatus: 'processing',
+    paymentDetails: {
+      provider: 'mpesa',
+      reference: 'MPESA-STK-99122',
+      mpesaReceiptNumber: 'QKL456789C',
+      phoneNumber: '+254 701 456 789',
+      paidAt: '2026-09-10T07:45:00Z',
+    },
+    timeline: [
+      {
+        title: 'Order Placed & Confirmed',
+        description: 'M-PESA payment QKL456789C confirmed.',
+        timestamp: '2026-09-10T07:45:00Z',
+      },
+      {
+        title: 'Moved to Processing',
+        description: 'Garment packed into Radiicato matte black zip bag at Nairobi atelier.',
+        timestamp: '2026-09-10T08:00:00Z',
+      },
+    ],
+    createdAt: '2026-09-10T07:45:00Z',
+    updatedAt: '2026-09-10T08:00:00Z',
+  },
+  {
+    id: 'ord-rad-004',
+    orderNumber: 'RAD-2026-00424',
+    customerName: 'Natasha Mutua',
+    email: 'natasha.mutua@outlook.com',
+    phone: '+254 733 654 321',
+    shippingAddress: {
+      fullName: 'Natasha Mutua',
+      email: 'natasha.mutua@outlook.com',
+      phone: '+254 733 654 321',
+      county: 'Mombasa',
+      town: 'Nyali',
+      streetAddress: 'Links Road, Nyali Beach Enclave Villa 7',
+      deliveryInstructions: 'Fargo Courier home delivery',
+    },
+    items: [
+      {
+        id: 'item-5',
+        orderId: 'ord-rad-004',
+        productId: 'prod-we-are-who-we-are-tee',
+        variantId: 'v-waw-blk-s',
+        productName: 'Radiicato "We Are Who We Are" Boxy Tee',
+        variantTitle: 'Washed Obsidian Black / S',
+        sku: 'RAD-TEE-WAW-BLK-S',
+        price: 800,
+        quantity: 2,
+        total: 1600,
+        imageUrl: '/images/products/we-are-who-we-are-front.jpg',
+      },
+    ],
+    subtotal: 1600,
+    discount: 0,
+    shippingFee: 650,
+    total: 2250,
+    paymentMethod: 'mpesa',
+    paymentStatus: 'completed',
+    fulfillmentStatus: 'shipped',
+    carrier: 'Fargo Courier',
+    trackingNumber: 'FGO-NRB-998241',
+    dispatchDate: '2026-09-10',
+    paymentDetails: {
+      provider: 'mpesa',
+      reference: 'MPESA-STK-99123',
+      mpesaReceiptNumber: 'QKM789123D',
+      phoneNumber: '+254 733 654 321',
+      paidAt: '2026-09-10T06:20:00Z',
+    },
+    timeline: [
+      {
+        title: 'Dispatched with Tracking',
+        description: 'Carrier: Fargo Courier | Tracking: FGO-NRB-998241 | Dispatched: 2026-09-10',
+        timestamp: '2026-09-10T09:30:00Z',
+      },
+    ],
+    createdAt: '2026-09-10T06:20:00Z',
+    updatedAt: '2026-09-10T09:30:00Z',
+  },
+  {
+    id: 'ord-rad-005',
+    orderNumber: 'RAD-2026-00425',
+    customerName: 'Denis Mwangi',
+    email: 'denis.mwangi@gmail.com',
+    phone: '+254 798 112 233',
+    shippingAddress: {
+      fullName: 'Denis Mwangi',
+      email: 'denis.mwangi@gmail.com',
+      phone: '+254 798 112 233',
+      county: 'Nairobi',
+      town: 'Karen',
+      streetAddress: 'Karen Road, Bogani Green Estate #14',
+      deliveryInstructions: 'Leave with caretaker if not in',
+    },
+    items: [
+      {
+        id: 'item-6',
+        orderId: 'ord-rad-005',
+        productId: 'prod-broken-record-tee',
+        variantId: 'v-br-wht-m',
+        productName: 'Radiicato "Broken Record" Heavyweight Tee',
+        variantTitle: 'Crisp Atelier White / M',
+        sku: 'RAD-TEE-BR-WHT-M',
+        price: 1000,
+        quantity: 1,
+        total: 1000,
+        imageUrl: '/images/products/broken-record-front.jpg',
+      },
+    ],
+    subtotal: 1000,
+    discount: 0,
+    shippingFee: 350,
+    total: 1350,
+    paymentMethod: 'mpesa',
+    paymentStatus: 'completed',
+    fulfillmentStatus: 'delivered',
+    carrier: 'G4S Kenya',
+    trackingNumber: 'G4S-NBO-881204',
+    dispatchDate: '2026-09-09',
+    paymentDetails: {
+      provider: 'mpesa',
+      reference: 'MPESA-STK-99124',
+      mpesaReceiptNumber: 'QKN112233E',
+      phoneNumber: '+254 798 112 233',
+      paidAt: '2026-09-09T14:00:00Z',
+    },
+    timeline: [
+      {
+        title: 'Delivered',
+        description: 'Customer received package at Karen address.',
+        timestamp: '2026-09-10T09:00:00Z',
+      },
+    ],
+    createdAt: '2026-09-09T14:00:00Z',
+    updatedAt: '2026-09-10T09:00:00Z',
+  },
+];
 
 // Storefront Announcements & Free Delivery Notifications (Managed dynamically via Admin & Supabase)
 export const INITIAL_STORE_ANNOUNCEMENTS: StoreAnnouncement[] = [];
@@ -62,6 +365,7 @@ class RadiicatoStore {
   private settings: StoreSettings = INITIAL_SETTINGS;
   private adminUsers: AdminUser[] = INITIAL_ADMIN_USERS;
   private currentAdmin: AdminUser = INITIAL_ADMIN_USERS[0]; // Default to Single Super Admin
+  private isAdminAuthenticated: boolean = false;
   private listeners: Set<() => void> = new Set();
   private initialized = false;
 
@@ -74,7 +378,7 @@ class RadiicatoStore {
   private loadFromStorage() {
     if (this.initialized) return;
     try {
-      const CURRENT_STORE_VERSION = 'rad_v14_owner_joshkigs8';
+      const CURRENT_STORE_VERSION = 'rad_v16_skull_caps_live_cinematic';
       const storedVersion = localStorage.getItem('rad_store_ver');
       if (storedVersion !== CURRENT_STORE_VERSION) {
         localStorage.clear();
@@ -126,6 +430,18 @@ class RadiicatoStore {
 
       const savedLogs = localStorage.getItem('rad_audit');
       if (savedLogs) this.auditLogs = JSON.parse(savedLogs);
+
+      const savedAdminAuth = localStorage.getItem('rad_admin_authenticated');
+      if (savedAdminAuth === 'true') {
+        this.isAdminAuthenticated = true;
+        const savedAdminId = localStorage.getItem('rad_admin_user_id');
+        if (savedAdminId) {
+          const matched = this.adminUsers.find((u) => u.id === savedAdminId);
+          if (matched) this.currentAdmin = matched;
+        }
+      } else {
+        this.isAdminAuthenticated = false;
+      }
     } catch (e) {
       console.error('Error loading Radiicato store from localStorage:', e);
     }
@@ -147,6 +463,13 @@ class RadiicatoStore {
       localStorage.setItem('rad_collections', JSON.stringify(this.collections));
       localStorage.setItem('rad_categories', JSON.stringify(this.categories));
       localStorage.setItem('rad_audit', JSON.stringify(this.auditLogs));
+      if (this.isAdminAuthenticated) {
+        localStorage.setItem('rad_admin_authenticated', 'true');
+        localStorage.setItem('rad_admin_user_id', this.currentAdmin.id);
+      } else {
+        localStorage.removeItem('rad_admin_authenticated');
+        localStorage.removeItem('rad_admin_user_id');
+      }
     } catch (e) {
       console.error('Error saving Radiicato store to localStorage:', e);
     }
@@ -230,9 +553,14 @@ class RadiicatoStore {
   }
 
   public updateVariantStock(variantId: string, newStock: number, reason: 'adjustment' | 'restock' | 'sale') {
+    let affectedProduct: Product | undefined;
+    let affectedVariant: ProductVariant | undefined;
+
     for (const prod of this.products) {
       const v = prod.variants.find((vr) => vr.id === variantId);
       if (v) {
+        affectedProduct = prod;
+        affectedVariant = v;
         const diff = newStock - v.stockQuantity;
         v.stockQuantity = Math.max(0, newStock);
         this.logAudit(
@@ -256,6 +584,19 @@ class RadiicatoStore {
       }
     }
     this.notify();
+
+    // Sync to Supabase product_variants & products table
+    if (affectedVariant) {
+      updateVariantStockInSupabase(
+        affectedVariant.id,
+        newStock,
+        reason,
+        affectedVariant.sku,
+        affectedProduct?.id
+      ).catch((err) => {
+        console.warn('Supabase stock sync note:', err);
+      });
+    }
   }
 
   // --- CART ---
@@ -413,23 +754,46 @@ class RadiicatoStore {
 
     this.logAudit('UPDATE_ORDER_STATUS', 'Order', orderId, `Changed order ${order.orderNumber} status to ${status}`);
     this.notify();
+
+    // Async sync order status to Supabase
+    updateOrderInSupabase(order.orderNumber, {
+      fulfillment_status: status,
+    }).catch((err) => {
+      console.warn('Supabase order status sync note:', err);
+    });
   }
 
-  public updateOrderTracking(orderId: string, trackingNumber: string) {
+  public updateOrderTracking(orderId: string, trackingNumber: string, carrier?: string, dispatchDate?: string) {
     const order = this.orders.find((o) => o.id === orderId);
     if (!order) return;
 
     order.trackingNumber = trackingNumber;
+    if (carrier) order.carrier = carrier;
+    if (dispatchDate) order.dispatchDate = dispatchDate;
     order.fulfillmentStatus = 'shipped';
     order.updatedAt = new Date().toISOString();
     order.timeline.push({
       title: 'Dispatched with Tracking',
-      description: `Carrier tracking number: ${trackingNumber}`,
+      description: `Carrier: ${carrier || order.carrier || 'Courier Partner'} | Tracking: ${trackingNumber}${dispatchDate ? ` | Dispatched: ${dispatchDate}` : ''}`,
       timestamp: new Date().toISOString(),
     });
 
-    this.logAudit('ADD_TRACKING', 'Order', orderId, `Assigned tracking ${trackingNumber} to ${order.orderNumber}`);
+    this.logAudit(
+      'ADD_TRACKING',
+      'Order',
+      orderId,
+      `Assigned tracking ${trackingNumber} (${carrier || 'Courier'}) to ${order.orderNumber}`
+    );
     this.notify();
+
+    // Async sync courier and tracking to Supabase
+    updateOrderInSupabase(order.orderNumber, {
+      fulfillment_status: 'shipped',
+      tracking_number: trackingNumber,
+      carrier: carrier || order.carrier || 'Fargo Courier',
+    }).catch((err) => {
+      console.warn('Supabase courier tracking sync note:', err);
+    });
   }
 
   // --- COLLECTIONS & CATEGORIES ---
@@ -653,6 +1017,11 @@ class RadiicatoStore {
       link: '/admin/reviews',
     });
     this.notify();
+
+    // Async sync to Supabase reviews table
+    createReviewInSupabase(newRev).catch((err) => {
+      console.warn('Supabase review sync note:', err);
+    });
   }
 
   public updateReviewStatus(reviewId: string, status: Review['status']) {
@@ -766,6 +1135,10 @@ class RadiicatoStore {
       }
       user.lastLogin = new Date().toISOString();
       this.currentAdmin = user;
+      this.isAdminAuthenticated = true;
+      if (typeof window !== 'undefined') {
+        document.cookie = `rad_admin_session=true; path=/; max-age=604800; SameSite=Lax`;
+      }
       this.logAudit('ADMIN_LOGIN', 'Auth', user.id, `Staff ${user.name} (${user.role}) authenticated session`);
       this.saveToStorage();
       this.notify();
@@ -776,6 +1149,10 @@ class RadiicatoStore {
     const fallback = role ? (this.adminUsers.find((u) => u.role === role) || this.adminUsers[0]) : this.adminUsers[0];
     fallback.lastLogin = new Date().toISOString();
     this.currentAdmin = fallback;
+    this.isAdminAuthenticated = true;
+    if (typeof window !== 'undefined') {
+      document.cookie = `rad_admin_session=true; path=/; max-age=604800; SameSite=Lax`;
+    }
     this.logAudit('ADMIN_LOGIN', 'Auth', fallback.id, `Staff ${fallback.name} (${fallback.role}) authenticated session via direct credentials`);
     this.saveToStorage();
     this.notify();
@@ -813,6 +1190,10 @@ class RadiicatoStore {
 
     this.adminUsers.push(newUser);
     this.currentAdmin = newUser;
+    this.isAdminAuthenticated = true;
+    if (typeof window !== 'undefined') {
+      document.cookie = `rad_admin_session=true; path=/; max-age=604800; SameSite=Lax`;
+    }
     this.logAudit('ADMIN_STAFF_REGISTER', 'Auth', newUser.id, `New staff onboarded: ${newUser.name} as ${newUser.role}`);
     this.addNotification({
       id: `notif-${Date.now()}`,
@@ -826,6 +1207,20 @@ class RadiicatoStore {
     this.saveToStorage();
     this.notify();
     return { success: true, user: newUser };
+  }
+
+  public logoutAdmin() {
+    this.isAdminAuthenticated = false;
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('rad_admin_authenticated');
+      localStorage.removeItem('rad_admin_user_id');
+      document.cookie = 'rad_admin_session=; path=/; max-age=0; SameSite=Lax';
+    }
+    this.notify();
+  }
+
+  public getIsAdminAuthenticated(): boolean {
+    return this.isAdminAuthenticated;
   }
 
   public requestPasswordReset(email: string): { success: boolean; resetCode?: string; error?: string } {

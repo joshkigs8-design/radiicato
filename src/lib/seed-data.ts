@@ -35,12 +35,12 @@ export const INITIAL_CATEGORIES: Category[] = [
     id: 'cat-caps',
     name: 'Skull Caps & Headwear',
     slug: 'caps',
-    description: 'Heavyweight ribbed knit skull caps and beanies with metallic chrome badges. Next release dropping soon in Nairobi.',
-    imageUrl: '/images/products/radiicato-skull-cap.jpg',
+    description: 'Heavyweight double-layered knit skull caps with 3D signature script insignia. Available now in Onyx Black, Slate Grey, and Midnight Camo.',
+    imageUrl: '/images/products/radiicato-skull-cap-black.jpg',
     status: 'active',
     displayOrder: 2,
-    seoTitle: 'Radiicato Heavyweight Ribbed Skull Caps | Coming Soon Nairobi',
-    seoDescription: 'Heavyweight ribbed knit streetwear beanies and skull caps. Engineered for Nairobi nights. Dropping soon.',
+    seoTitle: 'Radiicato Signature Heavyweight Skull Caps | Now Live Nairobi',
+    seoDescription: 'Heavyweight double-layered streetwear skull caps. Engineered for Nairobi nights in Onyx Black, Slate Grey, and Midnight Blue Camo. KES 500.',
   },
 ];
 
@@ -75,12 +75,11 @@ export const INITIAL_COLLECTIONS: Collection[] = [
     id: 'col-skull-caps',
     name: 'SKULL CAPS',
     slug: 'skull-caps',
-    description: 'Heavyweight ribbed-knit skull caps engineered for chilly Nairobi nights and underground sets. Double-layered construction with brushed chrome insignia badge. Dropping soon.',
-    coverImage: '/images/products/radiicato-skull-cap.jpg',
-    bannerImage: '/images/skull-cap-banner.jpg',
-    status: 'scheduled',
-    isScheduled: true,
-    launchDate: '2026-10-20T19:00:00Z',
+    description: 'Heavyweight double-layered skull caps engineered for chilly Nairobi nights. Finished with the signature 3D Radiicato script insignia on the folded cuff. Available now in Onyx Black, Slate Grey, and Midnight Blue Camo.',
+    coverImage: '/images/products/radiicato-skull-cap-black.jpg',
+    bannerImage: '/images/products/radiicato-skull-cap-camo.jpg',
+    status: 'live',
+    isScheduled: false,
     displayOrder: 3,
     productIds: ['prod-skull-cap-teaser'],
     createdAt: '2026-03-05T00:00:00Z',
@@ -240,42 +239,69 @@ The front features our underground character mascot wearing a green bucket hat a
   },
   {
     id: 'prod-skull-cap-teaser',
-    name: 'Radiicato Heavyweight Ribbed Knit Skull Cap',
+    name: 'Radiicato Signature Heavyweight Skull Cap',
     slug: 'radiicato-heavyweight-ribbed-knit-skull-cap',
-    shortDescription: 'Drop 03 Teaser: Heavyweight double-layered ribbed knit skull cap with metallic chrome insignia. Engineered for chilly Nairobi nights.',
-    description: `Coming Soon to Radiicato.
+    shortDescription: 'Capsule 03: Heavyweight double-layered knit skull cap featuring the 3D Radiicato script insignia on the cuff. Contoured low-profile silhouette engineered in Nairobi.',
+    description: `The Radiicato Signature Skull Cap represents Capsule 03 of the atelier line. 
 
-The Atelier Skull Cap is crafted from custom dense ribbed knit with a snug low-profile crown and structured folded cuff. Finished with a subtle brushed chrome metallic logo badge on the front brim. Dropping soon in Obsidian Black and Military Olive for the Kenyan underground.`,
+Engineered specifically for chilly Nairobi evenings, underground DJ sets, and raw urban styling. Crafted with double-layered dense knit for structured warmth and finished with the signature 3D high-density Radiicato script embroidery along the cuff brim.
+
+Available in three distinct colorways:
+- Onyx Black (Monochrome Silver/White 3D Logo)
+- Slate Grey (Clean Contrast White 3D Logo)
+- Midnight Blue Camo (Subdued Multi-Tone Camouflage with Chrome Insignia)
+
+Unisex one-size contoured crown with elastic memory retention.`,
     price: 500,
     costPrice: 200,
     sku: 'RAD-CAP-SKULL-001',
     categoryId: 'cat-caps',
     collectionId: 'col-skull-caps',
     brand: 'RADIICATO',
-    material: '100% Heavyweight Ribbed Cotton-Acrylic Blend',
-    fit: 'Snug Low-Profile Streetwear Beanie Fit.',
-    careInstructions: 'Hand wash cold. Lay flat to dry. Do not iron.',
+    material: 'Double-Layered Heavyweight Stretch-Knit Cotton Blend',
+    fit: 'Low-Profile Contoured Streetwear Beanie Fit (Unisex One-Size)',
+    careInstructions: 'Hand wash cold. Lay flat to dry.',
     gender: 'unisex',
-    tags: ['skull cap', 'beanie', 'coming soon', 'black', 'knit', 'headwear'],
-    status: 'scheduled',
+    tags: ['skull cap', 'beanie', 'headwear', 'capsule 03', 'now live', 'black', 'grey', 'camo'],
+    status: 'active',
     isFeatured: true,
     isLimitedDrop: true,
     images: [
       {
-        id: 'img-sc-1',
+        id: 'img-sc-black',
         productId: 'prod-skull-cap-teaser',
-        url: '/images/products/radiicato-skull-cap.jpg',
-        altText: 'Radiicato Heavyweight Knit Skull Cap in Obsidian Black',
+        url: '/images/products/radiicato-skull-cap-black.jpg',
+        altText: 'Radiicato Skull Cap in Onyx Black with White 3D Logo',
         isPrimary: true,
         isHover: false,
         displayOrder: 1,
       },
+      {
+        id: 'img-sc-grey',
+        productId: 'prod-skull-cap-teaser',
+        url: '/images/products/radiicato-skull-cap-grey.jpg',
+        altText: 'Radiicato Skull Cap in Slate Grey with White 3D Logo',
+        isPrimary: false,
+        isHover: true,
+        displayOrder: 2,
+      },
+      {
+        id: 'img-sc-camo',
+        productId: 'prod-skull-cap-teaser',
+        url: '/images/products/radiicato-skull-cap-camo.jpg',
+        altText: 'Radiicato Skull Cap in Midnight Blue Camo with Chrome Insignia',
+        isPrimary: false,
+        isHover: false,
+        displayOrder: 3,
+      },
     ],
     variants: [
-      { id: 'v-sc-blk', productId: 'prod-skull-cap-teaser', colorName: 'Obsidian Black', colorHex: '#0A0A0A', size: 'ONE SIZE', sku: 'RAD-CAP-SKULL-BLK', stockQuantity: 0, lowStockThreshold: 5 },
+      { id: 'v-sc-blk', productId: 'prod-skull-cap-teaser', colorName: 'Onyx Black', colorHex: '#0A0A0A', size: 'ONE SIZE', sku: 'RAD-CAP-SKULL-BLK', stockQuantity: 45, lowStockThreshold: 5 },
+      { id: 'v-sc-gry', productId: 'prod-skull-cap-teaser', colorName: 'Slate Grey', colorHex: '#6B7280', size: 'ONE SIZE', sku: 'RAD-CAP-SKULL-GRY', stockQuantity: 35, lowStockThreshold: 5 },
+      { id: 'v-sc-cmo', productId: 'prod-skull-cap-teaser', colorName: 'Midnight Blue Camo', colorHex: '#2B3A4A', size: 'ONE SIZE', sku: 'RAD-CAP-SKULL-CMO', stockQuantity: 25, lowStockThreshold: 5 },
     ],
     createdAt: '2026-03-05T10:00:00Z',
-    updatedAt: '2026-03-08T12:00:00Z',
+    updatedAt: '2026-03-12T08:00:00Z',
   },
 ];
 
@@ -306,11 +332,19 @@ export const INITIAL_LOOKBOOK: LookbookItem[] = [
   },
   {
     id: 'lb-4',
-    title: 'NAIROBI STREET STUDY — SKULL CAP TEASER',
-    description: 'First look at the upcoming Radiicato Heavyweight Ribbed Knit Skull Cap styled with the We Are Who We Are drop on the streets of Nairobi.',
-    imageUrl: '/images/products/radiicato-skull-cap.jpg',
+    title: 'NAIROBI NIGHTS EDITORIAL — CAPSULE 03 SKULL CAPS',
+    description: 'The newly launched Radiicato Signature Heavyweight Skull Cap in Onyx Black, Slate Grey, and Midnight Blue Camo. Contoured silhouette engineered for the cold Nairobi sets.',
+    imageUrl: '/images/products/radiicato-skull-cap-black.jpg',
     collectionSlug: 'skull-caps',
     displayOrder: 4,
+  },
+  {
+    id: 'lb-5',
+    title: 'URBAN TACTICAL STUDY — MIDNIGHT CAMO SKULL CAP',
+    description: 'Subdued multi-tone blue camouflage skull cap accented with the high-relief metallic script insignia. Nairobi streetwear elevated.',
+    imageUrl: '/images/products/radiicato-skull-cap-camo.jpg',
+    collectionSlug: 'skull-caps',
+    displayOrder: 5,
   },
 ];
 

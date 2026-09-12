@@ -6,11 +6,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { 
   ShieldCheck, Lock, ArrowLeft, ArrowRight, Smartphone, 
-  CreditCard, CheckCircle2, AlertCircle, Loader2 
+  CreditCard, CheckCircle2, AlertCircle, Loader2, Copy, Check, Info, HelpCircle
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES } from '@/lib/utils';
-import { PaymentService, formatKenyanPhoneNumber } from '@/lib/payment';
+import { 
+  PaymentService, 
+  formatKenyanPhoneNumber, 
+  isValidKenyanPhone, 
+  formatDisplayKenyanPhone 
+} from '@/lib/payment';
 import { PaymentProvider } from '@/types';
 
 const KENYAN_COUNTIES = [
@@ -28,7 +33,7 @@ const KENYAN_COUNTIES = [
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, cartSummary, placeOrder, validateCoupon } = useStore();
+  const { cart, cartSummary, placeOrder, validateCoupon, settings } = useStore();
 
   // Form State
   const [fullName, setFullName] = useState('');
@@ -47,11 +52,13 @@ export default function CheckoutPage() {
 
   // Payment State
   const [paymentMethod, setPaymentMethod] = useState<PaymentProvider>('mpesa');
+  const [useDifferentMpesaPhone, setUseDifferentMpesaPhone] = useState(false);
   const [mpesaPhone, setMpesaPhone] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvv, setCardCvv] = useState('');
   const [cardHolder, setCardHolder] = useState('');
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // Coupon State
   const [promoCode, setPromoCode] = useState('');
@@ -119,6 +126,16 @@ export default function CheckoutPage() {
     }
   };
 
+  const handleCopy = async (text: string, fieldName: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(fieldName);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      // Fallback
+    }
+  };
+
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
@@ -128,10 +145,45 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!fullName || !email || !phone || !county || !town || !streetAddress) {
-      setErrorMessage('Please fill in all required customer and delivery details.');
+    if (!fullName.trim() || !email.trim() || !phone.trim() || !county || !town.trim() || !streetAddress.trim()) {
+      setErrorMessage('Please fill in all required customer contact and delivery address fields.');
       return;
     }
+
+    // 1. Kenyan Phone Validation for Customer Details
+    if (!isValidKenyanPhone(phone.trim())) {
+      setErrorMessage(
+        'Invalid Kenyan phone number for delivery contact. Please enter a valid 10 or 12-digit number (e.g. 0712 345 678, 0112 345 678, or +254 712 345 678).'
+      );
+      return;
+    }
+
+    // 2. Billing Address Details Validation (County, Town/Estate, Specific Apartment/Street)
+    if (!sameAsShipping) {
+      if (!billingCounty || !billingTown.trim() || !billingStreetAddress.trim()) {
+        setErrorMessage(
+          'Please complete all required billing address details (County/Region, Town/Estate, and Specific Street/Apartment Address).'
+        );
+        return;
+      }
+    }
+
+    // 3. M-PESA Phone Validation & Normalization (07XXXXXXXX, 01XXXXXXXX, 254XXXXXXXX, +254XXXXXXXX -> 2547XXXXXXXX or 2541XXXXXXXX)
+    const rawMpesaPhone = useDifferentMpesaPhone && mpesaPhone.trim() 
+      ? mpesaPhone.trim() 
+      : (mpesaPhone.trim() || phone.trim());
+
+    if (paymentMethod === 'mpesa') {
+      if (!isValidKenyanPhone(rawMpesaPhone)) {
+        setErrorMessage(
+          'Invalid M-PESA phone number. Safaricom STK Push requires a valid Kenyan line starting with 07, 01, or +254 (e.g. 0712 345 678 or +254 712 345 678).'
+        );
+        return;
+      }
+    }
+
+    const normalizedCustomerPhone = formatKenyanPhoneNumber(phone.trim());
+    const normalizedMpesaPhone = formatKenyanPhoneNumber(rawMpesaPhone);
 
     setIsProcessing(true);
 
@@ -140,11 +192,10 @@ export default function CheckoutPage() {
       let mpesaReceipt = '';
 
       if (paymentMethod === 'mpesa') {
-        const targetPhone = mpesaPhone.trim() || phone.trim();
         setStkPushStep('prompting');
 
         const mpesaResult = await PaymentService.initiateMpesaSTK({
-          phoneNumber: targetPhone,
+          phoneNumber: normalizedMpesaPhone,
           amount: orderTotal,
           orderNumber: `ORD-${Date.now()}`,
           accountReference: 'RADIICATO',
@@ -168,7 +219,7 @@ export default function CheckoutPage() {
             cardNumber,
             expiry: cardExpiry,
             cvv: cardCvv,
-            name: cardHolder || fullName,
+            name: cardHolder || fullName.trim(),
           }
         );
 
@@ -182,23 +233,41 @@ export default function CheckoutPage() {
 
       setStkPushStep('success');
 
-      // Place Order in reactive store with server-like validation
+      // Place Order in reactive store with server-like validation and billing details captured
       const createdOrder = placeOrder({
-        customerName: fullName,
-        email,
-        phone,
+        customerName: fullName.trim(),
+        email: email.trim(),
+        phone: normalizedCustomerPhone,
         shippingAddress: {
-          fullName,
-          email,
-          phone,
+          fullName: fullName.trim(),
+          email: email.trim(),
+          phone: normalizedCustomerPhone,
           county,
-          town,
-          streetAddress,
-          deliveryInstructions,
+          town: town.trim(),
+          streetAddress: streetAddress.trim(),
+          deliveryInstructions: deliveryInstructions.trim(),
         },
+        billingAddress: !sameAsShipping
+          ? {
+              fullName: fullName.trim(),
+              email: email.trim(),
+              phone: normalizedCustomerPhone,
+              county: billingCounty,
+              town: billingTown.trim(),
+              streetAddress: billingStreetAddress.trim(),
+            }
+          : {
+              fullName: fullName.trim(),
+              email: email.trim(),
+              phone: normalizedCustomerPhone,
+              county,
+              town: town.trim(),
+              streetAddress: streetAddress.trim(),
+              deliveryInstructions: deliveryInstructions.trim(),
+            },
         internalNotes: !sameAsShipping 
-          ? `Billing Address: ${billingCounty}, ${billingTown}, ${billingStreetAddress}` 
-          : 'Billing Address: Same as delivery',
+          ? `Billing Address: ${billingStreetAddress.trim()}, ${billingTown.trim()}, ${billingCounty} County` 
+          : `Billing Address: Same as delivery address (${streetAddress.trim()}, ${town.trim()}, ${county})`,
         items: cart.map((c) => ({
           id: `oi-${Date.now()}-${c.id}`,
           orderId: '',
@@ -224,7 +293,7 @@ export default function CheckoutPage() {
           provider: paymentMethod,
           reference: paymentRef,
           mpesaReceiptNumber: mpesaReceipt,
-          phoneNumber: paymentMethod === 'mpesa' ? formatKenyanPhoneNumber(mpesaPhone || phone) : undefined,
+          phoneNumber: paymentMethod === 'mpesa' ? normalizedMpesaPhone : undefined,
           paidAt: new Date().toISOString(),
         },
       });
@@ -232,7 +301,7 @@ export default function CheckoutPage() {
       // Redirect to Order Success page
       setTimeout(() => {
         router.push(`/order-success?orderNumber=${createdOrder.orderNumber}`);
-      }, 1000);
+      }, 1200);
     } catch (err: unknown) {
       setIsProcessing(false);
       setStkPushStep('idle');
@@ -381,17 +450,35 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
-                    KENYAN PHONE NUMBER (M-PESA) *
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
+                      KENYAN PHONE NUMBER (M-PESA / DISPATCH) *
+                    </label>
+                    {phone && isValidKenyanPhone(phone) ? (
+                      <span className="text-[10px] font-mono text-[#4D5936] font-bold flex items-center gap-1">
+                        <Check size={12} /> {formatDisplayKenyanPhone(phone)}
+                      </span>
+                    ) : phone && phone.length >= 3 ? (
+                      <span className="text-[10px] font-mono text-amber-600 flex items-center gap-1">
+                        <AlertCircle size={11} /> 07XX / 01XX / +254
+                      </span>
+                    ) : null}
+                  </div>
                   <input
                     type="tel"
                     required
                     placeholder="0712 345 678"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-white border border-[#E4E4E7] p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                    className={`w-full bg-white border p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none transition-colors ${
+                      phone && !isValidKenyanPhone(phone) && phone.length >= 4
+                        ? 'border-amber-400 focus:border-amber-600'
+                        : 'border-[#E4E4E7] focus:border-[#0A0A0A]'
+                    }`}
                   />
+                  <p className="text-[10px] font-mono text-[#71717A]">
+                    Accepts 07XXXXXXXX, 01XXXXXXXX, 254XXXXXXXX, or +254XXXXXXXX (normalized to 2547... or 2541...).
+                  </p>
                 </div>
               </div>
             </div>
@@ -410,7 +497,7 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
-                    COUNTY *
+                    COUNTY / REGION *
                   </label>
                   <select
                     value={county}
@@ -427,12 +514,12 @@ export default function CheckoutPage() {
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
-                    TOWN / SUBURB *
+                    TOWN / ESTATE *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="E.G. KILIMANI / WESTLANDS / NYALI"
+                    placeholder="E.G. KILIMANI / WESTLANDS / NYALI / KAREN"
                     value={town}
                     onChange={(e) => setTown(e.target.value)}
                     className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
@@ -441,7 +528,7 @@ export default function CheckoutPage() {
 
                 <div className="space-y-1.5 sm:col-span-2">
                   <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
-                    STREET ADDRESS / BUILDING / APARTMENT *
+                    SPECIFIC DELIVERY ADDRESS / BUILDING / APARTMENT *
                   </label>
                   <input
                     type="text"
@@ -459,7 +546,7 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="text"
-                    placeholder="E.G. GATE CODE 2049, CALL ON ARRIVAL"
+                    placeholder="E.G. GATE CODE 2049, CALL ON ARRIVAL, LEAVE AT CONCIERGE"
                     value={deliveryInstructions}
                     onChange={(e) => setDeliveryInstructions(e.target.value)}
                     className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
@@ -480,22 +567,31 @@ export default function CheckoutPage() {
               </div>
               
               <div className="pt-2">
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={sameAsShipping}
                     onChange={(e) => setSameAsShipping(e.target.checked)}
-                    className="rounded border-[#E4E4E7] text-[#0A0A0A] focus:ring-[#0A0A0A]"
+                    className="rounded border-[#E4E4E7] text-[#0A0A0A] focus:ring-[#0A0A0A] w-4 h-4"
                   />
-                  <span className="text-xs font-mono text-[#0A0A0A] uppercase tracking-wider">Same as delivery address</span>
+                  <span className="text-xs font-mono text-[#0A0A0A] uppercase tracking-wider font-medium">
+                    Billing address matches delivery address
+                  </span>
                 </label>
               </div>
 
-              {!sameAsShipping && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              {sameAsShipping ? (
+                <div className="p-3.5 bg-[#FAFAF9] border border-[#E4E4E7] text-[11px] font-mono text-[#71717A] flex items-center gap-2">
+                  <Info size={14} className="text-[#4D5936] shrink-0" />
+                  <span>
+                    VAT receipt and billing records will reflect delivery address: {streetAddress ? `${streetAddress}, ` : ''}{town ? `${town}, ` : ''}{county} County.
+                  </span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 p-4 bg-[#FAFAF9] border border-[#E4E4E7]">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
-                      COUNTY *
+                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A] font-bold">
+                      BILLING COUNTY / REGION *
                     </label>
                     <select
                       value={billingCounty}
@@ -511,13 +607,13 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
-                      TOWN / SUBURB *
+                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A] font-bold">
+                      BILLING TOWN / ESTATE *
                     </label>
                     <input
                       type="text"
                       required={!sameAsShipping}
-                      placeholder="E.G. KILIMANI"
+                      placeholder="E.G. KILIMANI / NAIROBI CBD"
                       value={billingTown}
                       onChange={(e) => setBillingTown(e.target.value)}
                       className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
@@ -525,13 +621,13 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A]">
-                      STREET ADDRESS / BUILDING / APARTMENT *
+                    <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A] font-bold">
+                      SPECIFIC BILLING ADDRESS / APARTMENT / BUILDING *
                     </label>
                     <input
                       type="text"
                       required={!sameAsShipping}
-                      placeholder="E.G. APARTMENT 4B"
+                      placeholder="E.G. SUITE 204, APEX PLAZA, WOOD AVENUE"
                       value={billingStreetAddress}
                       onChange={(e) => setBillingStreetAddress(e.target.value)}
                       className="w-full bg-white border border-[#E4E4E7] p-3 text-xs uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
@@ -572,7 +668,7 @@ export default function CheckoutPage() {
                     </span>
                   </div>
                   <p className="text-[11px] text-[#71717A] text-left">
-                    Pay securely using your Safaricom SIM prompt.
+                    Pay securely via Safaricom SIM prompt or Paybill/Till.
                   </p>
                 </button>
 
@@ -599,22 +695,137 @@ export default function CheckoutPage() {
                 </button>
               </div>
 
-              {/* M-PESA specific input */}
+              {/* M-PESA specific input & instructions */}
               {paymentMethod === 'mpesa' && (
-                <div className="p-5 bg-[#FAFAF9] border border-[#E4E4E7] space-y-2">
-                  <label className="text-[10px] font-mono uppercase text-[#71717A] font-bold">
-                    M-PESA PROMPT NUMBER (SAFARICOM)
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="07XX XXX XXX"
-                    value={mpesaPhone || phone}
-                    onChange={(e) => setMpesaPhone(e.target.value)}
-                    className="w-full bg-white border border-[#E4E4E7] p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
-                  />
-                  <p className="text-[11px] font-mono text-[#71717A]">
-                    An instant STK Push prompt will be sent to this phone to enter your 4-digit M-PESA PIN.
-                  </p>
+                <div className="p-5 bg-[#FAFAF9] border border-[#E4E4E7] space-y-5">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-mono uppercase text-[#71717A] font-bold">
+                        M-PESA PROMPT NUMBER (SAFARICOM)
+                      </label>
+                      {(() => {
+                        const target = useDifferentMpesaPhone && mpesaPhone.trim() ? mpesaPhone.trim() : (mpesaPhone.trim() || phone.trim());
+                        return isValidKenyanPhone(target) ? (
+                          <span className="text-[10px] font-mono text-[#4D5936] font-bold flex items-center gap-1">
+                            <Check size={12} /> {formatDisplayKenyanPhone(target)}
+                          </span>
+                        ) : target && target.length >= 4 ? (
+                          <span className="text-[10px] font-mono text-amber-600 flex items-center gap-1">
+                            <AlertCircle size={11} /> Format: 07XX / 01XX / +254
+                          </span>
+                        ) : null;
+                      })()}
+                    </div>
+
+                    <div className="space-y-2">
+                      <input
+                        type="tel"
+                        placeholder="07XX XXX XXX (e.g. 0712 345 678)"
+                        value={useDifferentMpesaPhone ? mpesaPhone : (mpesaPhone || phone)}
+                        onChange={(e) => {
+                          setMpesaPhone(e.target.value);
+                          if (!useDifferentMpesaPhone) setUseDifferentMpesaPhone(true);
+                        }}
+                        className="w-full bg-white border border-[#E4E4E7] p-3 text-xs font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                      />
+                      
+                      <div className="flex items-center justify-between text-[10px] font-mono text-[#71717A]">
+                        <span>
+                          Normalized STK target:{' '}
+                          <strong className="text-[#0A0A0A]">
+                            {formatKenyanPhoneNumber(useDifferentMpesaPhone && mpesaPhone ? mpesaPhone : (mpesaPhone || phone)) || '254XXXXXXXXX'}
+                          </strong>
+                        </span>
+                        {useDifferentMpesaPhone && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMpesaPhone('');
+                              setUseDifferentMpesaPhone(false);
+                            }}
+                            className="text-[#4D5936] underline hover:text-black"
+                          >
+                            Reset to contact phone
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Clear M-PESA Payment Instructions */}
+                  <div className="pt-4 border-t border-[#E4E4E7] space-y-4">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck size={16} className="text-[#4D5936]" />
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A] font-mono">
+                        M-PESA PAYMENT INSTRUCTIONS
+                      </h4>
+                    </div>
+
+                    {/* Step-by-step STK guidance */}
+                    <div className="bg-white p-4 border border-[#E4E4E7] space-y-2.5 text-xs text-[#52525B]">
+                      <span className="text-[10px] font-mono uppercase text-[#4D5936] font-bold block">
+                        OPTION A: INSTANT STK PUSH (RECOMMENDED)
+                      </span>
+                      <ol className="space-y-1.5 list-decimal list-inside font-mono text-[11px] leading-relaxed">
+                        <li>Ensure your phone is unlocked and connected to Safaricom network.</li>
+                        <li>Click <strong>&quot;CONFIRM ORDER • {formatKES(orderTotal)}&quot;</strong> below.</li>
+                        <li>An instant SIM popup from <strong>RADIICATO</strong> will appear on your phone.</li>
+                        <li>Enter your <strong>4-digit secret M-PESA PIN</strong> to authorize the charge.</li>
+                        <li>Your payment confirms automatically within seconds without manual entry.</li>
+                      </ol>
+                    </div>
+
+                    {/* Manual Fallback (Paybill & Till) */}
+                    <div className="bg-white p-4 border border-[#E4E4E7] space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-mono uppercase text-[#71717A] font-bold">
+                          OPTION B: MANUAL PAYBILL / TILL FALLBACK
+                        </span>
+                        <span className="text-[9px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded">
+                          IF STK DELAYS
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#71717A] font-mono">
+                        If you prefer paying manually through your SIM Toolkit or M-PESA App, use either official channel:
+                      </p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        {/* Paybill */}
+                        <div className="p-3 bg-[#FAFAF9] border border-[#E4E4E7] space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-mono text-[#71717A] font-bold uppercase">PAYBILL NUMBER</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy('729831', 'paybill')}
+                              className="text-[10px] font-mono text-[#4D5936] hover:underline flex items-center gap-1 font-bold"
+                            >
+                              {copiedField === 'paybill' ? <Check size={11} /> : <Copy size={11} />}
+                              {copiedField === 'paybill' ? 'COPIED' : 'COPY'}
+                            </button>
+                          </div>
+                          <div className="text-sm font-mono font-bold text-[#0A0A0A]">729831</div>
+                          <div className="text-[10px] font-mono text-[#71717A]">Account: <strong>RADIICATO</strong></div>
+                        </div>
+
+                        {/* Buy Goods Till */}
+                        <div className="p-3 bg-[#FAFAF9] border border-[#E4E4E7] space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-mono text-[#71717A] font-bold uppercase">BUY GOODS (TILL)</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy('982410', 'till')}
+                              className="text-[10px] font-mono text-[#4D5936] hover:underline flex items-center gap-1 font-bold"
+                            >
+                              {copiedField === 'till' ? <Check size={11} /> : <Copy size={11} />}
+                              {copiedField === 'till' ? 'COPIED' : 'COPY'}
+                            </button>
+                          </div>
+                          <div className="text-sm font-mono font-bold text-[#0A0A0A]">982410</div>
+                          <div className="text-[10px] font-mono text-[#71717A]">Store: <strong>RADIICATO ATELIER</strong></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -791,38 +1002,72 @@ export default function CheckoutPage() {
 
       {/* STK Push Simulation Modal */}
       {stkPushStep !== 'idle' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white border border-[#E4E4E7] shadow-2xl max-w-sm w-full p-7 text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-[#4D5936]/10 border border-[#4D5936]/20 mx-auto flex items-center justify-center text-[#4D5936]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-[#E4E4E7] shadow-2xl max-w-md w-full p-7 text-center space-y-5 transform transition-all duration-300">
+            {/* Stage Indicator */}
+            <div className="flex items-center justify-center gap-2 pb-2 border-b border-[#F4F4F5] text-[10px] font-mono uppercase tracking-widest text-[#71717A]">
+              <span className={`px-2 py-0.5 rounded ${stkPushStep === 'prompting' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
+                1. STK PROMPT
+              </span>
+              <span>→</span>
+              <span className={`px-2 py-0.5 rounded ${stkPushStep === 'verifying' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
+                2. DARAJA VERIFY
+              </span>
+              <span>→</span>
+              <span className={`px-2 py-0.5 rounded ${stkPushStep === 'success' ? 'bg-[#4D5936] text-white font-bold' : 'text-[#A1A1AA]'}`}>
+                3. CONFIRMED
+              </span>
+            </div>
+
+            <div className="w-16 h-16 rounded-full bg-[#4D5936]/10 border border-[#4D5936]/20 mx-auto flex items-center justify-center text-[#4D5936] transition-all">
               {stkPushStep === 'success' ? (
-                <CheckCircle2 size={36} />
+                <CheckCircle2 size={36} className="text-[#4D5936]" />
+              ) : stkPushStep === 'verifying' ? (
+                <Loader2 size={32} className="animate-spin text-[#4D5936]" />
               ) : (
-                <Smartphone size={32} className="animate-pulse" />
+                <Smartphone size={32} className="animate-pulse text-[#4D5936]" />
               )}
             </div>
 
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">
-              {stkPushStep === 'prompting'
-                ? 'Check Your Phone'
-                : stkPushStep === 'verifying'
-                ? 'Verifying M-PESA Payment...'
-                : 'M-PESA Payment Verified!'}
-            </h3>
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">
+                {stkPushStep === 'prompting'
+                  ? 'Check Your Phone Handset'
+                  : stkPushStep === 'verifying'
+                  ? 'Verifying M-PESA Payment...'
+                  : 'M-PESA Payment Verified!'}
+              </h3>
+              <p className="text-[11px] font-mono text-[#4D5936] font-bold">
+                AMOUNT: {formatKES(orderTotal)}
+              </p>
+            </div>
 
-            <p className="text-xs text-[#71717A] leading-relaxed font-light">
-              {stkPushStep === 'prompting'
-                ? `An M-PESA STK Push prompt has been sent to ${formatKenyanPhoneNumber(
-                    mpesaPhone || phone
-                  )}. Please enter your 4-digit PIN to authorize payment of ${formatKES(orderTotal)}.`
-                : stkPushStep === 'verifying'
-                ? 'Communicating with Safaricom Daraja Gateway for instant transaction confirmation...'
-                : 'Order confirmed and registered in Radiicato Atelier.'}
+            <p className="text-xs text-[#71717A] leading-relaxed font-mono">
+              {stkPushStep === 'prompting' ? (
+                <>
+                  An instant M-PESA prompt was dispatched to{' '}
+                  <strong className="text-[#0A0A0A]">
+                    {formatDisplayKenyanPhone(
+                      useDifferentMpesaPhone && mpesaPhone ? mpesaPhone : (mpesaPhone || phone)
+                    )}
+                  </strong>
+                  . Please unlock your phone and enter your 4-digit PIN.
+                </>
+              ) : stkPushStep === 'verifying' ? (
+                'Connecting with Safaricom Daraja Gateway for instant transaction confirmation and cryptographic receipt validation...'
+              ) : (
+                'Transaction confirmed! Your order has been registered in the Radiicato Atelier and queued for dispatch.'
+              )}
             </p>
 
-            <div className="pt-3 border-t border-[#F4F4F5]">
-              <span className="text-[10px] font-mono text-[#4D5936] font-bold uppercase tracking-wider">
-                SAFARICOM PAYBILL: 729831 • RADIICATO
-              </span>
+            <div className="pt-4 border-t border-[#F4F4F5] space-y-2">
+              <div className="flex justify-between items-center text-[10px] font-mono bg-[#FAFAF9] p-2.5 border border-[#E4E4E7]">
+                <span className="text-[#71717A]">SAFARICOM PAYBILL: <strong>729831</strong></span>
+                <span className="text-[#71717A]">ACC: <strong>RADIICATO</strong></span>
+              </div>
+              <p className="text-[10px] text-[#A1A1AA] font-mono">
+                Didn&apos;t get the prompt? Check that your Safaricom SIM has active network or pay manually using the Paybill above.
+              </p>
             </div>
           </div>
         </div>

@@ -19,16 +19,26 @@ export interface PaymentResult {
 
 /**
  * Normalizes any Kenyan phone number format into the standard 254XXXXXXXXX format
+ * Supports formats: 07XXXXXXXX, 01XXXXXXXX, 254XXXXXXXX, +254XXXXXXXX
+ * and normalizes strictly to 2547XXXXXXXX or 2541XXXXXXXX.
  */
 export function formatKenyanPhoneNumber(phone: string): string {
+  if (!phone) return '';
   const cleaned = phone.replace(/\D/g, '');
+  // Handles +25407XXXXXXXX or 25407XXXXXXXX (accidental 0 after country code)
+  if (cleaned.startsWith('2540') && cleaned.length === 13) {
+    return `254${cleaned.substring(4)}`;
+  }
+  // Handles 254XXXXXXXXX (12 digits e.g. 2547XXXXXXXX or 2541XXXXXXXX)
   if (cleaned.startsWith('254') && cleaned.length === 12) {
     return cleaned;
   }
+  // Handles 07XXXXXXXX or 01XXXXXXXX (10 digits)
   if (cleaned.startsWith('0') && cleaned.length === 10) {
     return `254${cleaned.substring(1)}`;
   }
-  if (cleaned.length === 9) {
+  // Handles 7XXXXXXXX or 1XXXXXXXX (9 digits without leading 0 or country code)
+  if (cleaned.length === 9 && (cleaned.startsWith('7') || cleaned.startsWith('1'))) {
     return `254${cleaned}`;
   }
   return cleaned;
@@ -36,10 +46,26 @@ export function formatKenyanPhoneNumber(phone: string): string {
 
 /**
  * Validates whether the given string is a valid Kenyan Safaricom / Airtel number
+ * Supports prefixes 07XXXXXXXX, 01XXXXXXXX, 254XXXXXXXX, +254XXXXXXXX
+ * Normalizes to 2547XXXXXXXX or 2541XXXXXXXX
  */
 export function isValidKenyanPhone(phone: string): boolean {
+  if (!phone) return false;
   const normalized = formatKenyanPhoneNumber(phone);
-  return /^254(7|1)\d{8}$/.test(normalized);
+  return /^254[17]\d{8}$/.test(normalized);
+}
+
+/**
+ * Formats a Kenyan phone number into human-friendly readable display format
+ * e.g. 254712345678 -> "+254 712 345 678" or "0712 345 678"
+ */
+export function formatDisplayKenyanPhone(phone: string, international = true): string {
+  const normalized = formatKenyanPhoneNumber(phone);
+  if (!isValidKenyanPhone(normalized)) return phone;
+  if (international) {
+    return `+254 ${normalized.substring(3, 6)} ${normalized.substring(6, 9)} ${normalized.substring(9)}`;
+  }
+  return `0${normalized.substring(3, 5)} ${normalized.substring(5, 8)} ${normalized.substring(8)}`;
 }
 
 /**

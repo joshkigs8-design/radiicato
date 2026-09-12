@@ -111,7 +111,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/collections/skull-caps" className="hover:text-black transition-colors">
-                  Skull Caps (Coming Soon)
+                  Skull Caps (Capsule 03)
                 </Link>
               </li>
             </ul>
@@ -133,7 +133,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/collections/skull-caps" className="hover:text-black transition-colors">
-                  Skull Caps (Drop 03 Teaser)
+                  Skull Caps (Capsule 03)
                 </Link>
               </li>
               <li>

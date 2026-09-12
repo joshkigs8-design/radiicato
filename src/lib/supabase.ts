@@ -294,3 +294,209 @@ export async function createOrderInSupabase(order: any) {
     return { success: false, error: err.message };
   }
 }
+
+/**
+ * Update order fulfillment, courier tracking, and status in Supabase
+ */
+export async function updateOrderInSupabase(
+  orderIdOrNumber: string,
+  updates: {
+    fulfillment_status?: string;
+    tracking_number?: string;
+    carrier?: string;
+    internal_notes?: string;
+  }
+) {
+  const client = supabaseAdmin || supabase;
+  if (!client) return { success: false, error: 'Supabase not initialized' };
+
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderIdOrNumber);
+    let query = (client as any).from('orders').update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    });
+
+    if (isUuid) {
+      query = query.or(`id.eq.${orderIdOrNumber},order_number.eq.${orderIdOrNumber}`);
+    } else {
+      query = query.eq('order_number', orderIdOrNumber);
+    }
+
+    const { data, error } = await query.select();
+    if (error) {
+      console.warn('Supabase Order Update note:', error.message);
+      return { success: false, error: error.message };
+    }
+    return { success: true, data };
+  } catch (err: any) {
+    console.warn('Supabase order update note:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Update product variant stock and reflect changes in Supabase product_variants and products tables
+ */
+export async function updateVariantStockInSupabase(
+  variantIdOrSku: string,
+  newStock: number,
+  reason: string = 'adjustment',
+  sku?: string,
+  productId?: string
+) {
+  const client = supabaseAdmin || supabase;
+  if (!client) return { success: false, error: 'Supabase not initialized' };
+
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(variantIdOrSku);
+    let updateQuery = (client as any).from('product_variants').update({
+      stock_quantity: Math.max(0, newStock),
+      updated_at: new Date().toISOString(),
+    });
+
+    if (isUuid) {
+      updateQuery = updateQuery.eq('id', variantIdOrSku);
+    } else if (sku) {
+      updateQuery = updateQuery.eq('sku', sku);
+    } else {
+      updateQuery = updateQuery.eq('sku', variantIdOrSku);
+    }
+
+    const { data: variantData, error: variantError } = await updateQuery.select('id, product_id, sku, stock_quantity');
+
+    if (variantError) {
+      console.warn('Supabase Product Variant stock update note:', variantError.message);
+    }
+
+    // Reflect in products table status (mark sold_out if all variants exhausted)
+    const effectiveProductId = productId || (variantData && variantData[0]?.product_id);
+    if (effectiveProductId) {
+      const isProductUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(effectiveProductId);
+      if (isProductUuid) {
+        const { data: allVariants } = await (client as any)
+          .from('product_variants')
+          .select('stock_quantity')
+          .eq('product_id', effectiveProductId);
+
+        if (allVariants && Array.isArray(allVariants) && allVariants.length > 0) {
+          const totalRemaining = allVariants.reduce((sum: number, v: any) => sum + (v.stock_quantity || 0), 0);
+          const newStatus = totalRemaining <= 0 ? 'sold_out' : 'active';
+          await (client as any)
+            .from('products')
+            .update({ status: newStatus, updated_at: new Date().toISOString() })
+            .eq('id', effectiveProductId);
+        }
+      }
+    }
+
+    // Insert inventory transaction record if variant id is valid UUID
+    const targetVariantId = variantData && variantData[0]?.id;
+    if (targetVariantId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetVariantId)) {
+      await (client as any)
+        .from('inventory_transactions')
+        .insert({
+          variant_id: targetVariantId,
+          change_amount: 0,
+          previous_stock: 0,
+          new_stock: Math.max(0, newStock),
+          reason: reason === 'restock' ? 'restock' : reason === 'sale' ? 'sale' : 'adjustment',
+          note: `Admin inventory stock update to ${newStock}`,
+        });
+    }
+
+    return { success: true, data: variantData };
+  } catch (err: any) {
+    console.warn('Supabase inventory update note:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Create a customer review in Supabase
+ */
+export async function createReviewInSupabase(review: {
+  id?: string;
+  productId: string;
+  productName: string;
+  customerName: string;
+  customerEmail: string;
+  rating: number;
+  title: string;
+  comment: string;
+  isVerifiedPurchase?: boolean;
+  status?: 'pending' | 'approved' | 'rejected';
+}) {
+  const client = supabaseAdmin || supabase;
+  if (!client) return { success: false, error: 'Supabase client not initialized' };
+
+  try {
+    let validProductId = review.productId;
+    if (validProductId === 'prod-broken-record-tee') {
+      validProductId = '11111111-1111-1111-1111-111111111111';
+    } else if (validProductId === 'prod-we-are-who-we-are-tee') {
+      validProductId = '22222222-2222-2222-2222-222222222222';
+    } else if (validProductId === 'prod-skull-cap-teaser') {
+      validProductId = '33333333-3333-3333-3333-333333333333';
+    }
+
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const finalProductId = uuidRegex.test(validProductId) ? validProductId : '11111111-1111-1111-1111-111111111111';
+
+    const { data, error } = await (client as any)
+      .from('reviews')
+      .insert({
+        product_id: finalProductId,
+        product_name: review.productName,
+        customer_name: review.customerName,
+        customer_email: review.customerEmail,
+        rating: Math.max(1, Math.min(5, Math.round(review.rating))),
+        title: review.title,
+        comment: review.comment,
+        is_verified_purchase: review.isVerifiedPurchase ?? true,
+        status: review.status || 'approved',
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.warn('Supabase Review Insert Note:', error.message);
+      return { success: false, error: error.message };
+    }
+    return { success: true, data };
+  } catch (err: any) {
+    console.warn('Supabase Review creation note:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Fetch reviews from Supabase
+ */
+export async function fetchReviewsFromSupabase(productId?: string) {
+  if (!supabase) return null;
+  try {
+    let query = (supabase as any).from('reviews').select('*').order('created_at', { ascending: false });
+    if (productId) {
+      let validProductId = productId;
+      if (validProductId === 'prod-broken-record-tee') {
+        validProductId = '11111111-1111-1111-1111-111111111111';
+      } else if (validProductId === 'prod-we-are-who-we-are-tee') {
+        validProductId = '22222222-2222-2222-2222-222222222222';
+      } else if (validProductId === 'prod-skull-cap-teaser') {
+        validProductId = '33333333-3333-3333-3333-333333333333';
+      }
+      query = query.eq('product_id', validProductId);
+    }
+    const { data, error } = await query;
+    if (error) {
+      console.warn('Supabase reviews query note:', error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.warn('Supabase reviews fetch skipped:', err);
+    return null;
+  }
+}
+

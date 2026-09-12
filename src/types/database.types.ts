@@ -517,6 +517,47 @@ export interface Database {
           updated_at?: string;
         };
       };
+      reviews: {
+        Row: {
+          id: string;
+          product_id: string;
+          product_name: string;
+          customer_name: string;
+          customer_email: string;
+          rating: number;
+          title: string;
+          comment: string;
+          is_verified_purchase: boolean;
+          status: 'pending' | 'approved' | 'rejected';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          product_id: string;
+          product_name: string;
+          customer_name: string;
+          customer_email: string;
+          rating: number;
+          title: string;
+          comment: string;
+          is_verified_purchase?: boolean;
+          status?: 'pending' | 'approved' | 'rejected';
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          product_id?: string;
+          product_name?: string;
+          customer_name?: string;
+          customer_email?: string;
+          rating?: number;
+          title?: string;
+          comment?: string;
+          is_verified_purchase?: boolean;
+          status?: 'pending' | 'approved' | 'rejected';
+          created_at?: string;
+        };
+      };
     };
   };
 }

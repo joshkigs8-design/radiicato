@@ -35,6 +35,7 @@ export function useStore() {
     notifications: store.getNotifications(),
     auditLogs: store.getAuditLogs(),
     currentAdmin: store.getCurrentAdmin(),
+    isAdminAuthenticated: store.getIsAdminAuthenticated(),
     adminUsers: store.getAdminUsers(),
     storeAnnouncements: store.getStoreAnnouncements(),
     activeAnnouncement: store.getActiveStoreAnnouncement(),
@@ -67,8 +68,8 @@ export function useStore() {
       store.updateVariantStock(variantId, stock, reason),
     updateOrderStatus: (orderId: string, status: Order['fulfillmentStatus'], note?: string) => 
       store.updateOrderStatus(orderId, status, note),
-    updateOrderTracking: (orderId: string, tracking: string) => 
-      store.updateOrderTracking(orderId, tracking),
+    updateOrderTracking: (orderId: string, tracking: string, carrier?: string, dispatchDate?: string) => 
+      store.updateOrderTracking(orderId, tracking, carrier, dispatchDate),
     saveCollection: (col: Collection) => store.saveCollection(col),
     deleteCollection: (id: string) => store.deleteCollection(id),
     saveCategory: (cat: Category) => store.saveCategory(cat),
@@ -76,6 +77,7 @@ export function useStore() {
     updateSettings: (settings: Partial<StoreSettings>) => store.updateSettings(settings),
     switchAdminRole: (role: AdminUser['role']) => store.switchAdminRole(role),
     loginAdmin: (email: string, role?: Parameters<typeof store.loginAdmin>[1]) => store.loginAdmin(email, role),
+    logoutAdmin: () => store.logoutAdmin(),
     registerAdmin: (data: Parameters<typeof store.registerAdmin>[0]) => store.registerAdmin(data),
     requestPasswordReset: (email: string) => store.requestPasswordReset(email),
     completePasswordReset: (email: string, code: string) => store.completePasswordReset(email, code),

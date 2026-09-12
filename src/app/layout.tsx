@@ -5,44 +5,49 @@ import { StoreLayoutWrapper } from '@/components/layout/StoreLayoutWrapper';
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://radiicato.co.ke';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL('https://radiicato.co.ke'),
   title: {
     default: 'RADIICATO | Premium Kenyan Streetwear — Nairobi Atelier Archive',
     template: '%s | RADIICATO',
   },
   description: 'Independent luxury streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM combed organic cotton tees, 3D chrome metallic badges, and underground graphic capsules. M-PESA checkout & Kenya-wide dispatch.',
   keywords: [
+    'Radiicato',
+    'luxury streetwear',
+    'Nairobi atelier',
+    'heavyweight fleece',
+    'Kenyan designer',
+    '280 GSM',
+    'skull caps',
+    'curated apparel',
     'streetwear kenya',
     'nairobi streetwear brand',
-    'radiicato',
     'radiicato clothing',
     'broken record white tee',
     'we are who we are black tee',
     'kenyan graphic tees',
-    'luxury streetwear nairobi',
     'heavyweight 280 gsm t-shirts kenya',
     'mf doom tribute shirt kenya',
-    'skull caps nairobi',
     'm-pesa streetwear shopping',
     'fargo courier delivery kenya',
     'african streetwear designers',
     'urban fashion nairobi'
   ],
-  authors: [{ name: 'RADIICATO APPAREL CO.', url: siteUrl }],
-  creator: 'RADIICATO APPAREL CO.',
+  authors: [{ name: 'RADIICATO', url: 'https://radiicato.co.ke' }],
+  creator: 'RADIICATO',
   publisher: 'RADIICATO',
   category: 'Fashion & Apparel',
   applicationName: 'RADIICATO',
   alternates: {
-    canonical: siteUrl,
+    canonical: 'https://radiicato.co.ke',
   },
   openGraph: {
     type: 'website',
     locale: 'en_KE',
-    url: siteUrl,
-    siteName: 'RADIICATO APPAREL CO.',
+    url: 'https://radiicato.co.ke',
+    siteName: 'RADIICATO',
     title: 'RADIICATO | Premium Kenyan Streetwear — Nairobi Atelier Archive',
-    description: 'Engineered in Nairobi for young fashion-conscious Kenyans who refuse to conform. Cut from 280 GSM combed cotton with hand-finished liquid chrome badges. M-PESA instant checkout.',
+    description: 'Independent luxury streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM combed organic cotton tees, 3D chrome metallic badges, and underground graphic capsules. M-PESA checkout & Kenya-wide dispatch.',
     images: [
       {
         url: '/images/broken-record.jpg',
@@ -69,7 +74,7 @@ export const metadata: Metadata = {
     site: '@radiicato',
     creator: '@radiicato',
     title: 'RADIICATO | Premium Kenyan Streetwear — Nairobi',
-    description: 'Independent streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM cotton and subversive underground aesthetics.',
+    description: 'Independent luxury streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM cotton and subversive underground aesthetics.',
     images: ['/images/broken-record.jpg'],
   },
   icons: {
@@ -102,13 +107,13 @@ export const metadata: Metadata = {
 // Global Schema.org JSON-LD Structured Data
 const organizationSchema = {
   '@context': 'https://schema.org',
-  '@type': 'ClothingStore',
+  '@type': 'Organization',
   name: 'RADIICATO',
   legalName: 'RADIICATO APPAREL CO.',
   url: siteUrl,
   logo: `${siteUrl}/logo.png`,
   image: `${siteUrl}/images/broken-record.jpg`,
-  description: 'Premium Kenyan streetwear clothing brand engineered in Nairobi. Heavyweight 280 GSM organic cotton tees and limited-edition underground drops.',
+  description: 'Independent luxury streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM combed organic cotton tees, 3D chrome metallic badges, and underground graphic capsules.',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'Studio 04, The Alchemist Yard, Parklands Road',

@@ -14,7 +14,7 @@ import { AdminRole } from '@/types';
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const { currentAdmin, switchAdminRole, notifications } = useStore();
+  const { currentAdmin, switchAdminRole, notifications, logoutAdmin } = useStore();
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const navGroups = [
@@ -155,6 +155,7 @@ export function AdminSidebar() {
       <div className="p-3 border-t border-[#E5E7EB] bg-[#FAFAFA] space-y-2">
         <Link
           href="/admin/login"
+          onClick={() => logoutAdmin()}
           className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-[#4B5563] hover:text-[#DC2626] hover:bg-[#FEE2E2]/60 rounded-md transition-colors"
         >
           <div className="flex items-center gap-2">

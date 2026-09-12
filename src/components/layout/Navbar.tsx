@@ -145,7 +145,7 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
                     >
                       <div>
                         <p className="text-xs font-black text-[#0A0A0A] group-hover/item:text-[#4D5936]">Skull Caps</p>
-                        <p className="text-[10px] text-[#71717A]">Drop 03 // Ribbed Knit</p>
+                        <p className="text-[10px] text-[#4D5936] font-semibold">Capsule 03 // Now Live</p>
                       </div>
                       <span className="text-[10px] px-2 py-0.5 bg-[#4D5936]/10 text-[#4D5936] font-bold border border-[#4D5936]/20 rounded font-mono">KES 500</span>
                     </Link>
@@ -301,7 +301,7 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
                   className="flex items-center justify-between text-base font-bold tracking-wider text-[#71717A] hover:text-black transition-colors"
                 >
                   <span>SKULL CAPS</span>
-                  <span className="text-[10px] px-2 py-0.5 bg-[#4D5936]/10 text-[#4D5936] border border-[#4D5936]/20 rounded font-mono font-bold">SOON • KES 500</span>
+                  <span className="text-[10px] px-2 py-0.5 bg-[#4D5936] text-white rounded font-mono font-bold">NOW LIVE • KES 500</span>
                 </Link>
               </div>
             </div>

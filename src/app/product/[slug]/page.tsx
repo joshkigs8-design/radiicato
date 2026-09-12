@@ -6,12 +6,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { 
   Heart, Plus, Minus, Check, ArrowRight, ShieldCheck, 
-  Ruler, Truck, RotateCcw, Sparkles, ChevronDown, ChevronUp, Star, Eye
+  Ruler, Truck, RotateCcw, Sparkles, ChevronDown, ChevronUp, Star, Eye,
+  AlertCircle, Loader2
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES } from '@/lib/utils';
 import { ProductCard } from '@/components/product/ProductCard';
 import { Size } from '@/types';
+import { createReviewInSupabase } from '@/lib/supabase';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -55,6 +57,9 @@ export default function ProductDetailPage() {
   const [reviewComment, setReviewComment] = useState('');
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Unique colors in product
   const availableColors = useMemo(() => {
@@ -139,30 +144,84 @@ export default function ProductDetailPage() {
     router.push('/checkout');
   };
 
-  const handleSubmitReview = (e: React.FormEvent) => {
+  const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reviewName.trim() || !reviewComment.trim()) return;
+    setReviewError('');
 
-    addReview({
-      productId: product.id,
-      productName: product.name,
-      customerName: reviewName.trim(),
-      customerEmail: reviewEmail.trim() || 'shopper@radiicato.co.ke',
-      rating: reviewRating,
-      title: reviewTitle.trim() || 'Verified Purchase',
-      comment: reviewComment.trim(),
-      isVerifiedPurchase: true,
-      status: 'approved',
-    });
+    // 1. Validate Rating (1-5)
+    const numericRating = Math.round(Number(reviewRating));
+    if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
+      setReviewError('Please select a valid rating between 1 and 5 stars.');
+      return;
+    }
 
-    setReviewSubmitted(true);
-    setReviewComment('');
-    setReviewTitle('');
-    setReviewName('');
-    setTimeout(() => {
-      setReviewSubmitted(false);
-      setShowReviewForm(false);
-    }, 2500);
+    // 2. Validate Customer Name
+    if (!reviewName.trim() || reviewName.trim().length < 2) {
+      setReviewError('Please enter your name (minimum 2 characters).');
+      return;
+    }
+
+    // 3. Validate Comment
+    if (!reviewComment.trim() || reviewComment.trim().length < 5) {
+      setReviewError('Please provide a detailed review comment (minimum 5 characters) discussing drape, sizing, or textile weight.');
+      return;
+    }
+
+    // 4. Validate Email (if provided)
+    const emailToUse = reviewEmail.trim() || 'shopper@radiicato.co.ke';
+    if (reviewEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reviewEmail.trim())) {
+      setReviewError('Please enter a valid email address.');
+      return;
+    }
+
+    setIsSubmittingReview(true);
+
+    try {
+      const reviewPayload = {
+        productId: product.id,
+        productName: product.name,
+        customerName: reviewName.trim(),
+        customerEmail: emailToUse,
+        rating: numericRating,
+        title: reviewTitle.trim() || `${numericRating}-Star Atelier Review`,
+        comment: reviewComment.trim(),
+        isVerifiedPurchase: true,
+        status: 'approved' as const,
+      };
+
+      // 1. Update Reactive In-Memory & LocalStorage Store immediately
+      addReview(reviewPayload);
+
+      // 2. Submits to Supabase `reviews` table if available
+      try {
+        await createReviewInSupabase(reviewPayload);
+      } catch (sbError) {
+        console.warn('Supabase reviews table note:', sbError);
+      }
+
+      // 3. Display success toast & inline confirmation state
+      setReviewSubmitted(true);
+      setToastMessage(`Your ${numericRating}-star review has been published to the Atelier!`);
+      setReviewComment('');
+      setReviewTitle('');
+      setReviewName('');
+      setReviewEmail('');
+      setReviewRating(5);
+
+      setTimeout(() => {
+        setToastMessage(null);
+      }, 5000);
+
+      setTimeout(() => {
+        setReviewSubmitted(false);
+        setShowReviewForm(false);
+      }, 3000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Review submission failed. Please try again.';
+      setReviewError(msg);
+    } finally {
+      setIsSubmittingReview(false);
+    }
   };
 
   // Related products
@@ -673,9 +732,16 @@ export default function ProductDetailPage() {
             <p className="text-xs text-[#71717A] mt-1 font-mono">Share your thoughts on textile weight, drape, and sizing.</p>
 
             {reviewSubmitted ? (
-              <div className="mt-4 p-4 bg-[#F4F6F0] border border-[#DCE4D3] text-xs text-[#4D5936] font-bold flex items-center gap-2">
-                <Check size={16} />
-                <span>Thank you! Your review has been published to the atelier.</span>
+              <div className="mt-4 p-5 bg-[#F4F6F0] border border-[#DCE4D3] text-xs text-[#4D5936] flex items-center gap-3 animate-in fade-in duration-200">
+                <div className="w-8 h-8 rounded-full bg-[#4D5936] text-white flex items-center justify-center shrink-0">
+                  <Check size={18} />
+                </div>
+                <div>
+                  <h4 className="font-bold uppercase tracking-wider text-[#0A0A0A] text-xs">Review Published to Atelier</h4>
+                  <p className="text-[11px] text-[#52525B] font-mono mt-0.5">
+                    Thank you! Your verified community review is now live on this garment.
+                  </p>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmitReview} className="mt-6 space-y-4">
@@ -743,13 +809,29 @@ export default function ProductDetailPage() {
                     onChange={(e) => setReviewComment(e.target.value)}
                     className="w-full bg-white border border-[#D4D4D8] p-3 text-xs uppercase text-black placeholder-[#71717A] focus:outline-none focus:border-black font-mono shadow-xs"
                   />
+                  <p className="text-[10px] font-mono text-[#71717A] mt-1">Minimum 5 characters required.</p>
                 </div>
+
+                {reviewError && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+                    <AlertCircle size={15} className="shrink-0" />
+                    <span className="font-mono text-[11px]">{reviewError}</span>
+                  </div>
+                )}
 
                 <button
                   type="submit"
-                  className="bg-[#0A0A0A] text-white px-8 py-3.5 text-xs font-bold tracking-widest uppercase hover:bg-[#27272A] shadow-sm transition-colors"
+                  disabled={isSubmittingReview}
+                  className="bg-[#0A0A0A] text-white px-8 py-3.5 text-xs font-bold tracking-widest uppercase hover:bg-[#27272A] shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  SUBMIT REVIEW
+                  {isSubmittingReview ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      <span>PUBLISHING REVIEW...</span>
+                    </>
+                  ) : (
+                    <span>SUBMIT REVIEW</span>
+                  )}
                 </button>
               </form>
             )}
@@ -857,6 +939,16 @@ export default function ProductDetailPage() {
               Take your regular size for an intended relaxed streetwear silhouette, or size down one size for a fitted tailor drape.
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Floating Review Success Toast */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0A0A0A] text-white px-5 py-3.5 shadow-2xl border border-[#27272A] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-3 duration-300">
+          <div className="w-5 h-5 rounded-full bg-[#4D5936] text-white flex items-center justify-center shrink-0">
+            <Check size={12} />
+          </div>
+          <span className="text-xs font-mono tracking-wider">{toastMessage}</span>
         </div>
       )}
     </div>

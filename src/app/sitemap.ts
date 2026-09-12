@@ -1,10 +1,13 @@
 import { MetadataRoute } from 'next';
+import { INITIAL_PRODUCTS, INITIAL_COLLECTIONS } from '@/lib/seed-data';
+import { supabase } from '@/lib/supabase';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://radiicato.co.ke';
   const now = new Date();
 
-  return [
+  // 1. Core Storefront Pages
+  const corePages: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}`,
       lastModified: now,
@@ -15,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/shop`,
       lastModified: now,
       changeFrequency: 'daily',
-      priority: 0.9,
+      priority: 0.95,
     },
     {
       url: `${baseUrl}/collections`,
@@ -24,41 +27,85 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/collections/broken-record`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/collections/we-are-who-we-are`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/collections/skull-caps`,
+      url: `${baseUrl}/lookbook`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.85,
     },
-    {
-      url: `${baseUrl}/product/broken-record-heavyweight-tee`,
-      lastModified: now,
+  ];
+
+  // 2. Dynamic Collections Mapping
+  const collectionSlugs = new Map<string, { updatedAt: Date; priority: number }>();
+  INITIAL_COLLECTIONS.forEach((col) => {
+    collectionSlugs.set(col.slug, {
+      updatedAt: col.createdAt ? new Date(col.createdAt) : now,
+      priority: col.status === 'live' ? 0.9 : 0.8,
+    });
+  });
+
+  // 3. Dynamic Products Mapping
+  const productSlugs = new Map<string, { updatedAt: Date; priority: number }>();
+  INITIAL_PRODUCTS.forEach((prod) => {
+    productSlugs.set(prod.slug, {
+      updatedAt: prod.updatedAt ? new Date(prod.updatedAt) : now,
+      priority: prod.isFeatured ? 0.9 : 0.85,
+    });
+  });
+
+  // Enrich dynamically with live Supabase database records when configured
+  try {
+    if (supabase) {
+      const [productsRes, collectionsRes] = await Promise.all([
+        supabase.from('products').select('slug, updated_at, is_featured, status').eq('status', 'active'),
+        supabase.from('collections').select('slug, updated_at, status'),
+      ]);
+
+      if (productsRes.data && productsRes.data.length > 0) {
+        productsRes.data.forEach((p: any) => {
+          if (p.slug) {
+            productSlugs.set(p.slug, {
+              updatedAt: p.updated_at ? new Date(p.updated_at) : now,
+              priority: p.is_featured ? 0.9 : 0.85,
+            });
+          }
+        });
+      }
+
+      if (collectionsRes.data && collectionsRes.data.length > 0) {
+        collectionsRes.data.forEach((c: any) => {
+          if (c.slug) {
+            collectionSlugs.set(c.slug, {
+              updatedAt: c.updated_at ? new Date(c.updated_at) : now,
+              priority: c.status === 'live' ? 0.9 : 0.8,
+            });
+          }
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('Supabase dynamic sitemap query fallback:', err);
+  }
+
+  const collectionEntries: MetadataRoute.Sitemap = Array.from(collectionSlugs.entries()).map(
+    ([slug, meta]) => ({
+      url: `${baseUrl}/collections/${slug}`,
+      lastModified: meta.updatedAt,
       changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/product/we-are-who-we-are-boxy-tee`,
-      lastModified: now,
+      priority: meta.priority,
+    })
+  );
+
+  const productEntries: MetadataRoute.Sitemap = Array.from(productSlugs.entries()).map(
+    ([slug, meta]) => ({
+      url: `${baseUrl}/product/${slug}`,
+      lastModified: meta.updatedAt,
       changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/product/radiicato-heavyweight-ribbed-knit-skull-cap`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
+      priority: meta.priority,
+    })
+  );
+
+  // 4. Legal & Customer Information Pages
+  const legalAndInfoPages: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}/about`,
       lastModified: now,
@@ -93,14 +140,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/privacy`,
       lastModified: now,
       changeFrequency: 'yearly',
-      priority: 0.3,
+      priority: 0.4,
     },
     {
       url: `${baseUrl}/terms`,
       lastModified: now,
       changeFrequency: 'yearly',
-      priority: 0.3,
+      priority: 0.4,
     },
+  ];
+
+  return [
+    ...corePages,
+    ...collectionEntries,
+    ...productEntries,
+    ...legalAndInfoPages,
   ];
 }
 
