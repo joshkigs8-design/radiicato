@@ -1,15 +1,139 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, ShoppingBag, Plus, Check } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ShoppingBag } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { LookbookModal } from '@/components/lookbook/LookbookModal';
 import { formatKES } from '@/lib/utils';
 import { Product, Size } from '@/types';
 
+/* ═══════════════════════════════════════════════════════════════════
+   Chrome Particle Canvas — PESOS Worldwide Inspired
+   Renders drifting metallic chrome particles on the hero background
+   ═══════════════════════════════════════════════════════════════════ */
+function ChromeHeroCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationId: number;
+    let width = 0;
+    let height = 0;
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Create chrome-style particles
+    interface Particle {
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      opacity: number;
+      pulse: number;
+      pulseSpeed: number;
+    }
+
+    const particles: Particle[] = [];
+    const PARTICLE_COUNT = 80;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.random() * 2.5 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3 - 0.15,
+        opacity: Math.random() * 0.4 + 0.1,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: Math.random() * 0.02 + 0.005,
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach((p) => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.pulse += p.pulseSpeed;
+
+        // Wrap around edges
+        if (p.x < -10) p.x = width + 10;
+        if (p.x > width + 10) p.x = -10;
+        if (p.y < -10) p.y = height + 10;
+        if (p.y > height + 10) p.y = -10;
+
+        const currentOpacity = p.opacity * (0.5 + 0.5 * Math.sin(p.pulse));
+
+        // Chrome metallic gradient dot
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${currentOpacity})`);
+        gradient.addColorStop(0.5, `rgba(200, 200, 210, ${currentOpacity * 0.6})`);
+        gradient.addColorStop(1, `rgba(150, 150, 170, 0)`);
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      });
+
+      // Draw subtle connection lines between nearby particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.03 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 z-[1]"
+      aria-hidden="true"
+      style={{ pointerEvents: 'none' }}
+    />
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HomePage Component — PESOS Worldwide Redesign
+   ═══════════════════════════════════════════════════════════════════ */
 export default function HomePage() {
   const { products, collections, lookbook, addToCart } = useStore();
   const [lookbookModalOpen, setLookbookModalOpen] = useState(false);
@@ -68,77 +192,151 @@ export default function HomePage() {
     transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] }
   };
 
+  /* ─── Product Card Component ─── */
+  const ProductCard = ({ product, fallbackImg }: { product: Product; fallbackImg: string }) => {
+    const primaryImg = product.images[0]?.url || fallbackImg;
+    const hoverImg = product.images[1]?.url || product.images[0]?.url;
+    const isHovered = hoveredProductId === product.id;
+
+    return (
+      <div
+        className="group flex flex-col"
+        onMouseEnter={() => setHoveredProductId(product.id)}
+        onMouseLeave={() => setHoveredProductId(null)}
+      >
+        {/* Clean Dark Frame */}
+        <Link
+          href={`/product/${product.slug}`}
+          className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden block"
+        >
+          <Image
+            src={primaryImg}
+            alt={product.name}
+            fill
+            className={`object-cover object-center transition-all duration-700 ease-out ${
+              isHovered && hoverImg ? 'opacity-0 scale-[1.02]' : 'opacity-100 scale-100'
+            }`}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+          {hoverImg && (
+            <Image
+              src={hoverImg}
+              alt={`${product.name} alternate view`}
+              fill
+              className={`object-cover object-center transition-all duration-700 ease-out ${
+                isHovered ? 'opacity-100 scale-[1.02]' : 'opacity-0 scale-100'
+              }`}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          )}
+        </Link>
+
+        {/* Metadata underneath */}
+        <div className="pt-4 flex flex-col space-y-1.5">
+          <div className="flex items-baseline justify-between">
+            <Link
+              href={`/product/${product.slug}`}
+              className="text-[14px] sm:text-[15px] font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
+            >
+              {product.name}
+            </Link>
+            <span className="text-[13px] font-mono font-medium text-white/80 ml-3 shrink-0">
+              {formatKES(product.price)}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-[11px] font-mono tracking-wider uppercase text-white/50">
+              280 GSM · ORGANIC COTTON
+            </span>
+            <button
+              onClick={() => handleQuickAdd(product)}
+              className="text-[11px] font-mono uppercase tracking-[0.14em] font-semibold text-white/90 hover:text-white transition-colors cursor-pointer border border-white/20 bg-white/5 px-2.5 py-1 rounded-[2px] hover:bg-white hover:text-black"
+            >
+              {quickAddedId === product.id ? 'ADDED ✓' : '+ ADD TO BAG'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-black text-white min-h-screen selection:bg-white selection:text-black font-sans">
 
       {/* =========================================================================
-          01 — FULL-SCREEN OPENING / BRAND STATEMENT
-          PESOS style: Deep black, full viewport editorial model drape,
-          translucent frosted action button & subtle scroll cue.
+          01 — FULL-SCREEN IMMERSIVE HERO (PESOS Chrome Viewer Style)
+          Fullscreen dark canvas with animated chrome particles,
+          centered 3D logo, and frosted glass CTA at bottom.
           ========================================================================= */}
-      <section className="relative h-screen w-full flex flex-col justify-between items-center px-6 sm:px-12 py-12 overflow-hidden bg-black">
-        {/* Full Viewport Background Image */}
+      <section className="pesos-below-navbar-fixed relative w-full overflow-hidden bg-black">
+        {/* Chrome Particle Canvas Background */}
+        <ChromeHeroCanvas />
+
+        {/* Deep radial gradient atmosphere */}
+        <div className="absolute inset-0 z-[2] bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,rgba(30,30,40,0.3),transparent)]" />
+
+        {/* Background editorial image with heavy darkness */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/products/broken-record-front.jpg"
-            alt="RADIICATO Streetwear Model"
+            alt="RADIICATO Streetwear"
             fill
             priority
-            className="object-cover object-center brightness-[0.75] contrast-[1.1]"
+            className="object-cover object-center brightness-[0.25] contrast-[1.2] scale-110"
             sizes="100vw"
           />
-          {/* PESOS Signature dark gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-black/85" />
         </div>
 
-        {/* Top spacer */}
-        <div className="relative z-10 w-full pt-10" />
+        {/* Center Content: 3D Logo + Brand Name */}
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-var(--navbar-height))] px-6">
+          {/* 3D Chrome Logo */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-8"
+          >
+            <Image
+              src="/images/radiicato-3d-logo.jpg"
+              alt="RADIICATO 3D Chrome Logo"
+              width={280}
+              height={280}
+              className="w-[180px] h-[180px] sm:w-[240px] sm:h-[240px] lg:w-[320px] lg:h-[320px] object-contain drop-shadow-[0_20px_60px_rgba(255,255,255,0.15)] rounded-2xl"
+              priority
+            />
+          </motion.div>
 
-        {/* Minimal Center Statement */}
-        <div className="relative z-10 text-center max-w-5xl mx-auto px-4">
-          <motion.h1 
-            initial={{ opacity: 0, y: 24 }}
+          {/* Brand Name */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(3.8rem,14vw,11.5rem)] font-bold tracking-[-0.05em] leading-[0.84] uppercase text-white drop-shadow-lg"
+            transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="text-[clamp(2rem,8vw,5rem)] font-bold tracking-[-0.05em] leading-[0.84] uppercase text-white text-center"
           >
             RADIICATO
           </motion.h1>
+
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 text-[13px] sm:text-[15px] uppercase tracking-[0.14em] text-white/80 font-medium"
+            transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-4 text-[12px] sm:text-[14px] uppercase tracking-[0.18em] text-white/60 font-medium"
           >
-            WE ARE WHO WE ARE.
+            INDEPENDENT STREETWEAR · NAIROBI
           </motion.p>
         </div>
 
-        {/* Bottom Nav & PESOS Frosted CTA */}
-        <div className="relative z-10 w-full flex flex-col items-center gap-6">
-          <nav className="flex flex-wrap items-center justify-center gap-5 sm:gap-9 text-[13px] sm:text-[14px] uppercase tracking-[0.12em] font-medium text-white/80">
-            <Link href="/shop" className="hover:text-white hover:opacity-70 transition-opacity">
-              Shop
-            </Link>
-            <span className="text-white/30">·</span>
-            <Link href="/collections" className="hover:text-white hover:opacity-70 transition-opacity">
-              Collections
-            </Link>
-            <span className="text-white/30">·</span>
-            <Link href="/about" className="hover:text-white hover:opacity-70 transition-opacity">
-              About
-            </Link>
-            <span className="text-white/30">·</span>
-            <Link href="/contact" className="hover:text-white hover:opacity-70 transition-opacity">
-              Contact
-            </Link>
-          </nav>
-
-          {/* Tiny Scroll Hint */}
-          <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-white/50 uppercase">
-            <span>SCROLL TO EXPLORE</span>
-            <span className="animate-bounce">↓</span>
-          </div>
+        {/* Bottom Frosted CTA — PESOS Exact Style */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          <Link
+            href="/shop"
+            className="group pointer-events-auto rounded-[2px] border border-white/40 bg-white/10 px-5 py-4 text-center font-sans text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] backdrop-blur-md transition-colors hover:border-white hover:bg-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-white max-[359px]:px-3 max-[359px]:text-[13px] max-[359px]:tracking-[0.1em] sm:px-8"
+          >
+            <span className="text-white transition-colors group-hover:text-black">
+              Shop latest collection
+            </span>
+          </Link>
         </div>
       </section>
 
@@ -208,74 +406,9 @@ export default function HomePage() {
 
           {/* Product Strip: 3 Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {brokenRecordProducts.map((product) => {
-              const primaryImg = product.images[0]?.url || '/images/products/broken-record-front.jpg';
-              const hoverImg = product.images[1]?.url || product.images[0]?.url;
-              const isHovered = hoveredProductId === product.id;
-
-              return (
-                <div
-                  key={product.id}
-                  className="group flex flex-col"
-                  onMouseEnter={() => setHoveredProductId(product.id)}
-                  onMouseLeave={() => setHoveredProductId(null)}
-                >
-                  {/* Clean Dark Frame */}
-                  <Link
-                    href={`/product/${product.slug}`}
-                    className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden block"
-                  >
-                    <Image
-                      src={primaryImg}
-                      alt={product.name}
-                      fill
-                      className={`object-cover object-center transition-all duration-700 ease-out ${
-                        isHovered && hoverImg ? 'opacity-0 scale-[1.02]' : 'opacity-100 scale-100'
-                      }`}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    {hoverImg && (
-                      <Image
-                        src={hoverImg}
-                        alt={`${product.name} alternate view`}
-                        fill
-                        className={`object-cover object-center transition-all duration-700 ease-out ${
-                          isHovered ? 'opacity-100 scale-[1.02]' : 'opacity-0 scale-100'
-                        }`}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                    )}
-                  </Link>
-
-                  {/* Metadata underneath */}
-                  <div className="pt-4 flex flex-col space-y-1.5">
-                    <div className="flex items-baseline justify-between">
-                      <Link 
-                        href={`/product/${product.slug}`}
-                        className="text-[14px] sm:text-[15px] font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
-                      >
-                        {product.name}
-                      </Link>
-                      <span className="text-[13px] font-mono font-medium text-white/80 ml-3 shrink-0">
-                        {formatKES(product.price)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="text-[11px] font-mono tracking-wider uppercase text-white/50">
-                        280 GSM · ORGANIC COTTON
-                      </span>
-                      <button
-                        onClick={() => handleQuickAdd(product)}
-                        className="text-[11px] font-mono uppercase tracking-[0.14em] font-semibold text-white/90 hover:text-white transition-colors cursor-pointer border border-white/20 bg-white/5 px-2.5 py-1 rounded-[2px] hover:bg-white hover:text-black"
-                      >
-                        {quickAddedId === product.id ? 'ADDED ✓' : '+ ADD TO BAG'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {brokenRecordProducts.map((product) => (
+              <ProductCard key={product.id} product={product} fallbackImg="/images/products/broken-record-front.jpg" />
+            ))}
           </div>
         </div>
       </section>
@@ -322,7 +455,7 @@ export default function HomePage() {
               src="/images/we-are-who-we-are.jpg"
               alt="We Are Who We Are Collection 02"
               fill
-              className="object-cover object-center brightness-85 contrast-110"
+              className="object-cover object-center brightness-[0.85] contrast-110"
               sizes="100vw"
             />
             {/* Overlay */}
@@ -379,74 +512,9 @@ export default function HomePage() {
 
           {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {weAreWhoWeAreProducts.map((product) => {
-              const primaryImg = product.images[0]?.url || '/images/products/we-are-who-we-are-front.jpg';
-              const hoverImg = product.images[1]?.url || product.images[0]?.url;
-              const isHovered = hoveredProductId === product.id;
-
-              return (
-                <div
-                  key={product.id}
-                  className="group flex flex-col"
-                  onMouseEnter={() => setHoveredProductId(product.id)}
-                  onMouseLeave={() => setHoveredProductId(null)}
-                >
-                  {/* Clean Dark Frame */}
-                  <Link
-                    href={`/product/${product.slug}`}
-                    className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden block"
-                  >
-                    <Image
-                      src={primaryImg}
-                      alt={product.name}
-                      fill
-                      className={`object-cover object-center transition-all duration-700 ease-out ${
-                        isHovered && hoverImg ? 'opacity-0 scale-[1.02]' : 'opacity-100 scale-100'
-                      }`}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    {hoverImg && (
-                      <Image
-                        src={hoverImg}
-                        alt={`${product.name} alternate view`}
-                        fill
-                        className={`object-cover object-center transition-all duration-700 ease-out ${
-                          isHovered ? 'opacity-100 scale-[1.02]' : 'opacity-0 scale-100'
-                        }`}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                    )}
-                  </Link>
-
-                  {/* Catalogue Details */}
-                  <div className="pt-4 flex flex-col space-y-1.5">
-                    <div className="flex items-baseline justify-between">
-                      <Link 
-                        href={`/product/${product.slug}`}
-                        className="text-[14px] sm:text-[15px] font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
-                      >
-                        {product.name}
-                      </Link>
-                      <span className="text-[13px] font-mono font-medium text-white/80 ml-3 shrink-0">
-                        {formatKES(product.price)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="text-[11px] font-mono tracking-wider uppercase text-white/50">
-                        WASHED OBSIDIAN · BOXY CUT
-                      </span>
-                      <button
-                        onClick={() => handleQuickAdd(product)}
-                        className="text-[11px] font-mono uppercase tracking-[0.14em] font-semibold text-white/90 hover:text-white transition-colors cursor-pointer border border-white/20 bg-white/5 px-2.5 py-1 rounded-[2px] hover:bg-white hover:text-black"
-                      >
-                        {quickAddedId === product.id ? 'ADDED ✓' : '+ ADD TO BAG'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {weAreWhoWeAreProducts.map((product) => (
+              <ProductCard key={product.id} product={product} fallbackImg="/images/products/we-are-who-we-are-front.jpg" />
+            ))}
           </div>
 
           <div className="mt-14 text-center">
@@ -484,65 +552,30 @@ export default function HomePage() {
 
           {/* 3 Colorways in PESOS Dark Frames */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 mb-12">
-            {/* Colorway 1: Onyx Black */}
-            <div className="flex flex-col group">
-              <Link 
-                href="/product/radiicato-heavyweight-ribbed-knit-skull-cap"
-                className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden"
-              >
-                <Image
-                  src="/images/products/radiicato-skull-cap-black.jpg"
-                  alt="Radiicato Skull Cap Onyx Black"
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                />
-              </Link>
-              <div className="pt-3 flex items-baseline justify-between text-[13px] font-mono uppercase">
-                <span className="font-bold text-white">ONYX BLACK</span>
-                <span className="text-white/70">{formatKES(500)}</span>
+            {[
+              { href: '/product/radiicato-heavyweight-ribbed-knit-skull-cap', src: '/images/products/radiicato-skull-cap-black.jpg', name: 'ONYX BLACK' },
+              { href: '/product/radiicato-skull-cap-slate-grey', src: '/images/products/radiicato-skull-cap-grey.jpg', name: 'SLATE GREY' },
+              { href: '/product/radiicato-skull-cap-midnight-camo', src: '/images/products/radiicato-skull-cap-camo.jpg', name: 'NIGHT CAMO' },
+            ].map((cap) => (
+              <div key={cap.name} className="flex flex-col group">
+                <Link
+                  href={cap.href}
+                  className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden"
+                >
+                  <Image
+                    src={cap.src}
+                    alt={`Radiicato Skull Cap ${cap.name}`}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                  />
+                </Link>
+                <div className="pt-3 flex items-baseline justify-between text-[13px] font-mono uppercase">
+                  <span className="font-bold text-white">{cap.name}</span>
+                  <span className="text-white/70">{formatKES(500)}</span>
+                </div>
               </div>
-            </div>
-
-            {/* Colorway 2: Slate Grey */}
-            <div className="flex flex-col group">
-              <Link 
-                href="/product/radiicato-skull-cap-slate-grey"
-                className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden"
-              >
-                <Image
-                  src="/images/products/radiicato-skull-cap-grey.jpg"
-                  alt="Radiicato Skull Cap Slate Grey"
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                />
-              </Link>
-              <div className="pt-3 flex items-baseline justify-between text-[13px] font-mono uppercase">
-                <span className="font-bold text-white">SLATE GREY</span>
-                <span className="text-white/70">{formatKES(500)}</span>
-              </div>
-            </div>
-
-            {/* Colorway 3: Night Camo */}
-            <div className="flex flex-col group">
-              <Link 
-                href="/product/radiicato-skull-cap-midnight-camo"
-                className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden"
-              >
-                <Image
-                  src="/images/products/radiicato-skull-cap-camo.jpg"
-                  alt="Radiicato Skull Cap Night Camo"
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                />
-              </Link>
-              <div className="pt-3 flex items-baseline justify-between text-[13px] font-mono uppercase">
-                <span className="font-bold text-white">NIGHT CAMO</span>
-                <span className="text-white/70">{formatKES(500)}</span>
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Action Button */}
@@ -572,7 +605,7 @@ export default function HomePage() {
               MANIFESTO // NAIROBI
             </span>
 
-            <h2 className="text-[clamp(36px,6vw,84px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] text-white">
+            <h2 className="pesos-text-face text-[clamp(36px,6vw,84px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] text-white">
               WE ARE WHO WE ARE.
             </h2>
 
@@ -618,7 +651,7 @@ export default function HomePage() {
           {/* Masonry / Grid with PESOS borders */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6">
             {/* Left Dominant Tall Column (7 cols) */}
-            <div 
+            <div
               onClick={() => handleOpenLookbook(0)}
               className="md:col-span-7 relative aspect-[4/5] sm:aspect-[16/11] md:aspect-[4/5] bg-[#0d0d0d] border border-white/20 overflow-hidden cursor-pointer group"
             >
@@ -639,7 +672,7 @@ export default function HomePage() {
             {/* Right Stacked Column (5 cols) */}
             <div className="md:col-span-5 flex flex-col gap-5 sm:gap-6">
               {/* Top Right */}
-              <div 
+              <div
                 onClick={() => handleOpenLookbook(1)}
                 className="relative aspect-[4/3] bg-[#0d0d0d] border border-white/20 overflow-hidden cursor-pointer group"
               >
@@ -658,7 +691,7 @@ export default function HomePage() {
               </div>
 
               {/* Bottom Right */}
-              <div 
+              <div
                 onClick={() => handleOpenLookbook(3)}
                 className="relative aspect-[4/3] bg-[#0d0d0d] border border-white/20 overflow-hidden cursor-pointer group"
               >

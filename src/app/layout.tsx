@@ -185,7 +185,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className={`${inter.className} bg-white text-[#0A0A0A] antialiased`}>
+      <body className={`${inter.className} min-h-full flex flex-col bg-black text-white antialiased`}>
         <StoreLayoutWrapper>
           {children}
         </StoreLayoutWrapper>

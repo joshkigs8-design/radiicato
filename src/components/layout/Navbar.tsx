@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ShoppingBag } from 'lucide-react';
+import Image from 'next/image';
+import { ShoppingBag } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 
 interface NavbarProps {
@@ -22,154 +23,164 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Handle scroll effect
+  // Handle scroll effect — transparent → solid
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const isAdmin = pathname?.startsWith('/admin');
   if (isAdmin) return null;
 
+  const navLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'Shop', href: '/shop' },
+    { name: 'Collections', href: '/collections' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    return pathname?.startsWith(href);
+  };
+
   return (
-    <header className="fixed top-0 left-0 z-40 flex h-[72px] sm:h-[80px] w-full items-center px-6 sm:px-10 transition-colors duration-300 bg-black/65 backdrop-blur-xl border-b border-white/20 shadow-[0_1px_0_rgba(255,255,255,0.18)] text-white">
-      <nav className="mx-auto flex w-full max-w-[1600px] items-center justify-between">
-        
-        {/* Left: Brand Logo / Wordmark */}
-        <Link 
-          href="/" 
-          className="text-xl sm:text-2xl font-bold tracking-[-0.04em] uppercase text-white hover:opacity-70 transition-opacity"
-        >
-          RADIICATO
-        </Link>
+    <>
+      <header
+        className={`fixed top-0 left-0 z-40 flex h-[var(--navbar-height)] w-full items-center px-6 transition-colors duration-300 ${
+          isScrolled
+            ? 'bg-black/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.18)]'
+            : 'bg-transparent shadow-[0_1px_0_rgba(255,255,255,0.32)]'
+        }`}
+      >
+        <nav className="mx-auto flex w-full max-w-[1600px] items-center justify-between">
 
-        {/* Desktop Nav Links (PESOS exact layout & styling) */}
-        <div className="hidden md:flex items-center gap-7 lg:gap-8 font-sans transition-colors duration-300 text-white">
-          <Link 
-            href="/" 
-            className={`text-[15px] lg:text-[16px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${pathname === '/' ? 'text-white' : 'text-white/80'}`}
-          >
-            Home
-          </Link>
-          <Link 
-            href="/shop" 
-            className={`text-[15px] lg:text-[16px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${pathname === '/shop' ? 'text-white' : 'text-white/80'}`}
-          >
-            Shop
-          </Link>
-          <Link 
-            href="/collections" 
-            className={`text-[15px] lg:text-[16px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${pathname?.startsWith('/collections') ? 'text-white' : 'text-white/80'}`}
-          >
-            Collections
-          </Link>
-          <Link 
-            href="/about" 
-            className={`text-[15px] lg:text-[16px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${pathname === '/about' ? 'text-white' : 'text-white/80'}`}
-          >
-            About
-          </Link>
-          <Link 
-            href="/contact" 
-            className={`text-[15px] lg:text-[16px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${pathname === '/contact' ? 'text-white' : 'text-white/80'}`}
-          >
-            Contact
+          {/* Left — 3D Logo */}
+          <Link href="/" className="block" onClick={() => setMobileMenuOpen(false)}>
+            <Image
+              src="/images/radiicato-3d-logo.jpg"
+              alt="RADIICATO"
+              width={120}
+              height={45}
+              className="h-auto w-[95px]"
+              style={{ color: 'transparent' }}
+            />
           </Link>
 
-          {/* Currency Pill */}
-          <div className="rounded-full border border-white/30 bg-transparent px-2.5 py-1 text-[13px] font-mono tracking-[0.06em] text-white">
-            KES
+          {/* Desktop Nav Links — PESOS exact layout */}
+          <div className="pesos-nav__links flex items-center gap-8 font-sans transition-colors duration-300 text-white">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-[17px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${
+                  isActive(link.href) ? 'text-white' : 'text-white/80'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+
+            {/* Currency Selector */}
+            <select
+              aria-label="Display currency"
+              className="cursor-pointer rounded-full border bg-transparent px-2 py-1 text-[14px] font-medium tracking-[0.06em] transition-colors border-white/30 text-white"
+            >
+              <option value="KES" className="text-black" selected>KES</option>
+              <option value="USD" className="text-black">USD</option>
+              <option value="EUR" className="text-black">EUR</option>
+              <option value="GBP" className="text-black">GBP</option>
+              <option value="UGX" className="text-black">UGX</option>
+              <option value="TZS" className="text-black">TZS</option>
+            </select>
+
+            {/* Shopping Bag */}
+            <button
+              onClick={onOpenCart}
+              className="relative flex items-center transition-opacity hover:opacity-50 cursor-pointer"
+              aria-label="Cart"
+            >
+              <ShoppingBag className="h-5 w-5" aria-hidden />
+              {cartSummary.itemsCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 h-4 w-4 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">
+                  {cartSummary.itemsCount}
+                </span>
+              )}
+            </button>
           </div>
 
-          {/* Shopping Bag Button */}
-          <button
-            onClick={onOpenCart}
-            className="relative flex items-center gap-1.5 transition-opacity hover:opacity-50 cursor-pointer"
-            aria-label="Open Cart"
-          >
-            <ShoppingBag size={20} className="text-white" />
-            {cartSummary.itemsCount > 0 && (
-              <span className="font-mono text-[12px] font-bold text-white">
-                ({cartSummary.itemsCount})
-              </span>
-            )}
-          </button>
-        </div>
+          {/* Mobile Menu Toggle — PESOS animated hamburger */}
+          <div className="pesos-mobile-menu">
+            {/* Mobile cart icon */}
+            <button
+              onClick={onOpenCart}
+              className="mr-4 relative flex items-center transition-opacity hover:opacity-50"
+              aria-label="Cart"
+            >
+              <ShoppingBag className="h-5 w-5 text-white" />
+              {cartSummary.itemsCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 h-4 w-4 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">
+                  {cartSummary.itemsCount}
+                </span>
+              )}
+            </button>
 
-        {/* Mobile Nav Right: Bag + Toggle */}
-        <div className="flex md:hidden items-center gap-4">
-          <button
-            onClick={onOpenCart}
-            className="flex items-center gap-1 text-[12px] font-mono uppercase text-white"
-            aria-label="Open cart"
-          >
-            <ShoppingBag size={18} />
-            <span>({cartSummary.itemsCount})</span>
-          </button>
+            <button
+              type="button"
+              className="pesos-mobile-menu__toggle"
+              aria-expanded={mobileMenuOpen}
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              <span />
+              <span />
+            </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1 text-white hover:opacity-60 transition-opacity"
-            aria-label="Open menu"
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+        </nav>
+      </header>
 
-      </nav>
-
-      {/* Mobile Drawer (Fullscreen dark backdrop blur) */}
+      {/* Mobile Drawer — Fullscreen dark backdrop blur */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-[72px] sm:top-[80px] bg-black/95 backdrop-blur-2xl z-50 flex flex-col justify-between p-7 border-t border-white/20 animate-fade-in text-white">
+        <div className="fixed inset-0 top-[var(--navbar-height)] bg-black/95 backdrop-blur-2xl z-50 flex flex-col justify-between p-7 border-t border-white/20 animate-fade-in text-white md:hidden">
           <div className="space-y-6 pt-4">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-3xl font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
-            >
-              Home
-            </Link>
-            <Link
-              href="/shop"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-3xl font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
-            >
-              Shop
-            </Link>
-            <Link
-              href="/collections"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-3xl font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
-            >
-              Collections
-            </Link>
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-3xl font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-3xl font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
-            >
-              Contact
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-3xl font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
+              >
+                {link.name}
+              </Link>
+            ))}
           </div>
 
-          <div className="border-t border-white/15 pt-6 pb-4 space-y-2 text-[12px] font-mono tracking-[0.16em] uppercase text-white/60">
-            <p className="text-white font-bold">NAIROBI, KENYA</p>
-            <p>WE ARE WHO WE ARE.</p>
-            <p>© 2026 RADIICATO</p>
+          <div className="border-t border-white/15 pt-6 pb-4 space-y-3">
+            {/* Currency selector mobile */}
+            <select
+              aria-label="Display currency"
+              className="cursor-pointer rounded-full border bg-transparent px-3 py-1.5 text-[14px] font-medium tracking-[0.06em] border-white/30 text-white w-auto"
+            >
+              <option value="KES" className="text-black" selected>KES</option>
+              <option value="USD" className="text-black">USD</option>
+              <option value="EUR" className="text-black">EUR</option>
+              <option value="GBP" className="text-black">GBP</option>
+            </select>
+
+            <div className="text-[12px] font-mono tracking-[0.16em] uppercase text-white/60 space-y-2 pt-2">
+              <p className="text-white font-bold">NAIROBI, KENYA</p>
+              <p>WE ARE WHO WE ARE.</p>
+              <p>© 2026 RADIICATO</p>
+            </div>
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
