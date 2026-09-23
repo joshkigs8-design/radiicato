@@ -20,13 +20,13 @@ export function Footer() {
         {/* Top: Massive "Let's work together." & "© 26" watermark */}
         <div className="flex items-start justify-between gap-6">
           <h2 className="pesos-text-face text-[clamp(36px,6.4vw,96px)] font-bold leading-[0.86] tracking-[-0.04em]">
-            Let&apos;s work<span className="block">together.</span>
+            Let&apos;s build<span className="block">the next drop.</span>
           </h2>
           <span
             aria-label="Copyright 2026"
             className="shrink-0 text-[clamp(44px,10vw,150px)] font-bold leading-[0.8] tracking-[-0.05em] select-none"
           >
-            ©<span>26</span>
+            ©<span>PW</span>
           </span>
         </div>
 
@@ -35,12 +35,12 @@ export function Footer() {
 
         {/* Middle Prompt */}
         <p className="mt-16 text-[clamp(17px,2vw,30px)] font-bold leading-tight tracking-[-0.03em]">
-          Drop us a line to talk about a piece, an order or a collaboration.
+          For orders, collaborations, and worldwide drops, send the signal.
         </p>
 
         {/* Big Action Box: "Let's talk" with hover fill transition */}
         <a
-          href={`mailto:${settings.contactEmail || 'info@radiicato.co.ke'}`}
+          href={`mailto:${settings.contactEmail || 'hello@pesosworldwide.com'}`}
           className="group mt-6 flex w-full items-center justify-between gap-6 border border-white/25 bg-white/10 px-6 py-6 backdrop-blur-md transition-colors duration-200 hover:border-white hover:bg-white focus-visible:border-white focus-visible:bg-white focus-visible:outline-none md:px-10 md:py-8"
         >
           <span className="text-[clamp(22px,3.2vw,44px)] font-bold leading-none tracking-[-0.03em] transition-colors duration-200 group-hover:text-black group-focus-visible:text-black">
@@ -76,7 +76,7 @@ export function Footer() {
           {/* Social */}
           <nav aria-label="Social" className="flex flex-wrap gap-x-5 gap-y-2 md:justify-center">
             <a
-              href={settings.socialInstagram || 'https://instagram.com/radiicato'}
+              href={settings.socialInstagram || 'https://instagram.com/pesosworldwide'}
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/60 transition-colors hover:text-white focus-visible:text-white"
@@ -84,7 +84,7 @@ export function Footer() {
               Instagram <span className="ml-1.5 text-white/35">Main</span>
             </a>
             <a
-              href={settings.socialTiktok || 'https://tiktok.com/@radiicato'}
+              href={settings.socialTiktok || 'https://tiktok.com/@pesosworldwide'}
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/60 transition-colors hover:text-white focus-visible:text-white"
@@ -96,17 +96,17 @@ export function Footer() {
           {/* Identity & Copyright */}
           <div className="flex flex-col gap-2 text-white/60 md:items-end md:text-right">
             <a
-              href={`mailto:${settings.contactEmail || 'info@radiicato.co.ke'}`}
+              href={`mailto:${settings.contactEmail || 'hello@pesosworldwide.com'}`}
               className="text-white/60 transition-colors hover:text-white focus-visible:text-white"
             >
-              {settings.contactEmail || 'info@radiicato.co.ke'}
+              {settings.contactEmail || 'hello@pesosworldwide.com'}
             </a>
-            <a href="tel:+254712904883" className="text-white/60 transition-colors hover:text-white focus-visible:text-white">
-              +254 712 904 883
+            <a href="tel:+13105550148" className="text-white/60 transition-colors hover:text-white focus-visible:text-white">
+              +1 (310) 555-0148
             </a>
-            <span>Nairobi, Kenya</span>
+            <span>Worldwide</span>
             <span className="text-white/35">
-              RADIICATO: all rights reserved © 2026
+              PESOS WORLDWIDE © 2026
             </span>
           </div>
         </div>

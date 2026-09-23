@@ -3,7 +3,7 @@ import { INITIAL_PRODUCTS, INITIAL_COLLECTIONS } from '@/lib/seed-data';
 import { supabase } from '@/lib/supabase';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://radiicato.co.ke';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pesosworldwide.com';
   const now = new Date();
 
   // 1. Core Storefront Pages

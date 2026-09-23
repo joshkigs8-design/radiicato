@@ -150,7 +150,7 @@ export function StoreLayoutWrapper({ children }: StoreLayoutWrapperProps) {
       
       {/* Page Loader */}
       <div className={`page-loader ${isLoaded ? 'page-loader--hidden' : ''}`}>
-        <div className="text-white text-xl font-bold tracking-[0.2em] uppercase animate-pulse">RADIICATO</div>
+        <div className="text-white text-xl font-bold tracking-[0.28em] uppercase animate-pulse">PESOS</div>
       </div>
       
       <Navbar onOpenCart={() => setIsCartOpen(true)} onOpenSearch={() => setIsSearchOpen(true)} />

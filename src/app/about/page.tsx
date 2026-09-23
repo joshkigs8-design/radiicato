@@ -8,22 +8,22 @@ export default function AboutPage() {
   return (
     <main className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 bg-white min-h-screen">
       <div className="max-w-[1400px] mx-auto">
-        <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">BRAND MANIFESTO / NAIROBI ROOTS</p>
-        <h1 className="text-display-md font-black uppercase mb-8">ENGINEERED IN NAIROBI</h1>
+        <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">BRAND MANIFESTO / GLOBAL ROOTS</p>
+        <h1 className="text-display-md font-black uppercase mb-8">STREETWEAR FOR THE WORLD</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 pb-20 border-b border-[#E4E4E7]">
           <div className="space-y-6 text-sm text-[#71717A] leading-relaxed">
             <p>
-              Radiicato is an independent streetwear atelier established in Nairobi, Kenya. We exist at the intersection of non-conformist rebellion, architectural silhouettes, and heavyweight textile craftsmanship.
+              PESOS Worldwide is a global streetwear label built around movement, culture, and identity. We design for people who move through cities, scenes, and communities with attitude and intent.
             </p>
             <p>
-              In an era dominated by fleeting algorithms and flimsy disposable garments, Radiicato was founded by a visionary creative in Nairobi who refused to conform to generic fast-fashion templates.
+              In a landscape saturated by disposable fashion, PESOS Worldwide exists to create pieces with presence: confident silhouettes, clean utility, and the kind of graphic language that feels immediate and genuine.
             </p>
             <p>
-              Standing atop Nairobi's skyline, every Radiicato garment is born out of genuine underground culture: drop shoulders, structured double-layered collars, heavyweight 280 GSM combed organic cotton, and hand-finished 3D liquid chrome hardware.
+              Every drop is made to reflect the energy of the culture it comes from, blending hard-wearing materials, premium construction, and a visual language shaped by music, sport, and everyday rebellion.
             </p>
             <p>
-              We don't chase international trends—we define them right here from Kenya, proving that raw African streetwear holds undeniable presence anywhere on earth.
+              We don't follow trends from a single place—we build a worldwide point of view that travels with its wearer anywhere on earth.
             </p>
           </div>
           <div className="relative aspect-[3/4] bg-[#F4F4F5] border border-[#E4E4E7]">
@@ -40,21 +40,21 @@ export default function AboutPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-20 border-b border-[#E4E4E7]">
           <div className="space-y-3">
-            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">01 / THE VISION & FOUNDER</h3>
+            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">01 / THE VISION</h3>
             <p className="text-sm text-[#71717A]">
-              Built from raw passion on Nairobi rooftops. We refuse fast-fashion dilution. Cut for creatives who refuse to conform.
+              Built from a culture-first perspective. We reject generic fashion in favor of silhouettes that feel specific, confident, and unmistakably alive.
             </p>
           </div>
           <div className="space-y-3">
-            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">02 / HEAVYWEIGHT CRAFT</h3>
+            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">02 / CRAFT</h3>
             <p className="text-sm text-[#71717A]">
-              280 GSM combed organic cotton. Drop shoulders. Structured double-layered collars. Unapologetic silhouettes engineered for longevity.
+              Premium heavyweight fabrics, controlled drape, and disciplined construction designed to hold shape and presence through everyday wear.
             </p>
           </div>
           <div className="space-y-3">
-            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">03 / LIQUID CHROME</h3>
+            <h3 className="text-[11px] font-mono font-semibold tracking-wider uppercase text-[#0A0A0A]">03 / VISUAL LANGUAGE</h3>
             <p className="text-sm text-[#71717A]">
-              Hand-finished 3D hardware. Every garment is an architectural statement designed to disrupt the global streetwear landscape.
+              Bold graphics, metallic accents, and cultural references that speak on a global scale without losing their edge.
             </p>
           </div>
         </div>

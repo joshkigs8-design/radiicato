@@ -21,7 +21,7 @@ export default function ContactPage() {
     <main className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 bg-white min-h-screen">
       <div className="max-w-3xl mx-auto">
         <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">CLIENT CONCIERGE</p>
-        <h1 className="text-display-sm font-black uppercase mb-8">CONTACT THE ATELIER</h1>
+        <h1 className="text-display-sm font-black uppercase mb-8">CONTACT PESOS</h1>
 
         {/* Message Form */}
         <div>
@@ -30,7 +30,7 @@ export default function ContactPage() {
               <Check size={32} className="mx-auto text-[#0A0A0A] mb-4" />
               <h4 className="text-sm font-bold uppercase text-[#0A0A0A]">Transmission Received</h4>
               <p className="text-sm text-[#71717A] mt-2">
-                Our Nairobi concierge will review your message and reply via email within 4 business hours.
+                Our concierge team will review your message and reply via email within 4 business hours.
               </p>
             </div>
           ) : (
@@ -110,7 +110,7 @@ export default function ContactPage() {
                 </a>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-mono tracking-[0.12em] uppercase text-[#71717A]">NAIROBI ATELIER & STUDIO</span>
+                <span className="text-[10px] font-mono tracking-[0.12em] uppercase text-[#71717A]">STUDIO & SHIPPING</span>
                 <p className="text-sm text-[#0A0A0A] font-mono">{settings.address}</p>
               </div>
             </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
             <div className="bg-[#F4F4F5] border border-[#E4E4E7] p-6 h-fit">
               <p className="text-[10px] font-mono tracking-[0.12em] uppercase text-[#71717A] mb-2">OPERATIONAL HOURS</p>
               <p className="text-sm font-mono text-[#0A0A0A]">
-                Monday – Saturday: 10:00 AM – 7:00 PM EAT<br />
+                Monday – Saturday: 10:00 AM – 7:00 PM GMT<br />
                 Sunday: Private Appointments Only
               </p>
             </div>
