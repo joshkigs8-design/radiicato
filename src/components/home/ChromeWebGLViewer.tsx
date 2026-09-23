@@ -10,12 +10,14 @@ export function ChromeWebGLViewer() {
   // UI state
   const [autoRotate, setAutoRotate] = useState(true);
   const [isWireframe, setIsWireframe] = useState(false);
+  const [flipY, setFlipY] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // References to communicate with Three.js render loop
   const stateRef = useRef({
     autoRotate: true,
     isWireframe: false,
+    flipY: false,
     rotationX: 0,
     rotationY: 0,
     targetRotationX: 0,
@@ -263,6 +265,7 @@ export function ChromeWebGLViewer() {
       }
 
       modelGroup.rotation.y = stateRef.current.rotationY;
+      modelGroup.rotation.z = stateRef.current.flipY ? Math.PI : 0;
       if (stateRef.current.isDragging) {
         modelGroup.rotation.x = stateRef.current.rotationX;
       }
@@ -414,6 +417,19 @@ export function ChromeWebGLViewer() {
           </button>
           <button
             type="button"
+            onClick={() => {
+              setFlipY((prev) => {
+                const next = !prev;
+                stateRef.current.flipY = next;
+                return next;
+              });
+            }}
+            className="text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-white/20 transition-colors"
+          >
+            FLIP 180°
+          </button>
+          <button
+            type="button"
             onClick={resetView}
             className="text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-white/20 transition-colors"
           >
@@ -443,3 +459,4 @@ export function ChromeWebGLViewer() {
     </div>
   );
 }
+
