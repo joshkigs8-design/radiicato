@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 
 interface NavbarProps {
@@ -14,7 +14,7 @@ interface NavbarProps {
 
 export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
   const pathname = usePathname();
-  const { cartSummary, wishlist, cms, activeAnnouncement } = useStore();
+  const { cartSummary } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -26,318 +26,187 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
   // Handle scroll opacity
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 30);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const isAdmin = pathname?.startsWith('/admin');
-  if (isAdmin) return null; // Admin has its own dedicated navigation
-
-  const isBarActive = activeAnnouncement ? activeAnnouncement.isActive : cms.isAnnouncementActive;
-  const barText = activeAnnouncement?.message || cms.announcementText;
-  const barBadge = activeAnnouncement?.badge || 'FREE DELIVERY';
-  const barLink = activeAnnouncement?.linkUrl || '/shipping';
+  if (isAdmin) return null;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300">
-      {/* Announcement Bar */}
-      {isBarActive && (
-        <div className="bg-[#0A0A0A] text-white font-mono text-[10px] tracking-[0.2em] uppercase py-2 px-4 text-center font-medium">
-          <Link
-            href={barLink}
-            className="inline-flex items-center gap-2 hover:text-white transition-colors group"
-          >
-            <span>·</span>
-            {barBadge && (
-              <span className="text-white text-[10px] font-mono font-bold px-1.5 py-0.5 tracking-[0.2em]">
-                {barBadge}
-              </span>
-            )}
-            <span className="truncate max-w-[280px] sm:max-w-none">
-              {barText}
-            </span>
-          </Link>
-        </div>
-      )}
-
-      {/* Main Bar */}
+    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
       <div
-        className={`px-4 sm:px-8 lg:px-12 transition-all duration-300 ${
+        className={`px-5 sm:px-8 lg:px-12 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/95 backdrop-blur-xl border-b border-[#E4E4E7] py-2.5'
-            : 'bg-white/90 backdrop-blur-md border-b border-transparent py-3 sm:py-3.5'
+            ? 'bg-white/95 backdrop-blur-md border-b border-[#E4E4E7] py-3.5 shadow-xs'
+            : 'bg-transparent py-5 sm:py-6'
         }`}
       >
         <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-          {/* Left Side: Logo + Navigation Links */}
-          <div className="flex items-center gap-6 sm:gap-10 lg:gap-12">
-            {/* Brand Logo */}
-            <Link href="/" className="inline-block group py-1 shrink-0">
-              <Image
-                src="/logo.png"
-                alt="RADIICATO"
-                width={260}
-                height={100}
-                priority
-                className="h-9 sm:h-10 lg:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
-              />
+          
+          {/* DESKTOP VIEW */}
+          <div className="hidden md:flex items-center justify-between w-full">
+            {/* Brand Logo / Wordmark */}
+            <Link 
+              href="/" 
+              className="group flex items-center gap-3 transition-opacity hover:opacity-70"
+            >
+              <span className="text-xl lg:text-2xl font-black tracking-[-0.05em] uppercase text-[#0A0A0A]">
+                RADIICATO
+              </span>
             </Link>
 
-            <nav className="hidden md:flex items-center space-x-5 lg:space-x-8 text-[10px] font-mono font-semibold tracking-[0.18em] uppercase">
-              {/* Home */}
-              <Link
-                href="/"
-                className={`transition-colors py-1 ${
-                  pathname === '/' 
-                    ? 'text-[#0A0A0A]' 
-                    : 'text-[#71717A] hover:text-[#0A0A0A]'
-                }`}
+            {/* Navigation Links: SHOP | COLLECTIONS | ABOUT | CONTACT | BAG */}
+            <nav className="flex items-center space-x-4 lg:space-x-6 text-[11px] font-mono tracking-[0.18em] uppercase text-[#0A0A0A]">
+              <Link 
+                href="/shop" 
+                className={`transition-opacity hover:opacity-50 ${pathname === '/shop' ? 'font-bold' : ''}`}
               >
-                Home
+                SHOP
               </Link>
-
-              {/* Collections with Dropdown */}
-              <div className="relative group">
-                <Link
-                  href="/collections"
-                  className={`transition-colors flex items-center gap-1.5 py-1 ${
-                    pathname?.startsWith('/collections') 
-                      ? 'text-[#0A0A0A]' 
-                      : 'text-[#71717A] hover:text-[#0A0A0A]'
-                  }`}
-                >
-                  <span>Collections</span>
-                  <ChevronDown size={15} className="text-[#71717A] group-hover:rotate-180 transition-transform duration-200" />
-                </Link>
-
-                {/* Dropdown Menu on Hover */}
-                <div className="absolute top-full left-0 pt-2 w-72 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
-                  <div className="bg-white border border-[#E4E4E7] rounded-none p-3 space-y-1.5">
-                    <div className="px-2 py-1 text-[10px] font-mono tracking-[0.18em] font-semibold text-[#71717A] uppercase border-b border-[#F4F4F5]">
-                      NAIROBI CAPSULES
-                    </div>
-                    <Link
-                      href="/collections/broken-record"
-                      className="flex items-center justify-between p-2 rounded-none hover:bg-[#F4F4F5] transition-colors group/item"
-                    >
-                      <div>
-                        <p className="text-[10px] font-mono font-bold tracking-[0.18em] uppercase text-[#0A0A0A]">Broken Record</p>
-                        <p className="text-[10px] text-[#71717A]">Drop 01 // Atelier White</p>
-                      </div>
-                      <span className="text-[10px] px-2 py-0.5 bg-[#F4F4F5] text-[#0A0A0A] font-bold border border-[#E4E4E7] rounded-none font-mono">KES 1,000</span>
-                    </Link>
-                    <Link
-                      href="/collections/we-are-who-we-are"
-                      className="flex items-center justify-between p-2 rounded-none hover:bg-[#F4F4F5] transition-colors group/item"
-                    >
-                      <div>
-                        <p className="text-[10px] font-mono font-bold tracking-[0.18em] uppercase text-[#0A0A0A]">We Are Who We Are</p>
-                        <p className="text-[10px] text-[#71717A]">Drop 02 // Washed Black</p>
-                      </div>
-                      <span className="text-[10px] px-2 py-0.5 bg-[#0A0A0A] text-white font-bold rounded-none font-mono">KES 800</span>
-                    </Link>
-                    <Link
-                      href="/collections/skull-caps"
-                      className="flex items-center justify-between p-2 rounded-none hover:bg-[#F4F4F5] transition-colors group/item"
-                    >
-                      <div>
-                        <p className="text-[10px] font-mono font-bold tracking-[0.18em] uppercase text-[#0A0A0A]">Skull Caps</p>
-                        <p className="text-[10px] text-[#0A0A0A] font-semibold">Capsule 03 // Now Live</p>
-                      </div>
-                      <span className="text-[10px] px-2 py-0.5 bg-[#0A0A0A] text-white font-bold border border-[#0A0A0A] rounded-none font-mono">KES 500</span>
-                    </Link>
-                    <div className="pt-2 border-t border-[#F4F4F5]">
-                      <Link
-                        href="/collections"
-                        className="block text-center text-[10px] font-mono font-semibold tracking-[0.18em] uppercase text-[#0A0A0A] hover:underline py-1"
-                      >
-                        View All Collections &rarr;
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Shop */}
-              <Link
-                href="/shop"
-                className={`transition-colors py-1 ${
-                  pathname === '/shop' 
-                    ? 'text-[#0A0A0A]' 
-                    : 'text-[#71717A] hover:text-[#0A0A0A]'
-                }`}
+              <span className="text-[#D4D4D8]">|</span>
+              <Link 
+                href="/collections" 
+                className={`transition-opacity hover:opacity-50 ${pathname?.startsWith('/collections') ? 'font-bold' : ''}`}
               >
-                Shop
+                COLLECTIONS
               </Link>
-
-              {/* Our Story */}
-              <Link
-                href="/about"
-                className={`transition-colors py-1 ${
-                  pathname === '/about' 
-                    ? 'text-[#0A0A0A]' 
-                    : 'text-[#71717A] hover:text-[#0A0A0A]'
-                }`}
+              <span className="text-[#D4D4D8]">|</span>
+              <Link 
+                href="/about" 
+                className={`transition-opacity hover:opacity-50 ${pathname === '/about' ? 'font-bold' : ''}`}
               >
-                Our Story
+                ABOUT
               </Link>
+              <span className="text-[#D4D4D8]">|</span>
+              <Link 
+                href="/contact" 
+                className={`transition-opacity hover:opacity-50 ${pathname === '/contact' ? 'font-bold' : ''}`}
+              >
+                CONTACT
+              </Link>
+              <span className="text-[#D4D4D8]">|</span>
+              <button
+                onClick={onOpenCart}
+                className="transition-opacity hover:opacity-50 flex items-center gap-1.5 font-bold uppercase cursor-pointer"
+                aria-label="Open shopping bag"
+              >
+                <span>BAG</span>
+                <span className="font-mono text-[10px]">({cartSummary.itemsCount})</span>
+              </button>
             </nav>
           </div>
 
-          {/* Right Actions: Search, Wishlist, Account, Cart, Mobile Menu Toggle */}
-          <div className="flex items-center space-x-1 sm:space-x-2 text-[#71717A]">
-            {/* Search */}
+          {/* MOBILE VIEW: ☰  RADIICATO  BAG */}
+          <div className="flex md:hidden items-center justify-between w-full">
+            {/* Left Hamburger */}
             <button
-              onClick={onOpenSearch}
-              className="p-2 text-[#71717A] hover:text-[#0A0A0A] transition-colors"
-              aria-label="Search catalog"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1 text-[#0A0A0A] hover:opacity-60 transition-opacity"
+              aria-label="Toggle navigation menu"
             >
-              <Search size={19} />
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
 
-            {/* Wishlist */}
-            <Link
-              href="/account#wishlist"
-              className="p-2 text-[#71717A] hover:text-[#0A0A0A] transition-colors relative hidden sm:block"
-              aria-label="Wishlist"
+            {/* Center Brand */}
+            <Link 
+              href="/" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-lg font-black tracking-[-0.04em] uppercase text-[#0A0A0A]"
             >
-              <Heart size={19} />
-              {wishlist.length > 0 && (
-                <span className="absolute top-0 right-0 bg-[#0A0A0A] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                  {wishlist.length}
-                </span>
-              )}
+              RADIICATO
             </Link>
 
-            {/* Customer Account */}
-            <Link
-              href="/account"
-              className="p-2 text-[#71717A] hover:text-[#0A0A0A] transition-colors hidden sm:block"
-              aria-label="Customer account"
-            >
-              <User size={19} />
-            </Link>
-
-            {/* Cart Button */}
+            {/* Right Bag */}
             <button
               onClick={onOpenCart}
-              className="flex items-center space-x-2 bg-[#0A0A0A] text-white hover:opacity-80 transition-opacity px-3 py-2 text-[10px] font-bold tracking-[0.12em] uppercase rounded-none"
-              aria-label="Open cart drawer"
+              className="text-[11px] font-mono font-bold tracking-[0.14em] uppercase text-[#0A0A0A] hover:opacity-60 transition-opacity flex items-center gap-1"
+              aria-label="Open bag"
             >
-              <ShoppingBag size={15} />
-              <span className="text-[11px] font-mono font-bold">({cartSummary.itemsCount})</span>
+              <span>BAG</span>
+              <span>({cartSummary.itemsCount})</span>
             </button>
-
-            {/* Mobile Menu Toggle Button */}
-            <div className="flex md:hidden items-center pl-1">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-1 text-[#71717A] hover:text-[#0A0A0A] transition-colors"
-                aria-label="Toggle menu"
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
           </div>
+
         </div>
       </div>
 
-      {/* Mobile Drawer Navigation */}
+      {/* MOBILE FULL-SCREEN MENU DRAWER */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-[96px] bg-white border-t border-[#E4E4E7] z-50 flex flex-col justify-between p-6 sm:p-8 overflow-y-auto">
-          <div className="space-y-5 pt-2">
-            <div className="pb-4 border-b border-[#F4F4F5]">
-              <Image
-                src="/logo.png"
-                alt="RADIICATO"
-                width={200}
-                height={80}
-                className="h-12 sm:h-14 w-auto object-contain mb-1"
-              />
-            </div>
-
-            {/* Mobile Navigation Order: Home, Collections, Shop, Our Story */}
+        <div className="md:hidden fixed inset-0 top-[65px] bg-white z-40 flex flex-col justify-between p-6 sm:p-8 animate-fade-in border-t border-[#E4E4E7]">
+          <div className="space-y-6 pt-4">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block text-2xl font-black tracking-widest transition-colors ${
-                pathname === '/' ? 'text-[#0A0A0A]' : 'text-[#71717A]'
-              }`}
+              className="block text-2xl font-black tracking-tight uppercase text-[#0A0A0A]"
             >
               HOME
             </Link>
 
-            <div className="space-y-2 pt-2 border-t border-[#F4F4F5]">
+            <Link
+              href="/shop"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-2xl font-black tracking-tight uppercase text-[#0A0A0A]"
+            >
+              SHOP
+            </Link>
+
+            <div className="space-y-3 pt-2">
               <Link
                 href="/collections"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-[10px] font-mono font-semibold tracking-[0.18em] text-[#71717A] uppercase"
+                className="block text-[11px] font-mono tracking-[0.2em] text-[#71717A] uppercase"
               >
-                COLLECTIONS //
+                COLLECTIONS
               </Link>
-              <div className="pl-3 space-y-3 border-l-2 border-[#E4E4E7]">
+              <div className="pl-3 space-y-2.5 border-l border-[#0A0A0A]">
                 <Link
                   href="/collections/broken-record"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-lg font-black tracking-wider text-[#71717A] hover:text-[#0A0A0A] transition-colors"
+                  className="block text-sm font-bold uppercase tracking-wider text-[#0A0A0A]"
                 >
-                  <span>BROKEN RECORD</span>
-                  <span className="text-[10px] px-2 py-0.5 bg-[#F4F4F5] text-black border border-[#E4E4E7] rounded-none font-mono font-bold">WHITE • KES 1,000</span>
+                  BROKEN RECORD (COLLECTION 01)
                 </Link>
                 <Link
                   href="/collections/we-are-who-we-are"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-lg font-black tracking-wider text-[#71717A] hover:text-[#0A0A0A] transition-colors"
+                  className="block text-sm font-bold uppercase tracking-wider text-[#0A0A0A]"
                 >
-                  <span>WE ARE WHO WE ARE</span>
-                  <span className="text-[10px] px-2 py-0.5 bg-[#0A0A0A] text-white rounded-none font-mono font-bold">BLACK • KES 800</span>
+                  WE ARE WHO WE ARE (COLLECTION 02)
                 </Link>
                 <Link
                   href="/collections/skull-caps"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-base font-bold tracking-wider text-[#71717A] hover:text-[#0A0A0A] transition-colors"
+                  className="block text-sm font-bold uppercase tracking-wider text-[#0A0A0A]"
                 >
-                  <span>SKULL CAPS</span>
-                  <span className="text-[10px] px-2 py-0.5 bg-[#0A0A0A] text-white rounded-none font-mono font-bold">NOW LIVE • KES 500</span>
+                  SKULL CAPS (CAPSULE 03)
                 </Link>
               </div>
             </div>
 
             <Link
-              href="/shop"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block text-2xl font-black tracking-widest transition-colors pt-2 border-t border-[#F4F4F5] ${
-                pathname === '/shop' ? 'text-[#0A0A0A]' : 'text-[#71717A]'
-              }`}
-            >
-              SHOP
-            </Link>
-
-            <Link
               href="/about"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block text-2xl font-black tracking-wider transition-colors pt-2 border-t border-[#F4F4F5] ${
-                pathname === '/about' ? 'text-[#0A0A0A]' : 'text-[#71717A]'
-              }`}
+              className="block text-2xl font-black tracking-tight uppercase text-[#0A0A0A]"
             >
-              OUR STORY
+              ABOUT
             </Link>
 
             <Link
-              href="/account"
+              href="/contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-[10px] font-mono font-semibold tracking-[0.18em] text-[#71717A] hover:text-[#0A0A0A] transition-colors pt-2 border-t border-[#F4F4F5] uppercase"
+              className="block text-2xl font-black tracking-tight uppercase text-[#0A0A0A]"
             >
-              MY ACCOUNT
+              CONTACT
             </Link>
           </div>
 
-          <div className="border-t border-[#E4E4E7] pt-5 pb-6 space-y-1 text-xs">
-            <p className="text-[#71717A] tracking-wider uppercase font-semibold">Nairobi Atelier & Flagship</p>
-            <p className="text-[#71717A]">Studio 04, The Alchemist Yard, Parklands Road</p>
-            <p className="text-[#71717A] font-mono">+254 712 904 883</p>
+          <div className="border-t border-[#E4E4E7] pt-6 pb-4 space-y-2 text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A]">
+            <p className="font-bold text-[#0A0A0A]">NAIROBI, KENYA</p>
+            <p>WE ARE WHO WE ARE.</p>
+            <p>© 2026 RADIICATO</p>
           </div>
         </div>
       )}
