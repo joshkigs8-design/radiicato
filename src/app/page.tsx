@@ -353,8 +353,30 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* 3 Colorways in Glass Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 mb-12">
+          {/* Model Rocking Skull Cap + 3 Colorways in Glass Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-12">
+            {/* Model Editorial Shot */}
+            <div className="glass-card rounded-2xl p-3 flex flex-col group">
+              <div className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden">
+                <Image
+                  src="/images/skull-cap-model.jpg"
+                  alt="Model rocking Radiicato Skull Cap"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, 25vw"
+                />
+                <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                  <span className="text-[10px] font-mono tracking-widest uppercase text-white/80 glass-pill px-2.5 py-0.5">
+                    WORN IN NAIROBI
+                  </span>
+                </div>
+              </div>
+              <div className="pt-3.5 flex items-baseline justify-between text-[13px] font-mono uppercase px-1">
+                <span className="font-bold text-white">EDITORIAL LOOK</span>
+                <span className="text-white/60">STREET STUDY</span>
+              </div>
+            </div>
+
             {[
               { href: '/product/radiicato-heavyweight-ribbed-knit-skull-cap', src: '/images/products/radiicato-skull-cap-black.jpg', name: 'ONYX BLACK' },
               { href: '/product/radiicato-skull-cap-slate-grey', src: '/images/products/radiicato-skull-cap-grey.jpg', name: 'SLATE GREY' },
@@ -370,7 +392,7 @@ export default function HomePage() {
                     alt={`Radiicato Skull Cap ${cap.name}`}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, 25vw"
                   />
                 </Link>
                 <div className="pt-3.5 flex items-baseline justify-between text-[13px] font-mono uppercase px-1">

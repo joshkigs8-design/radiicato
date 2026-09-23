@@ -11,6 +11,7 @@ export function ChromeWebGLViewer() {
   const [autoRotate, setAutoRotate] = useState(true);
   const [isWireframe, setIsWireframe] = useState(false);
   const [flipY, setFlipY] = useState(false);
+  const [isMirrored, setIsMirrored] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // References to communicate with Three.js render loop
@@ -18,6 +19,7 @@ export function ChromeWebGLViewer() {
     autoRotate: true,
     isWireframe: false,
     flipY: false,
+    isMirrored: false,
     rotationX: 0,
     rotationY: 0,
     targetRotationX: 0,
@@ -266,6 +268,7 @@ export function ChromeWebGLViewer() {
 
       modelGroup.rotation.y = stateRef.current.rotationY;
       modelGroup.rotation.z = stateRef.current.flipY ? Math.PI : 0;
+      modelGroup.scale.x = stateRef.current.isMirrored ? -1 : 1;
       if (stateRef.current.isDragging) {
         modelGroup.rotation.x = stateRef.current.rotationX;
       }
@@ -427,6 +430,19 @@ export function ChromeWebGLViewer() {
             className="text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-white/20 transition-colors"
           >
             FLIP 180°
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsMirrored((prev) => {
+                const next = !prev;
+                stateRef.current.isMirrored = next;
+                return next;
+              });
+            }}
+            className="text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-white/20 transition-colors"
+          >
+            {isMirrored ? 'UNMIRROR' : 'MIRROR'}
           </button>
           <button
             type="button"
