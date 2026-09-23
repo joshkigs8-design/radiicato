@@ -63,9 +63,9 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
           {/* Left — 3D Logo */}
           <Link href="/" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
             <Image
-              src="/images/radiicato-3d-logo.png"
+              src="/images/radiicato-3d-chrome.png"
               alt="RADIICATO"
-              width={160}
+              width={180}
               height={70}
               priority
               className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 hover:scale-105"

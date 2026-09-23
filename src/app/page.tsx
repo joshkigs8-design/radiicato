@@ -7,129 +7,11 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, ShoppingBag } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { LookbookModal } from '@/components/lookbook/LookbookModal';
+import { ChromeStudyViewer } from '@/components/home/ChromeStudyViewer';
 import { formatKES } from '@/lib/utils';
 import { Product, Size } from '@/types';
 
-/* ═══════════════════════════════════════════════════════════════════
-   Chrome Particle Canvas — PESOS Worldwide Inspired
-   Renders drifting metallic chrome particles on the hero background
-   ═══════════════════════════════════════════════════════════════════ */
-function ChromeHeroCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationId: number;
-    let width = 0;
-    let height = 0;
-
-    const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    };
-
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Create chrome-style particles
-    interface Particle {
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
-      pulse: number;
-      pulseSpeed: number;
-    }
-
-    const particles: Particle[] = [];
-    const PARTICLE_COUNT = 80;
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        size: Math.random() * 2.5 + 0.5,
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: (Math.random() - 0.5) * 0.3 - 0.15,
-        opacity: Math.random() * 0.4 + 0.1,
-        pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: Math.random() * 0.02 + 0.005,
-      });
-    }
-
-    const draw = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      particles.forEach((p) => {
-        p.x += p.speedX;
-        p.y += p.speedY;
-        p.pulse += p.pulseSpeed;
-
-        // Wrap around edges
-        if (p.x < -10) p.x = width + 10;
-        if (p.x > width + 10) p.x = -10;
-        if (p.y < -10) p.y = height + 10;
-        if (p.y > height + 10) p.y = -10;
-
-        const currentOpacity = p.opacity * (0.5 + 0.5 * Math.sin(p.pulse));
-
-        // Chrome metallic gradient dot
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
-        gradient.addColorStop(0, `rgba(255, 255, 255, ${currentOpacity})`);
-        gradient.addColorStop(0.5, `rgba(200, 200, 210, ${currentOpacity * 0.6})`);
-        gradient.addColorStop(1, `rgba(150, 150, 170, 0)`);
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      });
-
-      // Draw subtle connection lines between nearby particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.03 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-
-      animationId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', resize);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 z-[1]"
-      aria-hidden="true"
-      style={{ pointerEvents: 'none' }}
-    />
-  );
-}
 
 /* ═══════════════════════════════════════════════════════════════════
    HomePage Component — PESOS Worldwide Redesign
@@ -265,77 +147,12 @@ export default function HomePage() {
     <div className="bg-black text-white min-h-screen selection:bg-white selection:text-black font-sans">
 
       {/* =========================================================================
-          01 — FULL-SCREEN IMMERSIVE HERO (PESOS Chrome Viewer Style)
-          Fullscreen dark canvas with animated chrome particles,
-          centered 3D logo, and frosted glass CTA at bottom.
+          01 — 3D CHROME STUDY VIEWER (PESOS WORLDWIDE SIGNATURE HERO)
+          Interactive liquid chrome model responding in real-time to pointer
+          tracking, tilt physics, specular highlights, and pinned frosted CTA.
           ========================================================================= */}
       <section className="pesos-below-navbar-fixed relative w-full overflow-hidden bg-black">
-        {/* Chrome Particle Canvas Background */}
-        <ChromeHeroCanvas />
-
-        {/* Deep radial gradient atmosphere */}
-        <div className="absolute inset-0 z-[2] bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,rgba(30,30,40,0.3),transparent)]" />
-
-        {/* Background editorial image with heavy darkness */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/products/broken-record-front.jpg"
-            alt="RADIICATO Streetwear"
-            fill
-            priority
-            className="object-cover object-center brightness-[0.25] contrast-[1.2] scale-110"
-            sizes="100vw"
-          />
-        </div>
-
-        {/* Center Content: 3D Logo Emblem + Statement */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-var(--navbar-height))] px-6 pb-20">
-          {/* 3D Chrome Logo Emblem */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.88, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex items-center justify-center"
-          >
-            {/* Ambient metallic halo glow behind emblem */}
-            <div className="absolute inset-0 bg-white/10 blur-[80px] rounded-full scale-75 pointer-events-none" />
-            <Image
-              src="/images/radiicato-3d-logo.png"
-              alt="RADIICATO 3D Chrome Emblem"
-              width={640}
-              height={440}
-              className="relative z-10 w-[280px] sm:w-[420px] md:w-[520px] lg:w-[620px] h-auto object-contain drop-shadow-[0_25px_60px_rgba(255,255,255,0.2)]"
-              priority
-            />
-          </motion.div>
-
-          {/* Slogan & Origin */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center mt-6 space-y-2"
-          >
-            <h1 className="text-[clamp(15px,2.2vw,22px)] font-bold tracking-[0.24em] uppercase text-white">
-              WE ARE WHO WE ARE.
-            </h1>
-            <p className="text-[11px] sm:text-[13px] uppercase tracking-[0.2em] text-white/60 font-mono">
-              INDEPENDENT STREETWEAR · NAIROBI
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Bottom Frosted CTA — PESOS Exact Style */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-          <Link
-            href="/shop"
-            className="group pointer-events-auto rounded-[2px] border border-white/40 bg-white/10 px-5 py-4 text-center font-sans text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] backdrop-blur-md transition-colors hover:border-white hover:bg-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-white max-[359px]:px-3 max-[359px]:text-[13px] max-[359px]:tracking-[0.1em] sm:px-8"
-          >
-            <span className="text-white transition-colors group-hover:text-black">
-              Shop latest collection
-            </span>
-          </Link>
-        </div>
+        <ChromeStudyViewer />
       </section>
 
 
