@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { LookbookModal } from '@/components/lookbook/LookbookModal';
-import { ChromeStudyViewer } from '@/components/home/ChromeStudyViewer';
+import { ChromeWebGLViewer } from '@/components/home/ChromeWebGLViewer';
 import { formatKES } from '@/lib/utils';
 import { Product, Size } from '@/types';
 
@@ -142,12 +142,12 @@ export default function HomePage() {
     <div className="bg-black text-white min-h-screen selection:bg-white selection:text-black font-sans">
 
       {/* =========================================================================
-          01 — 3D CHROME STUDY VIEWER (PESOS WORLDWIDE SIGNATURE HERO)
-          Interactive 3D liquid chrome turntable rotating in 3D perspective space,
-          with drag physics, specular highlights, and pinned glass CTA.
+          01 — TRUE WEBGL 3D CHROME STUDY VIEWER (THREE.JS ENGINE)
+          True 3D polygon mesh with HDR studio reflections, camera lighting,
+          drag-to-orbit physics, wireframe toggle, and glassmorphic HUD.
           ========================================================================= */}
       <section className="pesos-below-navbar-fixed relative w-full overflow-hidden bg-black">
-        <ChromeStudyViewer />
+        <ChromeWebGLViewer />
       </section>
 
 
