@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ArrowUpRight } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 
 export function Footer() {
@@ -13,87 +14,100 @@ export function Footer() {
   if (isAdmin) return null;
 
   return (
-    <footer className="bg-[#0A0A0A] text-white pt-20 pb-16 px-6 sm:px-8 lg:px-12 border-t border-[#18181B]">
-      <div className="max-w-[1600px] mx-auto flex flex-col justify-between min-h-[400px]">
+    <footer className="relative z-10 mt-auto flex w-full flex-col border-t border-white/20 bg-black/60 font-sans text-white backdrop-blur-2xl">
+      <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-6 py-16 sm:py-24">
         
-        {/* Top: Massive Editorial Brand Statement */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-16 border-b border-[#27272A]">
-          <div>
-            <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-[-0.06em] leading-[0.88] uppercase">
-              RADIICATO
-            </h2>
-            <p className="mt-3 text-[11px] font-mono tracking-[0.2em] uppercase text-[#71717A]">
-              WE ARE WHO WE ARE.
-            </p>
-          </div>
-          <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-[#71717A] md:text-right">
-            <span>NAIROBI, KENYA</span>
-          </div>
+        {/* Top: Massive "Let's work together." & "© 26" watermark */}
+        <div className="flex items-start justify-between gap-6 pb-12">
+          <h2 className="text-[clamp(36px,6.4vw,96px)] font-bold leading-[0.86] tracking-[-0.04em] uppercase text-white">
+            Let&apos;s work<span className="block">together.</span>
+          </h2>
+          <span 
+            aria-label="Copyright 2026" 
+            className="shrink-0 text-[clamp(44px,10vw,150px)] font-bold leading-[0.8] tracking-[-0.05em] text-white/90 select-none"
+          >
+            ©26
+          </span>
         </div>
 
-        {/* Middle: Minimal Navigation Columns */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-10 py-16 text-[11px] font-mono tracking-[0.18em] uppercase">
+        {/* Middle Prompt */}
+        <p className="mt-8 text-[clamp(17px,2vw,30px)] font-bold leading-tight tracking-[-0.03em] text-white/90">
+          Drop us a line to talk about a piece, an order or a collaboration.
+        </p>
+
+        {/* Big Action Box: "Let's talk" with hover fill transition */}
+        <a 
+          href={`mailto:${settings.contactEmail || 'info@radiicato.co.ke'}`}
+          className="group mt-6 flex w-full items-center justify-between gap-6 border border-white/25 bg-white/10 px-6 py-6 backdrop-blur-md transition-colors duration-200 hover:border-white hover:bg-white focus-visible:border-white focus-visible:bg-white focus-visible:outline-none md:px-10 md:py-8 rounded-[2px]"
+        >
+          <span className="text-[clamp(22px,3.2vw,44px)] font-bold leading-none tracking-[-0.03em] text-white transition-colors duration-200 group-hover:text-black">
+            Let&apos;s talk
+          </span>
+          <ArrowUpRight 
+            className="h-[clamp(24px,3vw,40px)] w-[clamp(24px,3vw,40px)] shrink-0 text-white transition-all duration-200 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-black" 
+          />
+        </a>
+
+        {/* Bottom Navigation Grid */}
+        <div className="mt-14 flex flex-col gap-8 border-t border-white/15 pt-8 text-[13px] tracking-[0.02em] md:flex-row md:items-start md:justify-between md:gap-10">
           {/* Main Links */}
-          <div className="flex flex-col space-y-3.5">
-            <Link href="/shop" className="text-white hover:opacity-50 transition-opacity">
-              SHOP
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2.5">
+            <Link href="/shop" className="text-white/60 transition-colors hover:text-white">
+              Shop
             </Link>
-            <Link href="/collections" className="text-white hover:opacity-50 transition-opacity">
-              COLLECTIONS
+            <Link href="/collections" className="text-white/60 transition-colors hover:text-white">
+              Collections
             </Link>
-            <Link href="/about" className="text-white hover:opacity-50 transition-opacity">
-              ABOUT
+            <Link href="/about" className="text-white/60 transition-colors hover:text-white">
+              About
             </Link>
-            <Link href="/contact" className="text-white hover:opacity-50 transition-opacity">
-              CONTACT
+            <Link href="/contact" className="text-white/60 transition-colors hover:text-white">
+              Contact
             </Link>
-          </div>
+            <Link href="/returns" className="text-white/60 transition-colors hover:text-white">
+              Return Policy
+            </Link>
+            <Link href="/terms" className="text-white/60 transition-colors hover:text-white">
+              Terms & Conditions
+            </Link>
+            <Link href="/privacy" className="text-white/60 transition-colors hover:text-white">
+              Privacy Policy
+            </Link>
+          </nav>
 
           {/* Social */}
-          <div className="flex flex-col space-y-3.5">
+          <nav aria-label="Social" className="flex flex-wrap gap-x-5 gap-y-2 md:justify-center">
             <a 
               href={settings.socialInstagram || 'https://instagram.com/radiicato'} 
               target="_blank" 
-              rel="noopener noreferrer"
-              className="text-white hover:opacity-50 transition-opacity"
+              rel="noopener noreferrer" 
+              className="text-white/60 transition-colors hover:text-white"
             >
-              INSTAGRAM
+              Instagram <span className="ml-1 text-white/35">Main</span>
             </a>
             <a 
               href={settings.socialTiktok || 'https://tiktok.com/@radiicato'} 
               target="_blank" 
-              rel="noopener noreferrer"
-              className="text-white hover:opacity-50 transition-opacity"
+              rel="noopener noreferrer" 
+              className="text-white/60 transition-colors hover:text-white"
             >
-              TIKTOK
+              TikTok
             </a>
-          </div>
+          </nav>
 
-          {/* Client Care & Legal */}
-          <div className="flex flex-col space-y-3.5">
-            <Link href="/shipping" className="text-[#A1A1AA] hover:text-white transition-colors">
-              SHIPPING
-            </Link>
-            <Link href="/returns" className="text-[#A1A1AA] hover:text-white transition-colors">
-              RETURNS
-            </Link>
-            <Link href="/privacy" className="text-[#A1A1AA] hover:text-white transition-colors">
-              PRIVACY
-            </Link>
+          {/* Identity & Copyright */}
+          <div className="flex flex-col gap-1.5 text-white/60 md:items-end md:text-right">
+            <a href={`mailto:${settings.contactEmail || 'info@radiicato.co.ke'}`} className="text-white/60 transition-colors hover:text-white">
+              {settings.contactEmail || 'info@radiicato.co.ke'}
+            </a>
+            <a href="tel:+254712904883" className="text-white/60 transition-colors hover:text-white">
+              +254 712 904 883
+            </a>
+            <span>Nairobi, Kenya</span>
+            <span className="text-white/35">
+              RADIICATO: all rights reserved © 2026
+            </span>
           </div>
-
-          {/* Nairobi Identity Note */}
-          <div className="flex flex-col space-y-2 text-[#71717A]">
-            <p className="text-white font-bold">STUDIO & ATELIER</p>
-            <p>PARKLANDS ROAD</p>
-            <p>NAIROBI, KENYA</p>
-          </div>
-        </div>
-
-        {/* Bottom Bar: Copyright */}
-        <div className="pt-8 border-t border-[#27272A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A]">
-          <p>© 2026 RADIICATO</p>
-          <p>ENGINEERED IN NAIROBI · WORN EVERYWHERE</p>
         </div>
 
       </div>

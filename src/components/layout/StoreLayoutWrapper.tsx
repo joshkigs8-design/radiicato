@@ -17,7 +17,7 @@ export function StoreLayoutWrapper({ children }: { children: React.ReactNode }) 
   }, []);
 
   return (
-    <div className="bg-white min-h-screen flex flex-col">
+    <div className="bg-black text-white min-h-screen flex flex-col selection:bg-white selection:text-black">
       <Navbar
         onOpenCart={() => setIsCartOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}

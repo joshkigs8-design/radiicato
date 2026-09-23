@@ -4,24 +4,26 @@
 
 @layer base {
   :root {
-    --background: #FFFFFF;
-    --foreground: #0A0A0A;
-    --ink: #0A0A0A;
-    --ink-muted: #71717A;
-    --ink-faint: #A1A1AA;
-    --line: #E4E4E7;
-    --line-faint: #F4F4F5;
-    --surface: #FAFAFA;
-    --surface-alt: #F4F4F5;
+    --background: #000000;
+    --foreground: #FFFFFF;
+    --ink: #FFFFFF;
+    --ink-muted: #A1A1AA;
+    --ink-faint: #71717A;
+    --line: rgba(255, 255, 255, 0.15);
+    --line-faint: rgba(255, 255, 255, 0.08);
+    --surface: #0A0A0A;
+    --surface-alt: #121212;
   }
 
   html {
     scroll-behavior: smooth;
+    background-color: #000000;
+    color: #FFFFFF;
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: #000000;
+    color: #FFFFFF;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -31,12 +33,12 @@
   a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
   button, a { outline-offset: 3px; }
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-    outline: 2px solid var(--ink);
+    outline: 2px solid #FFFFFF;
   }
 
   ::selection {
-    background-color: #0A0A0A;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #000000;
   }
 
   /* Prevent layout shift from scrollbar */
