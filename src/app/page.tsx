@@ -288,43 +288,41 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Center Content: 3D Logo + Brand Name */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-var(--navbar-height))] px-6">
-          {/* 3D Chrome Logo */}
+        {/* Center Content: 3D Logo Emblem + Statement */}
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-var(--navbar-height))] px-6 pb-20">
+          {/* 3D Chrome Logo Emblem */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.85, y: 30 }}
+            initial={{ opacity: 0, scale: 0.88, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-8"
+            className="relative flex items-center justify-center"
           >
+            {/* Ambient metallic halo glow behind emblem */}
+            <div className="absolute inset-0 bg-white/10 blur-[80px] rounded-full scale-75 pointer-events-none" />
             <Image
-              src="/images/radiicato-3d-logo.jpg"
-              alt="RADIICATO 3D Chrome Logo"
-              width={280}
-              height={280}
-              className="w-[180px] h-[180px] sm:w-[240px] sm:h-[240px] lg:w-[320px] lg:h-[320px] object-contain drop-shadow-[0_20px_60px_rgba(255,255,255,0.15)] rounded-2xl"
+              src="/images/radiicato-3d-logo.png"
+              alt="RADIICATO 3D Chrome Emblem"
+              width={640}
+              height={440}
+              className="relative z-10 w-[280px] sm:w-[420px] md:w-[520px] lg:w-[620px] h-auto object-contain drop-shadow-[0_25px_60px_rgba(255,255,255,0.2)]"
               priority
             />
           </motion.div>
 
-          {/* Brand Name */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+          {/* Slogan & Origin */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(2rem,8vw,5rem)] font-bold tracking-[-0.05em] leading-[0.84] uppercase text-white text-center"
+            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center mt-6 space-y-2"
           >
-            RADIICATO
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-4 text-[12px] sm:text-[14px] uppercase tracking-[0.18em] text-white/60 font-medium"
-          >
-            INDEPENDENT STREETWEAR · NAIROBI
-          </motion.p>
+            <h1 className="text-[clamp(15px,2.2vw,22px)] font-bold tracking-[0.24em] uppercase text-white">
+              WE ARE WHO WE ARE.
+            </h1>
+            <p className="text-[11px] sm:text-[13px] uppercase tracking-[0.2em] text-white/60 font-mono">
+              INDEPENDENT STREETWEAR · NAIROBI
+            </p>
+          </motion.div>
         </div>
 
         {/* Bottom Frosted CTA — PESOS Exact Style */}

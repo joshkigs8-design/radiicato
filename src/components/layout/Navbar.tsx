@@ -61,14 +61,14 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
         <nav className="mx-auto flex w-full max-w-[1600px] items-center justify-between">
 
           {/* Left — 3D Logo */}
-          <Link href="/" className="block" onClick={() => setMobileMenuOpen(false)}>
+          <Link href="/" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
             <Image
-              src="/images/radiicato-3d-logo.jpg"
+              src="/images/radiicato-3d-logo.png"
               alt="RADIICATO"
-              width={120}
-              height={45}
-              className="h-auto w-[95px]"
-              style={{ color: 'transparent' }}
+              width={160}
+              height={70}
+              priority
+              className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 hover:scale-105"
             />
           </Link>
 
