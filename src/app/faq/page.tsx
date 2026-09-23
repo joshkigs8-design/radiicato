@@ -6,12 +6,12 @@ import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 
 const FAQS = [
   {
-    q: 'HOW DO PESOS OVERSIZED TEES FIT?',
-    a: 'All PESOS tees are cut in an intentional relaxed streetwear silhouette featuring dropped shoulders, wide double-needle collar ribbing, and structured drape. If you prefer the intended oversized streetwear drape, take your normal size. For a standard or tailored fit, we recommend sizing down one full size.',
+    q: 'HOW DO RADIICATO OVERSIZED TEES FIT?',
+    a: 'All Radiicato tees are cut in an intentional relaxed streetwear silhouette featuring dropped shoulders, wide double-needle collar ribbing, and structured drape. If you prefer the intended oversized streetwear drape, take your normal size. For a standard or tailored fit, we recommend sizing down one full size.',
   },
   {
-    q: 'WHAT GSM ARE PESOS GARMENTS?',
-    a: 'We use custom heavyweight organic textiles: our graphic and core t-shirts are milled at 280 GSM combed cotton. Our premium essentials and outerwear are cut from elevated dense-knit fabrics designed for longevity and structure.',
+    q: 'WHAT GSM ARE RADIICATO GARMENTS?',
+    a: 'We use custom heavyweight organic textiles: our graphic and core t-shirts are milled at 280 GSM combed cotton. Our luxury hoodies and fleece outerwear are cut from 460 GSM high-density loopback French terry.',
   },
   {
     q: 'HOW DO M-PESA PAYMENTS OPERATE AT CHECKOUT?',
@@ -57,7 +57,7 @@ export default function FAQPage() {
         <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">CLIENT KNOWLEDGE BASE</p>
         <h1 className="text-display-sm font-black uppercase mb-8">FREQUENTLY ASKED QUESTIONS</h1>
         <p className="text-sm text-[#71717A] mb-12">
-          Essential details regarding sizing drape, heavyweight textiles, worldwide dispatch, and exchange protocols.
+          Essential details regarding sizing drape, heavyweight textiles, Kenyan dispatch, and exchange protocols.
         </p>
 
         <div className="border-t border-[#E4E4E7]">
@@ -84,7 +84,7 @@ export default function FAQPage() {
 
         <div className="mt-16 border border-[#E4E4E7] p-8 text-center space-y-4">
           <h3 className="text-sm font-bold uppercase text-[#0A0A0A] tracking-wider">Still have questions?</h3>
-          <p className="text-sm text-[#71717A]">Reach our client care concierge anywhere in the world.</p>
+          <p className="text-sm text-[#71717A]">Reach our client care concierge in Nairobi.</p>
           <div className="pt-4">
             <Link
               href="/contact"

@@ -312,10 +312,9 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(2.2rem,9vw,6rem)] font-black tracking-[-0.05em] leading-[0.8] uppercase text-center text-white"
+            className="text-[clamp(2rem,8vw,5rem)] font-bold tracking-[-0.05em] leading-[0.84] uppercase text-white text-center"
           >
-            PESOS
-            <span className="mt-2 block text-[0.5em] tracking-[0.18em] text-white/75">WORLDWIDE</span>
+            RADIICATO
           </motion.h1>
 
           <motion.p
@@ -324,7 +323,7 @@ export default function HomePage() {
             transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mt-4 text-[12px] sm:text-[14px] uppercase tracking-[0.18em] text-white/60 font-medium"
           >
-            GLOBAL STREETWEAR · CULTURE IN MOTION
+            INDEPENDENT STREETWEAR · NAIROBI
           </motion.p>
         </div>
 
@@ -335,7 +334,7 @@ export default function HomePage() {
             className="group pointer-events-auto rounded-[2px] border border-white/40 bg-white/10 px-5 py-4 text-center font-sans text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] backdrop-blur-md transition-colors hover:border-white hover:bg-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-white max-[359px]:px-3 max-[359px]:text-[13px] max-[359px]:tracking-[0.1em] sm:px-8"
           >
             <span className="text-white transition-colors group-hover:text-black">
-              Shop the drop
+              Shop latest collection
             </span>
           </Link>
         </div>
@@ -432,13 +431,13 @@ export default function HomePage() {
 
         <motion.div {...motionFadeIn} className="relative z-10 text-white max-w-xl">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/60 block mb-2">
-            PESOS WORLDWIDE
+            RADIICATO
           </span>
           <h2 className="text-[clamp(30px,5vw,64px)] font-bold uppercase tracking-[-0.04em] leading-[0.9]">
-            BUILT FOR THE<br />GLOBAL STREET.
+            MADE HERE.<br />WORN EVERYWHERE.
           </h2>
           <p className="mt-4 text-[14px] sm:text-[16px] text-white/80 font-normal leading-relaxed">
-            A movement of identity, attitude, and culture — designed for those who stand out anywhere.
+            Engineered in Nairobi for those who refuse to blend in. Independent underground luxury.
           </p>
         </motion.div>
       </section>
@@ -723,7 +722,7 @@ export default function HomePage() {
       <section className="w-full bg-black py-24 sm:py-32 px-6 sm:px-12 border-b border-white/15 text-center">
         <div className="max-w-2xl mx-auto space-y-7">
           <h2 className="text-[clamp(32px,5.5vw,68px)] font-bold uppercase tracking-[-0.04em] text-white">
-            SHOP PESOS WORLDWIDE
+            SHOP RADIICATO
           </h2>
           <div>
             <Link
@@ -764,12 +763,12 @@ export default function HomePage() {
               FOLLOW THE WORLD
             </span>
             <a
-              href="https://instagram.com/pesosworldwide"
+              href="https://instagram.com/radiicato"
               target="_blank"
               rel="noopener noreferrer"
               className="text-lg sm:text-xl font-mono font-bold tracking-[0.16em] uppercase text-white hover:opacity-60 transition-opacity"
             >
-              @PESOSWORLDWIDE
+              @RADIICATO
             </a>
           </div>
 

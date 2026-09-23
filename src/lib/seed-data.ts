@@ -1,22 +1,22 @@
 import { Product, Category, Collection, Coupon, LookbookItem, ShippingZone, StoreSettings, AdminUser, Review } from '@/types';
 
 export const INITIAL_SETTINGS: StoreSettings = {
-  storeName: 'PESOS Worldwide',
-  tagline: 'Global streetwear shaped by movement, identity, and culture.',
-  contactEmail: 'hello@pesosworldwide.com',
-  contactPhone: '+1 (310) 555-0148',
-  currency: 'USD',
-  country: 'United States',
-  address: 'Worldwide Studio • Global shipping available',
+  storeName: 'RADIICATO',
+  tagline: 'Independent streetwear engineered in Nairobi for those who refuse to blend in.',
+  contactEmail: 'concierge@radiicato.co.ke',
+  contactPhone: '+254 712 904 883',
+  currency: 'KES',
+  country: 'Kenya',
+  address: 'Studio 04, The Alchemist Yard, Parklands Road, Nairobi, Kenya',
   mpesaPaybill: '729831',
-  mpesaAccountName: 'PESOS WORLDWIDE',
+  mpesaAccountName: 'RADIICATO APPAREL LTD',
   mpesaPasskey: 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919',
   paystackPublicKey: 'pk_test_radiicato_9837198273891723',
   enableMpesa: true,
   enablePaystack: true,
-  socialInstagram: 'https://instagram.com/pesosworldwide',
-  socialTiktok: 'https://tiktok.com/@pesosworldwide',
-  socialTwitter: 'https://twitter.com/pesosworldwide',
+  socialInstagram: 'https://instagram.com/radiicato',
+  socialTiktok: 'https://tiktok.com/@radiicato',
+  socialTwitter: 'https://twitter.com/radiicato',
 };
 
 export const INITIAL_CATEGORIES: Category[] = [

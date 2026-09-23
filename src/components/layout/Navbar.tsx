@@ -60,12 +60,16 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
       >
         <nav className="mx-auto flex w-full max-w-[1600px] items-center justify-between">
 
-          {/* Left — Brand Wordmark */}
+          {/* Left — 3D Logo */}
           <Link href="/" className="block" onClick={() => setMobileMenuOpen(false)}>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-black uppercase tracking-[0.26em] text-white">PESOS</span>
-              <span className="text-[8px] font-medium uppercase tracking-[0.38em] text-white/70">WORLDWIDE</span>
-            </div>
+            <Image
+              src="/images/radiicato-3d-logo.jpg"
+              alt="RADIICATO"
+              width={120}
+              height={45}
+              className="h-auto w-[95px]"
+              style={{ color: 'transparent' }}
+            />
           </Link>
 
           {/* Desktop Nav Links — PESOS exact layout */}
@@ -170,9 +174,9 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
             </select>
 
             <div className="text-[12px] font-mono tracking-[0.16em] uppercase text-white/60 space-y-2 pt-2">
-              <p className="text-white font-bold">GLOBAL DROP CLUB</p>
-              <p>WORLDWIDE MOVEMENT.</p>
-              <p>© 2026 PESOS WORLDWIDE</p>
+              <p className="text-white font-bold">NAIROBI, KENYA</p>
+              <p>WE ARE WHO WE ARE.</p>
+              <p>© 2026 RADIICATO</p>
             </div>
           </div>
         </div>
