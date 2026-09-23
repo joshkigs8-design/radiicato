@@ -1,23 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, ShoppingBag } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { LookbookModal } from '@/components/lookbook/LookbookModal';
 import { ChromeStudyViewer } from '@/components/home/ChromeStudyViewer';
 import { formatKES } from '@/lib/utils';
 import { Product, Size } from '@/types';
 
-
-
-/* ═══════════════════════════════════════════════════════════════════
-   HomePage Component — PESOS Worldwide Redesign
-   ═══════════════════════════════════════════════════════════════════ */
 export default function HomePage() {
-  const { products, collections, lookbook, addToCart } = useStore();
+  const { products, lookbook, addToCart } = useStore();
   const [lookbookModalOpen, setLookbookModalOpen] = useState(false);
   const [selectedLookbookIndex, setSelectedLookbookIndex] = useState(0);
 
@@ -74,7 +69,7 @@ export default function HomePage() {
     transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] }
   };
 
-  /* ─── Product Card Component ─── */
+  /* ─── Glassmorphic Product Card Component ─── */
   const ProductCard = ({ product, fallbackImg }: { product: Product; fallbackImg: string }) => {
     const primaryImg = product.images[0]?.url || fallbackImg;
     const hoverImg = product.images[1]?.url || product.images[0]?.url;
@@ -82,21 +77,21 @@ export default function HomePage() {
 
     return (
       <div
-        className="group flex flex-col"
+        className="glass-card rounded-2xl p-3.5 flex flex-col group transition-all duration-300"
         onMouseEnter={() => setHoveredProductId(product.id)}
         onMouseLeave={() => setHoveredProductId(null)}
       >
-        {/* Clean Dark Frame */}
+        {/* Frame with subtle border */}
         <Link
           href={`/product/${product.slug}`}
-          className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden block"
+          className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden block"
         >
           <Image
             src={primaryImg}
             alt={product.name}
             fill
             className={`object-cover object-center transition-all duration-700 ease-out ${
-              isHovered && hoverImg ? 'opacity-0 scale-[1.02]' : 'opacity-100 scale-100'
+              isHovered && hoverImg ? 'opacity-0 scale-[1.03]' : 'opacity-100 scale-100'
             }`}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
@@ -106,23 +101,23 @@ export default function HomePage() {
               alt={`${product.name} alternate view`}
               fill
               className={`object-cover object-center transition-all duration-700 ease-out ${
-                isHovered ? 'opacity-100 scale-[1.02]' : 'opacity-0 scale-100'
+                isHovered ? 'opacity-100 scale-[1.03]' : 'opacity-0 scale-100'
               }`}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           )}
         </Link>
 
-        {/* Metadata underneath */}
-        <div className="pt-4 flex flex-col space-y-1.5">
+        {/* Metadata underneath with glass styling */}
+        <div className="pt-4 flex flex-col space-y-2">
           <div className="flex items-baseline justify-between">
             <Link
               href={`/product/${product.slug}`}
-              className="text-[14px] sm:text-[15px] font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
+              className="text-[14px] sm:text-[15px] font-bold uppercase tracking-tight text-white hover:opacity-70 transition-opacity"
             >
               {product.name}
             </Link>
-            <span className="text-[13px] font-mono font-medium text-white/80 ml-3 shrink-0">
+            <span className="text-[13px] font-mono font-medium text-white/90 ml-3 shrink-0">
               {formatKES(product.price)}
             </span>
           </div>
@@ -133,7 +128,7 @@ export default function HomePage() {
             </span>
             <button
               onClick={() => handleQuickAdd(product)}
-              className="text-[11px] font-mono uppercase tracking-[0.14em] font-semibold text-white/90 hover:text-white transition-colors cursor-pointer border border-white/20 bg-white/5 px-2.5 py-1 rounded-[2px] hover:bg-white hover:text-black"
+              className="glass-button text-[11px] font-mono uppercase tracking-[0.14em] font-semibold text-white/90 px-3 py-1.5 rounded-lg cursor-pointer"
             >
               {quickAddedId === product.id ? 'ADDED ✓' : '+ ADD TO BAG'}
             </button>
@@ -148,8 +143,8 @@ export default function HomePage() {
 
       {/* =========================================================================
           01 — 3D CHROME STUDY VIEWER (PESOS WORLDWIDE SIGNATURE HERO)
-          Interactive liquid chrome model responding in real-time to pointer
-          tracking, tilt physics, specular highlights, and pinned frosted CTA.
+          Interactive 3D liquid chrome turntable rotating in 3D perspective space,
+          with drag physics, specular highlights, and pinned glass CTA.
           ========================================================================= */}
       <section className="pesos-below-navbar-fixed relative w-full overflow-hidden bg-black">
         <ChromeStudyViewer />
@@ -158,12 +153,11 @@ export default function HomePage() {
 
       {/* =========================================================================
           02 — BROKEN RECORD (Collection 01 Introduction)
-          Large editorial photograph dominating the section.
-          Brutalist PESOS typography: COLLECTION 01 / BROKEN RECORD
+          Editorial photograph with glassmorphism overlay card.
           ========================================================================= */}
-      <section id="broken-record" className="relative w-full bg-black py-20 sm:py-28 px-6 sm:px-10 lg:px-14 border-b border-white/15">
+      <section id="broken-record" className="relative w-full bg-black py-20 sm:py-28 px-6 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
-          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden bg-[#0d0d0d] border border-white/20">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
             <Image
               src="/images/broken-record.jpg"
               alt="Broken Record Collection 01"
@@ -171,22 +165,22 @@ export default function HomePage() {
               className="object-cover object-center brightness-90 contrast-105"
               sizes="100vw"
             />
-            {/* Dark editorial gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent flex flex-col justify-end p-7 sm:p-12 lg:p-16">
-              <motion.div {...motionFadeIn} className="max-w-xl text-white">
+            {/* Glassmorphic editorial card overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent flex flex-col justify-end p-6 sm:p-12 lg:p-16">
+              <motion.div {...motionFadeIn} className="glass-panel p-6 sm:p-10 rounded-2xl max-w-xl text-white">
                 <span className="text-[11px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-2">
                   COLLECTION 01
                 </span>
-                <h2 className="text-[clamp(32px,6vw,72px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-4 text-white">
+                <h2 className="pesos-text-face text-[clamp(28px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-4 text-white">
                   BROKEN RECORD
                 </h2>
-                <p className="text-[15px] sm:text-[17px] text-white/80 font-normal mb-8 leading-snug">
+                <p className="text-[15px] sm:text-[16px] text-white/80 font-normal mb-8 leading-snug">
                   A repetition worth breaking.
                 </p>
                 <div>
                   <Link
                     href="/collections/broken-record"
-                    className="inline-flex items-center gap-3 rounded-[2px] border border-white/40 bg-white/10 px-6 py-4 text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] backdrop-blur-md transition-colors hover:border-white hover:bg-white hover:text-black"
+                    className="inline-flex items-center gap-3 glass-button px-6 py-4 text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl"
                   >
                     <span>EXPLORE BROKEN RECORD</span>
                     <ArrowRight size={15} />
@@ -201,14 +195,13 @@ export default function HomePage() {
 
       {/* =========================================================================
           03 — BROKEN RECORD PRODUCT STRIP
-          PESOS style dark catalogue grid:
-          3 products, rectangular framing, border-white/15, hover image swap.
+          Glassmorphic catalogue grid with hover luminescence.
           ========================================================================= */}
-      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/15">
+      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
           {/* Header */}
           <div className="flex items-baseline justify-between mb-10 pb-5 border-b border-white/15">
-            <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-[-0.03em] text-white">
+            <h3 className="pesos-text-face text-xl sm:text-2xl font-bold uppercase tracking-[-0.03em] text-white">
               BROKEN RECORD
             </h3>
             <Link
@@ -232,26 +225,25 @@ export default function HomePage() {
       {/* =========================================================================
           04 — FULL-WIDTH TRANSITION IMAGE
           Nairobi Street Culture & Movement
-          RADIICATO / MADE HERE. WORN EVERYWHERE.
           ========================================================================= */}
-      <section className="relative w-full h-[75vh] sm:h-[90vh] bg-black overflow-hidden flex items-end p-8 sm:p-14 lg:p-20 border-b border-white/15">
+      <section className="relative w-full h-[75vh] sm:h-[90vh] bg-black overflow-hidden flex items-end p-6 sm:p-12 lg:p-20 border-b border-white/10">
         <Image
           src="/images/owner_editorial.jpg"
           alt="Radiicato Nairobi Street Atelier"
           fill
-          className="object-cover object-center brightness-[0.78] contrast-[1.1]"
+          className="object-cover object-center brightness-[0.75] contrast-[1.1]"
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 
-        <motion.div {...motionFadeIn} className="relative z-10 text-white max-w-xl">
+        <motion.div {...motionFadeIn} className="relative z-10 glass-panel p-6 sm:p-10 rounded-2xl max-w-xl text-white">
           <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/60 block mb-2">
             RADIICATO
           </span>
-          <h2 className="text-[clamp(30px,5vw,64px)] font-bold uppercase tracking-[-0.04em] leading-[0.9]">
+          <h2 className="pesos-text-face text-[clamp(28px,4.5vw,56px)] font-bold uppercase tracking-[-0.04em] leading-[0.9]">
             MADE HERE.<br />WORN EVERYWHERE.
           </h2>
-          <p className="mt-4 text-[14px] sm:text-[16px] text-white/80 font-normal leading-relaxed">
+          <p className="mt-4 text-[14px] sm:text-[15px] text-white/80 font-normal leading-relaxed">
             Engineered in Nairobi for those who refuse to blend in. Independent underground luxury.
           </p>
         </motion.div>
@@ -260,12 +252,11 @@ export default function HomePage() {
 
       {/* =========================================================================
           05 — WE ARE WHO WE ARE (Collection 02 Hero)
-          Obsidian atmosphere: COLLECTION 02 / WE ARE WHO WE ARE
-          NO EXPLANATION NECESSARY.
+          Obsidian atmosphere with glassmorphic editorial panel.
           ========================================================================= */}
-      <section id="we-are-who-we-are" className="relative w-full bg-black py-20 sm:py-28 px-6 sm:px-10 lg:px-14 border-b border-white/15">
+      <section id="we-are-who-we-are" className="relative w-full bg-black py-20 sm:py-28 px-6 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
-          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden bg-[#0d0d0d] border border-white/20">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
             <Image
               src="/images/we-are-who-we-are.jpg"
               alt="We Are Who We Are Collection 02"
@@ -273,13 +264,13 @@ export default function HomePage() {
               className="object-cover object-center brightness-[0.85] contrast-110"
               sizes="100vw"
             />
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex flex-col justify-end p-7 sm:p-12 lg:p-16">
-              <motion.div {...motionFadeIn} className="max-w-xl text-white">
+            {/* Glassmorphic Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent flex flex-col justify-end p-6 sm:p-12 lg:p-16">
+              <motion.div {...motionFadeIn} className="glass-panel p-6 sm:p-10 rounded-2xl max-w-xl text-white">
                 <span className="text-[11px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-2">
                   COLLECTION 02
                 </span>
-                <h2 className="text-[clamp(32px,6vw,72px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-4 text-white">
+                <h2 className="pesos-text-face text-[clamp(28px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-4 text-white">
                   WE ARE WHO WE ARE
                 </h2>
                 <p className="text-[13px] sm:text-[14px] font-mono tracking-[0.16em] uppercase text-white/60 mb-8">
@@ -288,7 +279,7 @@ export default function HomePage() {
                 <div>
                   <Link
                     href="/collections/we-are-who-we-are"
-                    className="inline-flex items-center gap-3 rounded-[2px] border border-white/40 bg-white/10 px-6 py-4 text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] backdrop-blur-md transition-colors hover:border-white hover:bg-white hover:text-black"
+                    className="inline-flex items-center gap-3 glass-button px-6 py-4 text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl"
                   >
                     <span>EXPLORE COLLECTION</span>
                     <ArrowRight size={15} />
@@ -303,9 +294,8 @@ export default function HomePage() {
 
       {/* =========================================================================
           06 — WE ARE WHO WE ARE PRODUCT EDIT ("THE EDIT")
-          Selected showcase pieces in dark rectangular catalogue framing.
           ========================================================================= */}
-      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/15">
+      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
           {/* Header */}
           <div className="flex items-baseline justify-between mb-10 pb-5 border-b border-white/15">
@@ -313,7 +303,7 @@ export default function HomePage() {
               <span className="text-[11px] font-mono tracking-[0.22em] uppercase text-white/50 block mb-1">
                 THE EDIT
               </span>
-              <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-[-0.03em] text-white">
+              <h3 className="pesos-text-face text-xl sm:text-2xl font-bold uppercase tracking-[-0.03em] text-white">
                 WE ARE WHO WE ARE
               </h3>
             </div>
@@ -335,7 +325,7 @@ export default function HomePage() {
           <div className="mt-14 text-center">
             <Link
               href="/collections/we-are-who-we-are"
-              className="inline-flex items-center gap-2 text-[13px] font-mono tracking-[0.18em] uppercase text-white/80 hover:text-white transition-colors border-b border-white/30 pb-1"
+              className="inline-flex items-center gap-2 glass-pill px-5 py-2 text-[12px] font-mono tracking-[0.18em] uppercase text-white/80 hover:text-white transition-colors"
             >
               <span>VIEW ALL COLLECTION 02 PIECES</span>
               <ArrowRight size={14} />
@@ -347,17 +337,15 @@ export default function HomePage() {
 
       {/* =========================================================================
           07 — SKULL CAPS (Intimate Accessory Chapter)
-          Tactile 3-colorway accessory presentation.
-          SKULL CAPS / Onyx Black, Slate Grey, Night Camo. KES 500.
           ========================================================================= */}
-      <section id="skull-caps" className="w-full bg-black py-24 px-6 sm:px-10 lg:px-14 border-b border-white/15">
+      <section id="skull-caps" className="w-full bg-black py-24 px-6 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1400px] mx-auto">
           {/* Header */}
           <div className="text-center mb-14">
             <span className="text-[11px] font-mono tracking-[0.24em] uppercase text-white/50 block mb-2">
               ACCESSORY CHAPTER 03
             </span>
-            <h3 className="text-[clamp(28px,5vw,52px)] font-bold uppercase tracking-[-0.04em] text-white">
+            <h3 className="pesos-text-face text-[clamp(28px,5vw,52px)] font-bold uppercase tracking-[-0.04em] text-white">
               SKULL CAPS
             </h3>
             <p className="mt-2 text-[13px] font-mono tracking-[0.16em] text-white/60 uppercase">
@@ -365,17 +353,17 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* 3 Colorways in PESOS Dark Frames */}
+          {/* 3 Colorways in Glass Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 mb-12">
             {[
               { href: '/product/radiicato-heavyweight-ribbed-knit-skull-cap', src: '/images/products/radiicato-skull-cap-black.jpg', name: 'ONYX BLACK' },
               { href: '/product/radiicato-skull-cap-slate-grey', src: '/images/products/radiicato-skull-cap-grey.jpg', name: 'SLATE GREY' },
               { href: '/product/radiicato-skull-cap-midnight-camo', src: '/images/products/radiicato-skull-cap-camo.jpg', name: 'NIGHT CAMO' },
             ].map((cap) => (
-              <div key={cap.name} className="flex flex-col group">
+              <div key={cap.name} className="glass-card rounded-2xl p-3 flex flex-col group">
                 <Link
                   href={cap.href}
-                  className="relative aspect-[3/4] w-full bg-[#0d0d0d] border border-white/15 group-hover:border-white/50 transition-colors duration-300 overflow-hidden"
+                  className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden"
                 >
                   <Image
                     src={cap.src}
@@ -385,7 +373,7 @@ export default function HomePage() {
                     sizes="(max-width: 640px) 100vw, 33vw"
                   />
                 </Link>
-                <div className="pt-3 flex items-baseline justify-between text-[13px] font-mono uppercase">
+                <div className="pt-3.5 flex items-baseline justify-between text-[13px] font-mono uppercase px-1">
                   <span className="font-bold text-white">{cap.name}</span>
                   <span className="text-white/70">{formatKES(500)}</span>
                 </div>
@@ -397,7 +385,7 @@ export default function HomePage() {
           <div className="text-center">
             <Link
               href="/collections/skull-caps"
-              className="inline-flex items-center gap-3 rounded-[2px] border border-white/40 bg-white/10 px-8 py-4 text-[13px] font-semibold uppercase tracking-[0.14em] backdrop-blur-md transition-colors hover:border-white hover:bg-white hover:text-black"
+              className="inline-flex items-center gap-3 glass-button px-8 py-4 text-[13px] font-semibold uppercase tracking-[0.14em] rounded-xl"
             >
               <span>SHOP SKULL CAPS</span>
               <ArrowRight size={15} />
@@ -408,13 +396,10 @@ export default function HomePage() {
 
 
       {/* =========================================================================
-          08 — RADIICATO MANIFESTO
-          PESOS style brutalist statement box:
-          WE ARE WHO WE ARE.
-          RADIICATO IS A STATE OF MIND.
+          08 — RADIICATO MANIFESTO (Glassmorphic Plaque)
           ========================================================================= */}
-      <section className="w-full bg-black py-24 sm:py-32 px-6 sm:px-12 border-b border-white/15">
-        <div className="max-w-[1200px] mx-auto border border-white/20 bg-white/[0.02] p-8 sm:p-14 lg:p-20 rounded-[2px]">
+      <section className="w-full bg-black py-24 sm:py-32 px-6 sm:px-12 border-b border-white/10">
+        <div className="max-w-[1200px] mx-auto glass-panel p-8 sm:p-14 lg:p-20 rounded-3xl shadow-2xl">
           <motion.div {...motionFadeIn} className="space-y-8">
             <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/50 block">
               MANIFESTO // NAIROBI
@@ -448,14 +433,11 @@ export default function HomePage() {
 
       {/* =========================================================================
           09 — CAMPAIGN / LOOKBOOK
-          THE WORLD OF RADIICATO
-          Masonry/grid of photography.
-          Clicking opens Lookbook lightbox.
           ========================================================================= */}
-      <section className="w-full bg-black py-24 px-6 sm:px-10 lg:px-14 border-b border-white/15">
+      <section className="w-full bg-black py-24 px-6 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
           <div className="flex items-baseline justify-between mb-12 pb-5 border-b border-white/15">
-            <h3 className="text-xl sm:text-3xl font-bold uppercase tracking-[-0.04em] text-white">
+            <h3 className="pesos-text-face text-xl sm:text-3xl font-bold uppercase tracking-[-0.04em] text-white">
               THE WORLD OF RADIICATO
             </h3>
             <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/50">
@@ -463,24 +445,26 @@ export default function HomePage() {
             </span>
           </div>
 
-          {/* Masonry / Grid with PESOS borders */}
+          {/* Masonry / Grid with Glass borders */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6">
             {/* Left Dominant Tall Column (7 cols) */}
             <div
               onClick={() => handleOpenLookbook(0)}
-              className="md:col-span-7 relative aspect-[4/5] sm:aspect-[16/11] md:aspect-[4/5] bg-[#0d0d0d] border border-white/20 overflow-hidden cursor-pointer group"
+              className="md:col-span-7 relative aspect-[4/5] sm:aspect-[16/11] md:aspect-[4/5] glass-card rounded-2xl overflow-hidden cursor-pointer group p-2"
             >
-              <Image
-                src="/images/broken-record.jpg"
-                alt="Broken Record Atelier Rooftop Session"
-                fill
-                className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
-                sizes="(max-width: 768px) 100vw, 60vw"
-              />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                <span className="text-white text-[12px] font-mono tracking-widest uppercase">
-                  LOOK 01 · VIEW FULLSCREEN ↗
-                </span>
+              <div className="relative w-full h-full rounded-xl overflow-hidden">
+                <Image
+                  src="/images/broken-record.jpg"
+                  alt="Broken Record Atelier Rooftop Session"
+                  fill
+                  className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
+                  sizes="(max-width: 768px) 100vw, 60vw"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <span className="glass-pill px-3 py-1 text-white text-[11px] font-mono tracking-widest uppercase">
+                    LOOK 01 · VIEW FULLSCREEN ↗
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -489,38 +473,42 @@ export default function HomePage() {
               {/* Top Right */}
               <div
                 onClick={() => handleOpenLookbook(1)}
-                className="relative aspect-[4/3] bg-[#0d0d0d] border border-white/20 overflow-hidden cursor-pointer group"
+                className="relative aspect-[4/3] glass-card rounded-2xl overflow-hidden cursor-pointer group p-2"
               >
-                <Image
-                  src="/images/we-are-who-we-are.jpg"
-                  alt="We Are Who We Are Westlands Underground"
-                  fill
-                  className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
-                  sizes="(max-width: 768px) 100vw, 40vw"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <span className="text-white text-[12px] font-mono tracking-widest uppercase">
-                    LOOK 02 · VIEW FULLSCREEN ↗
-                  </span>
+                <div className="relative w-full h-full rounded-xl overflow-hidden">
+                  <Image
+                    src="/images/we-are-who-we-are.jpg"
+                    alt="We Are Who We Are Westlands Underground"
+                    fill
+                    className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
+                    sizes="(max-width: 768px) 100vw, 40vw"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                    <span className="glass-pill px-3 py-1 text-white text-[11px] font-mono tracking-widest uppercase">
+                      LOOK 02 · VIEW FULLSCREEN ↗
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Bottom Right */}
               <div
                 onClick={() => handleOpenLookbook(3)}
-                className="relative aspect-[4/3] bg-[#0d0d0d] border border-white/20 overflow-hidden cursor-pointer group"
+                className="relative aspect-[4/3] glass-card rounded-2xl overflow-hidden cursor-pointer group p-2"
               >
-                <Image
-                  src="/images/owner_editorial.jpg"
-                  alt="Nairobi Street Culture & Movement"
-                  fill
-                  className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
-                  sizes="(max-width: 768px) 100vw, 40vw"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <span className="text-white text-[12px] font-mono tracking-widest uppercase">
-                    LOOK 03 · VIEW FULLSCREEN ↗
-                  </span>
+                <div className="relative w-full h-full rounded-xl overflow-hidden">
+                  <Image
+                    src="/images/owner_editorial.jpg"
+                    alt="Nairobi Street Culture & Movement"
+                    fill
+                    className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
+                    sizes="(max-width: 768px) 100vw, 40vw"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                    <span className="glass-pill px-3 py-1 text-white text-[11px] font-mono tracking-widest uppercase">
+                      LOOK 03 · VIEW FULLSCREEN ↗
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -530,35 +518,31 @@ export default function HomePage() {
 
 
       {/* =========================================================================
-          10 — SHOP ALL
-          PESOS style shopping portal
-          SHOP RADIICATO / VIEW ALL PRODUCTS →
+          10 — SHOP ALL (Glassmorphic Portal)
           ========================================================================= */}
-      <section className="w-full bg-black py-24 sm:py-32 px-6 sm:px-12 border-b border-white/15 text-center">
-        <div className="max-w-2xl mx-auto space-y-7">
-          <h2 className="text-[clamp(32px,5.5vw,68px)] font-bold uppercase tracking-[-0.04em] text-white">
+      <section className="w-full bg-black py-24 sm:py-32 px-6 sm:px-12 border-b border-white/10 text-center">
+        <div className="max-w-2xl mx-auto glass-panel p-10 sm:p-16 rounded-3xl space-y-7 shadow-2xl">
+          <h2 className="pesos-text-face text-[clamp(32px,5.5vw,68px)] font-bold uppercase tracking-[-0.04em] text-white">
             SHOP RADIICATO
           </h2>
           <div>
             <Link
               href="/shop"
-              className="inline-flex items-center gap-3 rounded-[2px] border border-white/40 bg-white/10 px-8 py-4 text-[14px] font-semibold uppercase tracking-[0.14em] backdrop-blur-md transition-colors hover:border-white hover:bg-white hover:text-black"
+              className="inline-flex items-center gap-3 glass-button px-8 py-4 text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl"
             >
               <span>VIEW ALL PRODUCTS</span>
               <ArrowRight size={15} />
             </Link>
           </div>
 
-          <div className="pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-[12px] font-mono tracking-[0.18em] uppercase text-white/60">
-            <Link href="/collections/broken-record" className="hover:text-white transition-colors">
+          <div className="pt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-[12px] font-mono tracking-[0.18em] uppercase text-white/60">
+            <Link href="/collections/broken-record" className="glass-pill px-3.5 py-1 text-white/80 hover:text-white transition-colors">
               BROKEN RECORD
             </Link>
-            <span className="text-white/30">·</span>
-            <Link href="/collections/we-are-who-we-are" className="hover:text-white transition-colors">
+            <Link href="/collections/we-are-who-we-are" className="glass-pill px-3.5 py-1 text-white/80 hover:text-white transition-colors">
               WE ARE WHO WE ARE
             </Link>
-            <span className="text-white/30">·</span>
-            <Link href="/collections/skull-caps" className="hover:text-white transition-colors">
+            <Link href="/collections/skull-caps" className="glass-pill px-3.5 py-1 text-white/80 hover:text-white transition-colors">
               SKULL CAPS
             </Link>
           </div>
@@ -568,10 +552,8 @@ export default function HomePage() {
 
       {/* =========================================================================
           11 — INSTAGRAM / SOCIAL
-          FOLLOW THE WORLD / @RADIICATO
-          6 photographs with fine translucent border
           ========================================================================= */}
-      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/15">
+      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
           <div className="text-center mb-10">
             <span className="text-[11px] font-mono tracking-[0.22em] uppercase text-white/50 block mb-1">
@@ -587,7 +569,7 @@ export default function HomePage() {
             </a>
           </div>
 
-          {/* Clean 6-photo Dark Grid */}
+          {/* Clean 6-photo Glass Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { src: '/images/products/broken-record-front.jpg', alt: 'Radiicato Editorial 01' },
@@ -602,16 +584,18 @@ export default function HomePage() {
                 href="https://instagram.com/radiicato"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative aspect-square w-full bg-[#0d0d0d] border border-white/15 overflow-hidden block group"
+                className="glass-card rounded-xl p-1.5 overflow-hidden block group"
               >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                />
-                <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative aspect-square w-full rounded-lg overflow-hidden">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  />
+                  <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
               </a>
             ))}
           </div>

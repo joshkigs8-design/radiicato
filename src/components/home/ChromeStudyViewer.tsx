@@ -6,150 +6,226 @@ import Image from 'next/image';
 
 export function ChromeStudyViewer() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [rotate, setRotate] = useState({ x: 0, y: 0 });
-  const [targetRotate, setTargetRotate] = useState({ x: 0, y: 0 });
-  const [isInteracting, setIsInteracting] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  
+  // 3D rotation angles (degrees)
+  const [rotationY, setRotationY] = useState(0);
+  const [rotationX, setRotationX] = useState(-5);
+  const [isDragging, setIsDragging] = useState(false);
+  const [autoRotate, setAutoRotate] = useState(true);
+  
+  // Drag physics tracking
+  const dragStartRef = useRef<{ x: number; y: number; rotX: number; rotY: number }>({ x: 0, y: 0, rotX: 0, rotY: 0 });
+  const velocityRef = useRef<{ x: number; y: number }>({ x: 0.6, y: 0 });
+  const lastPointerRef = useRef<{ x: number; y: number; time: number }>({ x: 0, y: 0, time: 0 });
   const animFrameRef = useRef<number | null>(null);
 
-  // Smooth lerp physics for interactive 3D rotation
+  // 3D Animation & Physics loop
   useEffect(() => {
-    let idleAngle = 0;
-    const updatePhysics = () => {
-      if (!isInteracting) {
-        idleAngle += 0.015;
-        // Gentle sinusoidal floating motion when idle
-        const idleX = Math.sin(idleAngle * 0.7) * 4;
-        const idleY = Math.cos(idleAngle * 0.5) * 6;
-        setRotate((prev) => ({
-          x: prev.x + (idleX - prev.x) * 0.05,
-          y: prev.y + (idleY - prev.y) * 0.05,
-        }));
-      } else {
-        setRotate((prev) => ({
-          x: prev.x + (targetRotate.x - prev.x) * 0.12,
-          y: prev.y + (targetRotate.y - prev.y) * 0.12,
-        }));
+    const loop = () => {
+      if (autoRotate && !isDragging) {
+        // Continuous smooth 360° turntable spin
+        setRotationY((prev) => (prev + 0.6) % 360);
+        // Subtle vertical floating wave
+        setRotationX((prev) => -4 + Math.sin(Date.now() * 0.002) * 5);
+      } else if (!isDragging) {
+        // Inertia damping after drag release
+        if (Math.abs(velocityRef.current.x) > 0.05) {
+          setRotationY((prev) => (prev + velocityRef.current.x) % 360);
+          velocityRef.current.x *= 0.94; // friction
+        } else if (autoRotate) {
+          velocityRef.current.x = 0.6;
+        }
       }
-      animFrameRef.current = requestAnimationFrame(updatePhysics);
+
+      animFrameRef.current = requestAnimationFrame(loop);
     };
 
-    animFrameRef.current = requestAnimationFrame(updatePhysics);
+    animFrameRef.current = requestAnimationFrame(loop);
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [isInteracting, targetRotate]);
+  }, [autoRotate, isDragging]);
 
-  // Handle pointer tracking for 3D tilt
-  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const normX = (x / rect.width) * 2 - 1; // -1 to 1
-    const normY = (y / rect.height) * 2 - 1; // -1 to 1
-
-    // Map to 3D rotation angles (up to 16 deg tilt)
-    setTargetRotate({
-      x: -normY * 16,
-      y: normX * 22,
-    });
-
-    setMousePos({
-      x: Math.max(0, Math.min(100, (x / rect.width) * 100)),
-      y: Math.max(0, Math.min(100, (y / rect.height) * 100)),
-    });
-  }, []);
-
-  const handlePointerEnter = () => setIsInteracting(true);
-  const handlePointerLeave = () => {
-    setIsInteracting(false);
-    setTargetRotate({ x: 0, y: 0 });
+  // Pointer drag interactions
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      rotX: rotationX,
+      rotY: rotationY,
+    };
+    lastPointerRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      time: Date.now(),
+    };
+    velocityRef.current = { x: 0, y: 0 };
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
   };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+
+    const deltaX = e.clientX - dragStartRef.current.x;
+    const deltaY = e.clientY - dragStartRef.current.y;
+
+    const newRotY = (dragStartRef.current.rotY + deltaX * 0.45) % 360;
+    const newRotX = Math.max(-30, Math.min(30, dragStartRef.current.rotX - deltaY * 0.25));
+
+    setRotationY(newRotY);
+    setRotationX(newRotX);
+
+    // Calculate drag velocity for momentum
+    const now = Date.now();
+    const dt = Math.max(1, now - lastPointerRef.current.time);
+    const vx = ((e.clientX - lastPointerRef.current.x) / dt) * 8;
+    velocityRef.current.x = vx;
+
+    lastPointerRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      time: now,
+    };
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    setIsDragging(false);
+    (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
+  };
+
+  // Specular light angle derived from rotation
+  const radY = (rotationY * Math.PI) / 180;
+  const lightX = 50 + Math.sin(radY) * 40;
+  const lightOpacity = Math.max(0.2, (Math.cos(radY) + 1) / 2);
 
   return (
     <div
       ref={containerRef}
+      onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       className="relative w-full h-[calc(100vh-var(--navbar-height))] overflow-hidden bg-black select-none touch-none cursor-grab active:cursor-grabbing flex items-center justify-center"
-      style={{ perspective: '1200px' }}
+      style={{ perspective: '1400px' }}
     >
-      {/* Deep Obsidian Background Glow with Ambient Flare */}
+      {/* Dynamic Background Chrome Environment Glow */}
       <div
-        className="absolute inset-0 pointer-events-none transition-opacity duration-700"
+        className="absolute inset-0 pointer-events-none transition-all duration-300"
         style={{
-          background: `radial-gradient(circle 500px at ${mousePos.x}% ${mousePos.y}%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.95) 75%)`,
+          background: `radial-gradient(circle 600px at ${lightX}% 45%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.95) 75%)`,
         }}
       />
 
-      {/* Grid Floor Line (Pesos 3D Study Vibe) */}
+      {/* Showroom Floor Light Grid (Pesos 3D Study Vibe) */}
       <div
-        className="absolute inset-x-0 bottom-0 h-48 pointer-events-none opacity-20"
+        className="absolute inset-x-0 bottom-0 h-56 pointer-events-none opacity-25"
         style={{
-          background: 'linear-gradient(to top, rgba(255,255,255,0.08) 1px, transparent 1px)',
-          backgroundSize: '100% 24px',
+          background: 'linear-gradient(to top, rgba(255,255,255,0.1) 1px, transparent 1px)',
+          backgroundSize: '100% 28px',
           maskImage: 'linear-gradient(to top, black, transparent)',
           WebkitMaskImage: 'linear-gradient(to top, black, transparent)',
         }}
       />
 
-      {/* 3D Floating Chrome Study Model */}
+      {/* Floating 3D Turntable Sculpture */}
       <div
         className="relative z-10 flex flex-col items-center justify-center p-6"
         style={{
           transformStyle: 'preserve-3d',
-          transform: `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateZ(30px)`,
-          transition: 'transform 0.08s ease-out',
+          transform: `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`,
+          transition: isDragging ? 'none' : 'transform 0.05s linear',
         }}
       >
-        {/* Soft Metallic Under-Glow / Ambient Floor Shadow */}
+        {/* Soft Volumetric Showroom Floor Shadow */}
         <div
-          className="absolute -bottom-10 w-[80%] h-12 bg-white/5 blur-2xl rounded-full scale-90 pointer-events-none"
-          style={{ transform: 'translateZ(-40px)' }}
+          className="absolute -bottom-16 w-[90%] h-14 bg-white/[0.04] blur-3xl rounded-full scale-90 pointer-events-none"
+          style={{ transform: 'rotateX(90deg) translateZ(-60px)' }}
         />
 
-        {/* Liquid Chrome Logo Container */}
-        <div className="relative group max-w-[85vw] sm:max-w-[70vw] md:max-w-[620px] lg:max-w-[760px]">
-          {/* Real Chrome 3D Logo Image */}
-          <Image
-            src="/images/radiicato-3d-chrome.png"
-            alt="RADIICATO 3D Liquid Chrome Study"
-            width={760}
-            height={760}
-            priority
-            className="w-full h-auto object-contain filter drop-shadow-[0_20px_45px_rgba(255,255,255,0.22)] drop-shadow-[0_45px_90px_rgba(0,0,0,0.9)]"
-            style={{ transform: 'translateZ(20px)' }}
-          />
-
-          {/* Interactive Light Beam / Dynamic Specular Chrome Flare */}
+        {/* 3D Volumetric Extrusion Stack (Multi-layered Chrome Slices) */}
+        <div className="relative group max-w-[85vw] sm:max-w-[70vw] md:max-w-[620px] lg:max-w-[740px]" style={{ transformStyle: 'preserve-3d' }}>
+          
+          {/* Deep back slice */}
           <div
-            className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-60 transition-opacity duration-300"
+            className="absolute inset-0 pointer-events-none opacity-50 filter brightness-50"
+            style={{ transform: 'translateZ(-14px)' }}
+          >
+            <Image
+              src="/images/radiicato-3d-chrome.png"
+              alt=""
+              width={740}
+              height={740}
+              priority
+              className="w-full h-auto object-contain"
+            />
+          </div>
+
+          {/* Mid depth slice */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-70 filter brightness-75"
+            style={{ transform: 'translateZ(-7px)' }}
+          >
+            <Image
+              src="/images/radiicato-3d-chrome.png"
+              alt=""
+              width={740}
+              height={740}
+              priority
+              className="w-full h-auto object-contain"
+            />
+          </div>
+
+          {/* Front Primary 3D Liquid Chrome Model */}
+          <div style={{ transform: 'translateZ(10px)' }}>
+            <Image
+              src="/images/radiicato-3d-chrome.png"
+              alt="RADIICATO 3D Liquid Chrome Logo"
+              width={740}
+              height={740}
+              priority
+              className="w-full h-auto object-contain filter drop-shadow-[0_25px_50px_rgba(255,255,255,0.22)] drop-shadow-[0_45px_100px_rgba(0,0,0,0.95)]"
+            />
+          </div>
+
+          {/* Forward specular flare slice */}
+          <div
+            className="absolute inset-0 pointer-events-none mix-blend-overlay transition-opacity duration-200"
             style={{
-              background: `radial-gradient(ellipse 350px 200px at ${mousePos.x}% ${mousePos.y}%, rgba(255,255,255,0.85), transparent 70%)`,
+              transform: 'translateZ(20px)',
+              opacity: lightOpacity * 0.75,
+              background: `radial-gradient(ellipse 400px 250px at ${lightX}% 40%, rgba(255,255,255,0.95), transparent 70%)`,
             }}
           />
 
-          {/* Star Flare Accent Over Star Flourish */}
+          {/* Star Flourish Flare Glint */}
           <div
-            className="absolute top-[18%] right-[10%] w-8 h-8 pointer-events-none animate-pulse"
+            className="absolute top-[20%] right-[12%] w-10 h-10 pointer-events-none animate-pulse"
             style={{
-              background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%)',
-              filter: 'blur(1px)',
-              transform: 'translateZ(35px)',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 75%)',
+              filter: 'blur(1.5px)',
+              transform: 'translateZ(30px)',
             }}
           />
         </div>
 
-        {/* 3D Study Metadata Tag (Subtle Pesos aesthetic) */}
+        {/* Glassmorphic 3D Control Pill */}
         <div
-          className="mt-6 flex items-center gap-3 text-[11px] font-mono tracking-[0.25em] text-white/40 uppercase pointer-events-none"
-          style={{ transform: 'translateZ(10px)' }}
+          className="mt-8 flex items-center gap-3 glass-pill px-4 py-1.5 pointer-events-auto"
+          style={{ transform: 'translateZ(40px)' }}
+          onClick={(e) => e.stopPropagation()}
         >
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/60 animate-ping" />
-          <span>CHROME STUDY 01 // ROTATE &amp; EXPLORE</span>
+          <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+          <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/80">
+            3D CHROME ROTATE // DRAG TO SPIN
+          </span>
+          <button
+            type="button"
+            onClick={() => setAutoRotate((prev) => !prev)}
+            className="ml-2 text-[10px] font-mono tracking-[0.16em] uppercase px-2 py-0.5 rounded-full border border-white/20 bg-white/10 hover:bg-white hover:text-black transition-colors"
+          >
+            {autoRotate ? 'PAUSE' : 'AUTO-SPIN'}
+          </button>
         </div>
       </div>
 
@@ -157,7 +233,7 @@ export function ChromeStudyViewer() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         <Link
           href="/shop"
-          className="group pointer-events-auto rounded-[2px] border border-white/40 bg-white/10 px-5 py-4 text-center font-sans text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] backdrop-blur-md transition-colors hover:border-white hover:bg-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-white max-[359px]:px-3 max-[359px]:text-[13px] max-[359px]:tracking-[0.1em] sm:px-8"
+          className="group pointer-events-auto glass-button rounded-[2px] px-6 py-4 text-center font-sans text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] max-[359px]:px-4 max-[359px]:text-[13px] sm:px-9"
         >
           <span className="text-white transition-colors group-hover:text-black">
             Shop latest collection

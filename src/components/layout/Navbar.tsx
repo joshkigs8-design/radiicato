@@ -52,10 +52,10 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 z-40 flex h-[var(--navbar-height)] w-full items-center px-6 transition-colors duration-300 ${
+        className={`fixed top-0 left-0 z-40 flex h-[var(--navbar-height)] w-full items-center px-6 transition-all duration-300 ${
           isScrolled
-            ? 'bg-black/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.18)]'
-            : 'bg-transparent shadow-[0_1px_0_rgba(255,255,255,0.32)]'
+            ? 'glass-panel-heavy'
+            : 'bg-black/35 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.3)]'
         }`}
       >
         <nav className="mx-auto flex w-full max-w-[1600px] items-center justify-between">
@@ -86,10 +86,10 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
               </Link>
             ))}
 
-            {/* Currency Selector */}
+            {/* Currency Selector (Glass Pill) */}
             <select
               aria-label="Display currency"
-              className="cursor-pointer rounded-full border bg-transparent px-2 py-1 text-[14px] font-medium tracking-[0.06em] transition-colors border-white/30 text-white"
+              className="cursor-pointer glass-pill px-3 py-1 text-[13px] font-medium tracking-[0.06em] text-white focus:outline-none"
             >
               <option value="KES" className="text-black" selected>KES</option>
               <option value="USD" className="text-black">USD</option>
@@ -102,12 +102,12 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
             {/* Shopping Bag */}
             <button
               onClick={onOpenCart}
-              className="relative flex items-center transition-opacity hover:opacity-50 cursor-pointer"
+              className="relative flex items-center transition-opacity hover:opacity-50 cursor-pointer p-1.5 rounded-full hover:bg-white/10"
               aria-label="Cart"
             >
               <ShoppingBag className="h-5 w-5" aria-hidden />
               {cartSummary.itemsCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 h-4 w-4 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">
+                <span className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">
                   {cartSummary.itemsCount}
                 </span>
               )}
@@ -145,9 +145,9 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
         </nav>
       </header>
 
-      {/* Mobile Drawer — Fullscreen dark backdrop blur */}
+      {/* Mobile Drawer — Fullscreen glass backdrop blur */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 top-[var(--navbar-height)] bg-black/95 backdrop-blur-2xl z-50 flex flex-col justify-between p-7 border-t border-white/20 animate-fade-in text-white md:hidden">
+        <div className="fixed inset-0 top-[var(--navbar-height)] glass-panel-heavy z-50 flex flex-col justify-between p-7 animate-fade-in text-white md:hidden">
           <div className="space-y-6 pt-4">
             {navLinks.map((link) => (
               <Link
