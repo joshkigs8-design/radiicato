@@ -349,7 +349,7 @@ export default function HomePage() {
               SKULL CAPS
             </h3>
             <p className="mt-2 text-[13px] font-mono tracking-[0.16em] text-white/60 uppercase">
-              HEAVYWEIGHT KNIT · CONTOURED NAIROBI FIT · KES 500
+              STRETCH DOME SILHOUETTE · FLAT HEM BAND · KES 500
             </p>
           </div>
 
