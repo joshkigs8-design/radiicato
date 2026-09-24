@@ -1,51 +1,26 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import * as THREE from 'three';
 
 export function ChromeWebGLViewer() {
   const mountRef = useRef<HTMLDivElement>(null);
 
-  // UI state
-  const [autoRotate, setAutoRotate] = useState(true);
-  const [isWireframe, setIsWireframe] = useState(false);
-  const [flipY, setFlipY] = useState(false);
-  const [isMirrored, setIsMirrored] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // References to communicate with Three.js render loop
   const stateRef = useRef({
-    autoRotate: true,
-    isWireframe: false,
-    flipY: false,
-    isMirrored: false,
     rotationX: 0,
     rotationY: 0,
-    targetRotationX: 0,
-    targetRotationY: 0,
     isDragging: false,
     prevPointerX: 0,
     prevPointerY: 0,
-    velocityX: 0.008,
+    velocityX: 0,
     velocityY: 0,
-    zoom: 1,
-    material: null as THREE.MeshPhysicalMaterial | null,
     pointLight: null as THREE.PointLight | null,
     modelGroup: null as THREE.Group | null,
   });
-
-  // Keep stateRef synced with React state
-  useEffect(() => {
-    stateRef.current.autoRotate = autoRotate;
-  }, [autoRotate]);
-
-  useEffect(() => {
-    stateRef.current.isWireframe = isWireframe;
-    if (stateRef.current.material) {
-      stateRef.current.material.wireframe = isWireframe;
-    }
-  }, [isWireframe]);
 
   // Main Three.js Scene Setup
   useEffect(() => {
@@ -164,7 +139,6 @@ export function ChromeWebGLViewer() {
       alphaTest: 0.08,
       side: THREE.DoubleSide,
     });
-    stateRef.current.material = chromeMaterial;
 
     // High polygon density planar base for 3D extrusion
     // 120 x 120 segments = 28,800 polygons of real 3D geometry!
@@ -242,38 +216,41 @@ export function ChromeWebGLViewer() {
     let clock = new THREE.Clock();
 
     const animate = () => {
+      const delta = Math.min(clock.getDelta(), 0.05);
       const elapsedTime = clock.getElapsedTime();
 
       // Continuous 360-degree rotation & interactive physics
-      if (stateRef.current.autoRotate && !stateRef.current.isDragging) {
-        stateRef.current.rotationY += 0.012;
-        // Natural gentle floating wave
-        modelGroup.position.y = Math.sin(elapsedTime * 1.5) * 0.12;
-        modelGroup.rotation.x = THREE.MathUtils.lerp(
-          modelGroup.rotation.x,
-          Math.sin(elapsedTime * 0.9) * 0.08,
-          0.05
-        );
-      } else if (!stateRef.current.isDragging) {
-        // Inertia damping
-        if (Math.abs(stateRef.current.velocityX) > 0.0001) {
+      if (!stateRef.current.isDragging) {
+        // Inertia damping if recently dragged by user
+        if (Math.abs(stateRef.current.velocityX) > 0.001) {
           stateRef.current.rotationY += stateRef.current.velocityX;
-          stateRef.current.velocityX *= 0.94;
+          stateRef.current.velocityX *= 0.93;
+        } else {
+          // Continuous smooth luxury turntable spin (~6s per 360° rotation)
+          stateRef.current.rotationY += delta * 1.05;
         }
-        if (Math.abs(stateRef.current.velocityY) > 0.0001) {
-          stateRef.current.rotationX += stateRef.current.velocityY;
-          stateRef.current.velocityY *= 0.94;
-        }
-      }
 
-      modelGroup.rotation.y = stateRef.current.rotationY;
-      modelGroup.rotation.z = stateRef.current.flipY ? Math.PI : 0;
-      modelGroup.scale.x = stateRef.current.isMirrored ? -1 : 1;
-      if (stateRef.current.isDragging) {
+        if (Math.abs(stateRef.current.velocityY) > 0.001) {
+          stateRef.current.rotationX += stateRef.current.velocityY;
+          stateRef.current.velocityY *= 0.93;
+        }
+
+        // Return rotationX gently to subtle natural floating wave
+        stateRef.current.rotationX = THREE.MathUtils.lerp(
+          stateRef.current.rotationX,
+          Math.sin(elapsedTime * 1.1) * 0.06,
+          0.04
+        );
+
+        // Natural gentle floating wave on Y
+        modelGroup.position.y = Math.sin(elapsedTime * 1.5) * 0.12;
+      } else {
         modelGroup.rotation.x = stateRef.current.rotationX;
       }
 
-      // Dynamic light tracking
+      modelGroup.rotation.y = stateRef.current.rotationY;
+
+      // Dynamic specular light tracking for liquid chrome gleam
       if (stateRef.current.pointLight) {
         stateRef.current.pointLight.position.x = Math.sin(elapsedTime * 1.8) * 3;
         stateRef.current.pointLight.position.y = Math.cos(elapsedTime * 1.4) * 2;
@@ -351,18 +328,9 @@ export function ChromeWebGLViewer() {
     (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
   };
 
-  const resetView = () => {
-    stateRef.current.rotationX = 0;
-    stateRef.current.rotationY = 0;
-    if (stateRef.current.modelGroup) {
-      stateRef.current.modelGroup.rotation.set(0, 0, 0);
-    }
-    setAutoRotate(true);
-  };
-
   return (
     <div
-      className="relative w-full h-[calc(100vh-var(--navbar-height))] overflow-hidden bg-black select-none touch-none cursor-grab active:cursor-grabbing flex items-center justify-center"
+      className="relative w-full h-[calc(100vh-var(--navbar-height))] overflow-hidden bg-black select-none touch-pan-y cursor-grab active:cursor-grabbing flex items-center justify-center"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -389,77 +357,6 @@ export function ChromeWebGLViewer() {
           WebkitMaskImage: 'linear-gradient(to top, black, transparent)',
         }}
       />
-
-      {/* Glassmorphic 3D Controls HUD */}
-      <div
-        className="absolute top-6 inset-x-0 z-20 flex justify-center pointer-events-none px-4"
-      >
-        <div className="glass-panel px-4 py-2 rounded-full flex items-center gap-3 pointer-events-auto">
-          <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-          <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/80">
-            WEBGL 3D CHROME STUDY
-          </span>
-          <div className="h-3 w-[1px] bg-white/20 mx-1" />
-          <button
-            type="button"
-            onClick={() => setAutoRotate((prev) => !prev)}
-            className={`text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full transition-colors ${
-              autoRotate ? 'bg-white text-black font-semibold' : 'bg-white/10 text-white/70 hover:bg-white/20'
-            }`}
-          >
-            {autoRotate ? 'ROTATING' : 'PAUSED'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsWireframe((prev) => !prev)}
-            className={`text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full transition-colors ${
-              isWireframe ? 'bg-white text-black font-semibold' : 'bg-white/10 text-white/70 hover:bg-white/20'
-            }`}
-          >
-            {isWireframe ? 'WIREFRAME: ON' : 'POLYGONS'}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setFlipY((prev) => {
-                const next = !prev;
-                stateRef.current.flipY = next;
-                return next;
-              });
-            }}
-            className="text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-white/20 transition-colors"
-          >
-            FLIP 180°
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsMirrored((prev) => {
-                const next = !prev;
-                stateRef.current.isMirrored = next;
-                return next;
-              });
-            }}
-            className="text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-white/20 transition-colors"
-          >
-            {isMirrored ? 'UNMIRROR' : 'MIRROR'}
-          </button>
-          <button
-            type="button"
-            onClick={resetView}
-            className="text-[10px] font-mono uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-white/20 transition-colors"
-          >
-            RESET
-          </button>
-        </div>
-      </div>
-
-      {/* Drag instruction cue */}
-      <div className="absolute bottom-28 inset-x-0 z-20 flex justify-center pointer-events-none">
-        <span className="text-[10px] font-mono tracking-[0.25em] uppercase text-white/40 glass-pill px-4 py-1">
-          DRAG TO ORBIT 360° // SCROLL TO ZOOM
-        </span>
-      </div>
 
       {/* Bottom Pinned Frosted Glass CTA — PESOS Exact Match */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
