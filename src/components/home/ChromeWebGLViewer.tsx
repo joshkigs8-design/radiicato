@@ -18,6 +18,7 @@ export function ChromeWebGLViewer() {
     prevPointerY: 0,
     velocityX: 0,
     velocityY: 0,
+    baseY: 0,
     pointLight: null as THREE.PointLight | null,
     modelGroup: null as THREE.Group | null,
   });
@@ -242,8 +243,9 @@ export function ChromeWebGLViewer() {
           0.04
         );
 
-        // Natural gentle floating wave on Y
-        modelGroup.position.y = Math.sin(elapsedTime * 1.5) * 0.12;
+        // Natural gentle floating wave on Y around responsive baseY
+        const baseY = stateRef.current.baseY || 0;
+        modelGroup.position.y = baseY + Math.sin(elapsedTime * 1.5) * 0.1;
       } else {
         modelGroup.rotation.x = stateRef.current.rotationX;
       }
@@ -262,22 +264,59 @@ export function ChromeWebGLViewer() {
 
     animId = requestAnimationFrame(animate);
 
-    // 8. Handle Window Resize
-    const handleResize = () => {
+    // 8. Dynamic Responsive Framing (Guarantees perfect logo fit on any phone or desktop)
+    const applyResponsiveFraming = () => {
       if (!container) return;
       width = container.clientWidth;
       height = container.clientHeight;
-      camera.aspect = width / height;
+      if (width === 0 || height === 0) return;
+
+      const aspect = width / height;
+      camera.aspect = aspect;
+
+      // The 3D logo mesh width is 4.8 units. Vertical FOV is 42 degrees.
+      // Horizontal visible span = 2 * Z * tan(21°) * aspect.
+      // On narrow mobile screens (aspect < 1.25), we dynamically adjust camera Z
+      // so the 4.8-wide logo comfortably fills ~74% of the screen width with ~13% safe margins.
+      if (aspect < 1.25) {
+        const targetVisibleWidth = 6.4; // 4.8 / 0.75
+        const halfFovRad = (camera.fov * Math.PI) / 360;
+        const requiredZ = targetVisibleWidth / (2 * Math.tan(halfFovRad) * aspect);
+        camera.position.z = THREE.MathUtils.clamp(requiredZ, 7.5, 17.5);
+        // Elevate model slightly on phone portrait so it sits in the upper visual sweet spot
+        stateRef.current.baseY = THREE.MathUtils.lerp(0.35, 0, THREE.MathUtils.clamp((aspect - 0.45) / 0.8, 0, 1));
+      } else {
+        camera.position.z = 7.5;
+        stateRef.current.baseY = 0;
+      }
+
       camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
+      renderer.setSize(width, height, false);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     };
 
-    window.addEventListener('resize', handleResize);
+    // Initial calculation
+    applyResponsiveFraming();
+
+    // Listen for resize and orientation changes
+    window.addEventListener('resize', applyResponsiveFraming);
+    window.addEventListener('orientationchange', applyResponsiveFraming);
+
+    // ResizeObserver watches the container element directly for mobile toolbar changes
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        applyResponsiveFraming();
+      });
+      resizeObserver.observe(container);
+    }
 
     // Cleanup on unmount
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener('resize', handleResize);
+      if (resizeObserver) resizeObserver.disconnect();
+      window.removeEventListener('resize', applyResponsiveFraming);
+      window.removeEventListener('orientationchange', applyResponsiveFraming);
       renderer.dispose();
       frontGeom.dispose();
       backGeom.dispose();
@@ -330,7 +369,7 @@ export function ChromeWebGLViewer() {
 
   return (
     <div
-      className="relative w-full h-[calc(100vh-var(--navbar-height))] overflow-hidden bg-black select-none touch-pan-y cursor-grab active:cursor-grabbing flex items-center justify-center"
+      className="relative w-full h-[calc(100svh-var(--navbar-height))] sm:h-[calc(100vh-var(--navbar-height))] overflow-hidden bg-black select-none touch-pan-y cursor-grab active:cursor-grabbing flex items-center justify-center"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -349,7 +388,7 @@ export function ChromeWebGLViewer() {
 
       {/* Showroom Floor Grid */}
       <div
-        className="absolute inset-x-0 bottom-0 h-52 pointer-events-none opacity-20 z-0"
+        className="absolute inset-x-0 bottom-0 h-40 sm:h-52 pointer-events-none opacity-20 z-0"
         style={{
           background: 'linear-gradient(to top, rgba(255,255,255,0.08) 1px, transparent 1px)',
           backgroundSize: '100% 24px',
@@ -359,10 +398,10 @@ export function ChromeWebGLViewer() {
       />
 
       {/* Bottom Pinned Frosted Glass CTA — PESOS Exact Match */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+      <div className="pointer-events-none absolute inset-x-0 bottom-4 sm:bottom-6 z-20 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <Link
           href="/shop"
-          className="group pointer-events-auto glass-button rounded-[2px] px-6 py-4 text-center font-sans text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] max-[359px]:px-4 max-[359px]:text-[13px] sm:px-9"
+          className="group pointer-events-auto glass-button rounded-xl px-7 py-3.5 sm:px-9 sm:py-4 text-center font-sans text-[13px] sm:text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] shadow-2xl transition-all duration-300 hover:scale-105"
         >
           <span className="text-white transition-colors group-hover:text-black">
             Shop latest collection

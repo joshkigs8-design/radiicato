@@ -77,14 +77,14 @@ export default function HomePage() {
 
     return (
       <div
-        className="glass-card rounded-2xl p-3.5 flex flex-col group transition-all duration-300"
+        className="glass-card rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 flex flex-col group transition-all duration-300"
         onMouseEnter={() => setHoveredProductId(product.id)}
         onMouseLeave={() => setHoveredProductId(null)}
       >
         {/* Frame with subtle border */}
         <Link
           href={`/product/${product.slug}`}
-          className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden block"
+          className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-lg sm:rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden block"
         >
           <Image
             src={primaryImg}
@@ -93,7 +93,7 @@ export default function HomePage() {
             className={`object-cover object-center transition-all duration-700 ease-out ${
               isHovered && hoverImg ? 'opacity-0 scale-[1.03]' : 'opacity-100 scale-100'
             }`}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
           />
           {hoverImg && (
             <Image
@@ -103,34 +103,34 @@ export default function HomePage() {
               className={`object-cover object-center transition-all duration-700 ease-out ${
                 isHovered ? 'opacity-100 scale-[1.03]' : 'opacity-0 scale-100'
               }`}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
             />
           )}
         </Link>
 
         {/* Metadata underneath with glass styling */}
-        <div className="pt-4 flex flex-col space-y-2">
-          <div className="flex items-baseline justify-between">
+        <div className="pt-2.5 sm:pt-4 flex flex-col space-y-1 sm:space-y-2">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5 sm:gap-2">
             <Link
               href={`/product/${product.slug}`}
-              className="text-[14px] sm:text-[15px] font-bold uppercase tracking-tight text-white hover:opacity-70 transition-opacity"
+              className="text-[12px] sm:text-[15px] font-bold uppercase tracking-tight text-white hover:opacity-70 transition-opacity line-clamp-1"
             >
               {product.name}
             </Link>
-            <span className="text-[13px] font-mono font-medium text-white/90 ml-3 shrink-0">
+            <span className="text-[11px] sm:text-[13px] font-mono font-medium text-white/90 shrink-0">
               {formatKES(product.price)}
             </span>
           </div>
 
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-[11px] font-mono tracking-wider uppercase text-white/50">
-              280 GSM · ORGANIC COTTON
+          <div className="flex items-center justify-between pt-0.5 sm:pt-1 gap-1">
+            <span className="text-[9px] sm:text-[11px] font-mono tracking-wider uppercase text-white/50 truncate">
+              280 GSM · COTTON
             </span>
             <button
               onClick={() => handleQuickAdd(product)}
-              className="glass-button text-[11px] font-mono uppercase tracking-[0.14em] font-semibold text-white/90 px-3 py-1.5 rounded-lg cursor-pointer"
+              className="glass-button text-[9px] sm:text-[11px] font-mono uppercase tracking-[0.14em] font-semibold text-white/90 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg cursor-pointer shrink-0"
             >
-              {quickAddedId === product.id ? 'ADDED ✓' : '+ ADD TO BAG'}
+              {quickAddedId === product.id ? 'ADDED ✓' : '+ ADD'}
             </button>
           </div>
         </div>
@@ -155,9 +155,9 @@ export default function HomePage() {
           02 — BROKEN RECORD (Collection 01 Introduction)
           Editorial photograph with glassmorphism overlay card.
           ========================================================================= */}
-      <section id="broken-record" className="relative w-full bg-black py-20 sm:py-28 px-6 sm:px-10 lg:px-14 border-b border-white/10">
+      <section id="broken-record" className="relative w-full bg-black py-12 sm:py-24 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
-          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
             <Image
               src="/images/broken-record.jpg"
               alt="Broken Record Collection 01"
@@ -166,21 +166,21 @@ export default function HomePage() {
               sizes="100vw"
             />
             {/* Glassmorphic editorial card overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent flex flex-col justify-end p-6 sm:p-12 lg:p-16">
-              <motion.div {...motionFadeIn} className="glass-panel p-6 sm:p-10 rounded-2xl max-w-xl text-white">
-                <span className="text-[11px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-2">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-10 lg:p-16">
+              <motion.div {...motionFadeIn} className="glass-panel p-5 sm:p-10 rounded-xl sm:rounded-2xl max-w-xl text-white">
+                <span className="text-[10px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-1.5 sm:mb-2">
                   COLLECTION 01
                 </span>
-                <h2 className="pesos-text-face text-[clamp(28px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-4 text-white">
+                <h2 className="pesos-text-face text-[clamp(24px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-3 sm:mb-4 text-white">
                   BROKEN RECORD
                 </h2>
-                <p className="text-[15px] sm:text-[16px] text-white/80 font-normal mb-8 leading-snug">
+                <p className="text-[13px] sm:text-[16px] text-white/80 font-normal mb-6 sm:mb-8 leading-snug">
                   A repetition worth breaking.
                 </p>
                 <div>
                   <Link
                     href="/collections/broken-record"
-                    className="inline-flex items-center gap-3 glass-button px-6 py-4 text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl"
+                    className="inline-flex items-center justify-center gap-3 glass-button w-full sm:w-auto px-5 sm:px-6 py-3.5 sm:py-4 text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl text-center"
                   >
                     <span>EXPLORE BROKEN RECORD</span>
                     <ArrowRight size={15} />
@@ -197,23 +197,23 @@ export default function HomePage() {
           03 — BROKEN RECORD PRODUCT STRIP
           Glassmorphic catalogue grid with hover luminescence.
           ========================================================================= */}
-      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/10">
+      <section className="w-full bg-black py-12 sm:py-20 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
           {/* Header */}
-          <div className="flex items-baseline justify-between mb-10 pb-5 border-b border-white/15">
-            <h3 className="pesos-text-face text-xl sm:text-2xl font-bold uppercase tracking-[-0.03em] text-white">
+          <div className="flex items-baseline justify-between mb-6 sm:mb-10 pb-4 sm:pb-5 border-b border-white/15">
+            <h3 className="pesos-text-face text-lg sm:text-2xl font-bold uppercase tracking-[-0.03em] text-white">
               BROKEN RECORD
             </h3>
             <Link
               href="/collections/broken-record"
-              className="text-[12px] font-mono tracking-[0.16em] uppercase text-white/60 hover:text-white transition-colors"
+              className="text-[11px] sm:text-[12px] font-mono tracking-[0.16em] uppercase text-white/60 hover:text-white transition-colors"
             >
               SHOP CAPSULE →
             </Link>
           </div>
 
-          {/* Product Strip: 3 Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Product Strip: 2 columns on mobile, 3 on desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
             {brokenRecordProducts.map((product) => (
               <ProductCard key={product.id} product={product} fallbackImg="/images/products/broken-record-front.jpg" />
             ))}
@@ -226,7 +226,7 @@ export default function HomePage() {
           04 — FULL-WIDTH TRANSITION IMAGE
           Nairobi Street Culture & Movement
           ========================================================================= */}
-      <section className="relative w-full h-[75vh] sm:h-[90vh] bg-black overflow-hidden flex items-end p-6 sm:p-12 lg:p-20 border-b border-white/10">
+      <section className="relative w-full h-[60vh] sm:h-[90vh] bg-black overflow-hidden flex items-end p-4 sm:p-12 lg:p-20 border-b border-white/10">
         <Image
           src="/images/owner_editorial.jpg"
           alt="Radiicato Nairobi Street Atelier"
@@ -236,14 +236,14 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 
-        <motion.div {...motionFadeIn} className="relative z-10 glass-panel p-6 sm:p-10 rounded-2xl max-w-xl text-white">
-          <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/60 block mb-2">
+        <motion.div {...motionFadeIn} className="relative z-10 glass-panel p-5 sm:p-10 rounded-xl sm:rounded-2xl max-w-xl text-white">
+          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase text-white/60 block mb-1.5 sm:mb-2">
             RADIICATO
           </span>
-          <h2 className="pesos-text-face text-[clamp(28px,4.5vw,56px)] font-bold uppercase tracking-[-0.04em] leading-[0.9]">
+          <h2 className="pesos-text-face text-[clamp(24px,4.5vw,56px)] font-bold uppercase tracking-[-0.04em] leading-[0.9]">
             MADE HERE.<br />WORN EVERYWHERE.
           </h2>
-          <p className="mt-4 text-[14px] sm:text-[15px] text-white/80 font-normal leading-relaxed">
+          <p className="mt-3 sm:mt-4 text-[13px] sm:text-[15px] text-white/80 font-normal leading-relaxed">
             Engineered in Nairobi for those who refuse to blend in. Independent underground luxury.
           </p>
         </motion.div>
@@ -254,9 +254,9 @@ export default function HomePage() {
           05 — WE ARE WHO WE ARE (Collection 02 Hero)
           Obsidian atmosphere with glassmorphic editorial panel.
           ========================================================================= */}
-      <section id="we-are-who-we-are" className="relative w-full bg-black py-20 sm:py-28 px-6 sm:px-10 lg:px-14 border-b border-white/10">
+      <section id="we-are-who-we-are" className="relative w-full bg-black py-12 sm:py-24 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
-          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
             <Image
               src="/images/we-are-who-we-are.jpg"
               alt="We Are Who We Are Collection 02"
@@ -265,21 +265,21 @@ export default function HomePage() {
               sizes="100vw"
             />
             {/* Glassmorphic Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent flex flex-col justify-end p-6 sm:p-12 lg:p-16">
-              <motion.div {...motionFadeIn} className="glass-panel p-6 sm:p-10 rounded-2xl max-w-xl text-white">
-                <span className="text-[11px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-2">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-10 lg:p-16">
+              <motion.div {...motionFadeIn} className="glass-panel p-5 sm:p-10 rounded-xl sm:rounded-2xl max-w-xl text-white">
+                <span className="text-[10px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-1.5 sm:mb-2">
                   COLLECTION 02
                 </span>
-                <h2 className="pesos-text-face text-[clamp(28px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-4 text-white">
+                <h2 className="pesos-text-face text-[clamp(24px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-3 sm:mb-4 text-white">
                   WE ARE WHO WE ARE
                 </h2>
-                <p className="text-[13px] sm:text-[14px] font-mono tracking-[0.16em] uppercase text-white/60 mb-8">
+                <p className="text-[12px] sm:text-[14px] font-mono tracking-[0.16em] uppercase text-white/60 mb-6 sm:mb-8">
                   NO EXPLANATION NECESSARY.
                 </p>
                 <div>
                   <Link
                     href="/collections/we-are-who-we-are"
-                    className="inline-flex items-center gap-3 glass-button px-6 py-4 text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl"
+                    className="inline-flex items-center justify-center gap-3 glass-button w-full sm:w-auto px-5 sm:px-6 py-3.5 sm:py-4 text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl text-center"
                   >
                     <span>EXPLORE COLLECTION</span>
                     <ArrowRight size={15} />
@@ -295,37 +295,37 @@ export default function HomePage() {
       {/* =========================================================================
           06 — WE ARE WHO WE ARE PRODUCT EDIT ("THE EDIT")
           ========================================================================= */}
-      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/10">
+      <section className="w-full bg-black py-12 sm:py-20 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
           {/* Header */}
-          <div className="flex items-baseline justify-between mb-10 pb-5 border-b border-white/15">
+          <div className="flex items-baseline justify-between mb-6 sm:mb-10 pb-4 sm:pb-5 border-b border-white/15">
             <div>
-              <span className="text-[11px] font-mono tracking-[0.22em] uppercase text-white/50 block mb-1">
+              <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.22em] uppercase text-white/50 block mb-1">
                 THE EDIT
               </span>
-              <h3 className="pesos-text-face text-xl sm:text-2xl font-bold uppercase tracking-[-0.03em] text-white">
+              <h3 className="pesos-text-face text-lg sm:text-2xl font-bold uppercase tracking-[-0.03em] text-white">
                 WE ARE WHO WE ARE
               </h3>
             </div>
             <Link
               href="/collections/we-are-who-we-are"
-              className="text-[12px] font-mono tracking-[0.16em] uppercase text-white/60 hover:text-white transition-colors"
+              className="text-[11px] sm:text-[12px] font-mono tracking-[0.16em] uppercase text-white/60 hover:text-white transition-colors"
             >
               VIEW ALL →
             </Link>
           </div>
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Product Grid: 2 columns on mobile, 3 on desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
             {weAreWhoWeAreProducts.map((product) => (
               <ProductCard key={product.id} product={product} fallbackImg="/images/products/we-are-who-we-are-front.jpg" />
             ))}
           </div>
 
-          <div className="mt-14 text-center">
+          <div className="mt-8 sm:mt-14 text-center">
             <Link
               href="/collections/we-are-who-we-are"
-              className="inline-flex items-center gap-2 glass-pill px-5 py-2 text-[12px] font-mono tracking-[0.18em] uppercase text-white/80 hover:text-white transition-colors"
+              className="inline-flex items-center justify-center gap-2 glass-pill px-4 sm:px-5 py-2 text-[11px] sm:text-[12px] font-mono tracking-[0.18em] uppercase text-white/80 hover:text-white transition-colors w-full sm:w-auto"
             >
               <span>VIEW ALL COLLECTION 02 PIECES</span>
               <ArrowRight size={14} />
@@ -338,42 +338,45 @@ export default function HomePage() {
       {/* =========================================================================
           07 — SKULL CAPS (Intimate Accessory Chapter)
           ========================================================================= */}
-      <section id="skull-caps" className="w-full bg-black py-24 px-6 sm:px-10 lg:px-14 border-b border-white/10">
+      {/* =========================================================================
+          07 — SKULL CAPS (Intimate Accessory Chapter)
+          ========================================================================= */}
+      <section id="skull-caps" className="w-full bg-black py-12 sm:py-24 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1400px] mx-auto">
           {/* Header */}
-          <div className="text-center mb-14">
-            <span className="text-[11px] font-mono tracking-[0.24em] uppercase text-white/50 block mb-2">
+          <div className="text-center mb-8 sm:mb-14">
+            <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.24em] uppercase text-white/50 block mb-1.5 sm:mb-2">
               ACCESSORY CHAPTER 03
             </span>
-            <h3 className="pesos-text-face text-[clamp(28px,5vw,52px)] font-bold uppercase tracking-[-0.04em] text-white">
+            <h3 className="pesos-text-face text-[clamp(24px,5vw,52px)] font-bold uppercase tracking-[-0.04em] text-white">
               SKULL CAPS
             </h3>
-            <p className="mt-2 text-[13px] font-mono tracking-[0.16em] text-white/60 uppercase">
+            <p className="mt-1.5 sm:mt-2 text-[11px] sm:text-[13px] font-mono tracking-[0.16em] text-white/60 uppercase">
               STRETCH DOME SILHOUETTE · FLAT HEM BAND · KES 500
             </p>
           </div>
 
-          {/* Model Rocking Skull Cap + 3 Colorways in Glass Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-12">
+          {/* Model Rocking Skull Cap + 3 Colorways in 2x2 Mobile / 1x4 Desktop Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
             {/* Model Editorial Shot */}
-            <div className="glass-card rounded-2xl p-3 flex flex-col group">
-              <div className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden">
+            <div className="glass-card rounded-xl sm:rounded-2xl p-2.5 sm:p-3 flex flex-col group">
+              <div className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-lg sm:rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden">
                 <Image
                   src="/images/skull-cap-model.jpg"
                   alt="Model rocking Radiicato Skull Cap"
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 25vw"
+                  sizes="(max-width: 640px) 50vw, 25vw"
                 />
-                <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-                  <span className="text-[10px] font-mono tracking-widest uppercase text-white/80 glass-pill px-2.5 py-0.5">
+                <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-black/80 to-transparent">
+                  <span className="text-[9px] sm:text-[10px] font-mono tracking-widest uppercase text-white/80 glass-pill px-2 py-0.5">
                     WORN IN NAIROBI
                   </span>
                 </div>
               </div>
-              <div className="pt-3.5 flex items-baseline justify-between text-[13px] font-mono uppercase px-1">
-                <span className="font-bold text-white">EDITORIAL LOOK</span>
-                <span className="text-white/60">STREET STUDY</span>
+              <div className="pt-2.5 sm:pt-3.5 flex items-baseline justify-between text-[11px] sm:text-[13px] font-mono uppercase px-0.5 sm:px-1">
+                <span className="font-bold text-white">EDITORIAL</span>
+                <span className="text-white/60">STUDY</span>
               </div>
             </div>
 
@@ -382,22 +385,22 @@ export default function HomePage() {
               { href: '/product/radiicato-skull-cap-slate-grey', src: '/images/products/radiicato-skull-cap-grey.jpg', name: 'SLATE GREY' },
               { href: '/product/radiicato-skull-cap-midnight-camo', src: '/images/products/radiicato-skull-cap-camo.jpg', name: 'NIGHT CAMO' },
             ].map((cap) => (
-              <div key={cap.name} className="glass-card rounded-2xl p-3 flex flex-col group">
+              <div key={cap.name} className="glass-card rounded-xl sm:rounded-2xl p-2.5 sm:p-3 flex flex-col group">
                 <Link
                   href={cap.href}
-                  className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden"
+                  className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-lg sm:rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden"
                 >
                   <Image
                     src={cap.src}
                     alt={`Radiicato Skull Cap ${cap.name}`}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, 25vw"
+                    sizes="(max-width: 640px) 50vw, 25vw"
                   />
                 </Link>
-                <div className="pt-3.5 flex items-baseline justify-between text-[13px] font-mono uppercase px-1">
-                  <span className="font-bold text-white">{cap.name}</span>
-                  <span className="text-white/70">{formatKES(500)}</span>
+                <div className="pt-2.5 sm:pt-3.5 flex items-baseline justify-between text-[11px] sm:text-[13px] font-mono uppercase px-0.5 sm:px-1">
+                  <span className="font-bold text-white truncate">{cap.name}</span>
+                  <span className="text-white/70 shrink-0 ml-1">{formatKES(500)}</span>
                 </div>
               </div>
             ))}
@@ -407,7 +410,7 @@ export default function HomePage() {
           <div className="text-center">
             <Link
               href="/collections/skull-caps"
-              className="inline-flex items-center gap-3 glass-button px-8 py-4 text-[13px] font-semibold uppercase tracking-[0.14em] rounded-xl"
+              className="inline-flex items-center justify-center gap-3 glass-button w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 text-[12px] sm:text-[13px] font-semibold uppercase tracking-[0.14em] rounded-xl text-center"
             >
               <span>SHOP SKULL CAPS</span>
               <ArrowRight size={15} />
@@ -420,28 +423,28 @@ export default function HomePage() {
       {/* =========================================================================
           08 — RADIICATO MANIFESTO (Glassmorphic Plaque)
           ========================================================================= */}
-      <section className="w-full bg-black py-24 sm:py-32 px-6 sm:px-12 border-b border-white/10">
-        <div className="max-w-[1200px] mx-auto glass-panel p-8 sm:p-14 lg:p-20 rounded-3xl shadow-2xl">
-          <motion.div {...motionFadeIn} className="space-y-8">
-            <span className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/50 block">
+      <section className="w-full bg-black py-12 sm:py-28 px-4 sm:px-12 border-b border-white/10">
+        <div className="max-w-[1200px] mx-auto glass-panel p-6 sm:p-14 lg:p-20 rounded-2xl sm:rounded-3xl shadow-2xl">
+          <motion.div {...motionFadeIn} className="space-y-6 sm:space-y-8">
+            <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase text-white/50 block">
               MANIFESTO // NAIROBI
             </span>
 
-            <h2 className="pesos-text-face text-[clamp(36px,6vw,84px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] text-white">
+            <h2 className="pesos-text-face text-[clamp(28px,6vw,84px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] text-white">
               WE ARE WHO WE ARE.
             </h2>
 
-            <div className="max-w-2xl space-y-6 pt-4">
-              <p className="text-[17px] sm:text-[20px] font-bold uppercase tracking-tight text-white leading-snug">
+            <div className="max-w-2xl space-y-4 sm:space-y-6 pt-2 sm:pt-4">
+              <p className="text-[15px] sm:text-[20px] font-bold uppercase tracking-tight text-white leading-snug">
                 RADIICATO IS A STATE OF MIND. AN EXPRESSION OF IDENTITY, CULTURE AND INDIVIDUALITY.
               </p>
-              <p className="text-[14px] sm:text-[15px] text-white/70 font-normal leading-relaxed">
+              <p className="text-[13px] sm:text-[15px] text-white/70 font-normal leading-relaxed">
                 Founded in Nairobi, Radiicato rejects fast-fashion dilution in favor of heavyweight 280 GSM combed organic cotton, hand-finished 3D metallic badges, and subversive street graphics made for those who walk their own path.
               </p>
               <div className="pt-2">
                 <Link
                   href="/about"
-                  className="inline-flex items-center gap-2 text-[13px] font-mono tracking-[0.18em] uppercase font-bold text-white hover:opacity-60 transition-opacity border-b border-white pb-1"
+                  className="inline-flex items-center gap-2 text-[12px] sm:text-[13px] font-mono tracking-[0.18em] uppercase font-bold text-white hover:opacity-60 transition-opacity border-b border-white pb-1"
                 >
                   <span>READ OUR STORY</span>
                   <ArrowRight size={14} />
@@ -456,25 +459,25 @@ export default function HomePage() {
       {/* =========================================================================
           09 — CAMPAIGN / LOOKBOOK
           ========================================================================= */}
-      <section className="w-full bg-black py-24 px-6 sm:px-10 lg:px-14 border-b border-white/10">
+      <section className="w-full bg-black py-12 sm:py-24 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
-          <div className="flex items-baseline justify-between mb-12 pb-5 border-b border-white/15">
-            <h3 className="pesos-text-face text-xl sm:text-3xl font-bold uppercase tracking-[-0.04em] text-white">
+          <div className="flex items-baseline justify-between mb-6 sm:mb-12 pb-4 sm:pb-5 border-b border-white/15">
+            <h3 className="pesos-text-face text-lg sm:text-3xl font-bold uppercase tracking-[-0.04em] text-white">
               THE WORLD OF RADIICATO
             </h3>
-            <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-white/50">
+            <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase text-white/50">
               EDITORIAL CAMPAIGN · NAIROBI
             </span>
           </div>
 
           {/* Masonry / Grid with Glass borders */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-6">
             {/* Left Dominant Tall Column (7 cols) */}
             <div
               onClick={() => handleOpenLookbook(0)}
-              className="md:col-span-7 relative aspect-[4/5] sm:aspect-[16/11] md:aspect-[4/5] glass-card rounded-2xl overflow-hidden cursor-pointer group p-2"
+              className="md:col-span-7 relative aspect-[4/5] sm:aspect-[16/11] md:aspect-[4/5] glass-card rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer group p-1.5 sm:p-2"
             >
-              <div className="relative w-full h-full rounded-xl overflow-hidden">
+              <div className="relative w-full h-full rounded-lg sm:rounded-xl overflow-hidden">
                 <Image
                   src="/images/broken-record.jpg"
                   alt="Broken Record Atelier Rooftop Session"
@@ -482,8 +485,8 @@ export default function HomePage() {
                   className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
                   sizes="(max-width: 768px) 100vw, 60vw"
                 />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <span className="glass-pill px-3 py-1 text-white text-[11px] font-mono tracking-widest uppercase">
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 sm:p-6">
+                  <span className="glass-pill px-3 py-1 text-white text-[10px] sm:text-[11px] font-mono tracking-widest uppercase">
                     LOOK 01 · VIEW FULLSCREEN ↗
                   </span>
                 </div>
@@ -491,13 +494,13 @@ export default function HomePage() {
             </div>
 
             {/* Right Stacked Column (5 cols) */}
-            <div className="md:col-span-5 flex flex-col gap-5 sm:gap-6">
+            <div className="md:col-span-5 flex flex-col gap-3 sm:gap-6">
               {/* Top Right */}
               <div
                 onClick={() => handleOpenLookbook(1)}
-                className="relative aspect-[4/3] glass-card rounded-2xl overflow-hidden cursor-pointer group p-2"
+                className="relative aspect-[4/3] glass-card rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer group p-1.5 sm:p-2"
               >
-                <div className="relative w-full h-full rounded-xl overflow-hidden">
+                <div className="relative w-full h-full rounded-lg sm:rounded-xl overflow-hidden">
                   <Image
                     src="/images/we-are-who-we-are.jpg"
                     alt="We Are Who We Are Westlands Underground"
@@ -505,8 +508,8 @@ export default function HomePage() {
                     className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
                     sizes="(max-width: 768px) 100vw, 40vw"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                    <span className="glass-pill px-3 py-1 text-white text-[11px] font-mono tracking-widest uppercase">
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 sm:p-6">
+                    <span className="glass-pill px-3 py-1 text-white text-[10px] sm:text-[11px] font-mono tracking-widest uppercase">
                       LOOK 02 · VIEW FULLSCREEN ↗
                     </span>
                   </div>
@@ -516,9 +519,9 @@ export default function HomePage() {
               {/* Bottom Right */}
               <div
                 onClick={() => handleOpenLookbook(3)}
-                className="relative aspect-[4/3] glass-card rounded-2xl overflow-hidden cursor-pointer group p-2"
+                className="relative aspect-[4/3] glass-card rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer group p-1.5 sm:p-2"
               >
-                <div className="relative w-full h-full rounded-xl overflow-hidden">
+                <div className="relative w-full h-full rounded-lg sm:rounded-xl overflow-hidden">
                   <Image
                     src="/images/owner_editorial.jpg"
                     alt="Nairobi Street Culture & Movement"
@@ -526,8 +529,8 @@ export default function HomePage() {
                     className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
                     sizes="(max-width: 768px) 100vw, 40vw"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                    <span className="glass-pill px-3 py-1 text-white text-[11px] font-mono tracking-widest uppercase">
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 sm:p-6">
+                    <span className="glass-pill px-3 py-1 text-white text-[10px] sm:text-[11px] font-mono tracking-widest uppercase">
                       LOOK 03 · VIEW FULLSCREEN ↗
                     </span>
                   </div>
@@ -542,29 +545,29 @@ export default function HomePage() {
       {/* =========================================================================
           10 — SHOP ALL (Glassmorphic Portal)
           ========================================================================= */}
-      <section className="w-full bg-black py-24 sm:py-32 px-6 sm:px-12 border-b border-white/10 text-center">
-        <div className="max-w-2xl mx-auto glass-panel p-10 sm:p-16 rounded-3xl space-y-7 shadow-2xl">
-          <h2 className="pesos-text-face text-[clamp(32px,5.5vw,68px)] font-bold uppercase tracking-[-0.04em] text-white">
+      <section className="w-full bg-black py-12 sm:py-28 px-4 sm:px-12 border-b border-white/10 text-center">
+        <div className="max-w-2xl mx-auto glass-panel p-6 sm:p-16 rounded-2xl sm:rounded-3xl space-y-5 sm:space-y-7 shadow-2xl">
+          <h2 className="pesos-text-face text-[clamp(26px,5.5vw,68px)] font-bold uppercase tracking-[-0.04em] text-white">
             SHOP RADIICATO
           </h2>
           <div>
             <Link
               href="/shop"
-              className="inline-flex items-center gap-3 glass-button px-8 py-4 text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl"
+              className="inline-flex items-center justify-center gap-3 glass-button w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl text-center"
             >
               <span>VIEW ALL PRODUCTS</span>
               <ArrowRight size={15} />
             </Link>
           </div>
 
-          <div className="pt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-[12px] font-mono tracking-[0.18em] uppercase text-white/60">
-            <Link href="/collections/broken-record" className="glass-pill px-3.5 py-1 text-white/80 hover:text-white transition-colors">
+          <div className="pt-4 sm:pt-6 flex flex-wrap items-center justify-center gap-2.5 sm:gap-6 text-[11px] sm:text-[12px] font-mono tracking-[0.18em] uppercase text-white/60">
+            <Link href="/collections/broken-record" className="glass-pill px-3 sm:px-3.5 py-1 text-white/80 hover:text-white transition-colors">
               BROKEN RECORD
             </Link>
-            <Link href="/collections/we-are-who-we-are" className="glass-pill px-3.5 py-1 text-white/80 hover:text-white transition-colors">
+            <Link href="/collections/we-are-who-we-are" className="glass-pill px-3 sm:px-3.5 py-1 text-white/80 hover:text-white transition-colors">
               WE ARE WHO WE ARE
             </Link>
-            <Link href="/collections/skull-caps" className="glass-pill px-3.5 py-1 text-white/80 hover:text-white transition-colors">
+            <Link href="/collections/skull-caps" className="glass-pill px-3 sm:px-3.5 py-1 text-white/80 hover:text-white transition-colors">
               SKULL CAPS
             </Link>
           </div>
@@ -575,24 +578,24 @@ export default function HomePage() {
       {/* =========================================================================
           11 — INSTAGRAM / SOCIAL
           ========================================================================= */}
-      <section className="w-full bg-black py-20 px-6 sm:px-10 lg:px-14 border-b border-white/10">
+      <section className="w-full bg-black py-12 sm:py-20 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
-          <div className="text-center mb-10">
-            <span className="text-[11px] font-mono tracking-[0.22em] uppercase text-white/50 block mb-1">
+          <div className="text-center mb-6 sm:mb-10">
+            <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.22em] uppercase text-white/50 block mb-1">
               FOLLOW THE WORLD
             </span>
             <a
               href="https://instagram.com/radiicato"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-lg sm:text-xl font-mono font-bold tracking-[0.16em] uppercase text-white hover:opacity-60 transition-opacity"
+              className="text-base sm:text-xl font-mono font-bold tracking-[0.16em] uppercase text-white hover:opacity-60 transition-opacity"
             >
               @RADIICATO
             </a>
           </div>
 
-          {/* Clean 6-photo Glass Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {/* Clean 6-photo Glass Grid — 3 cols on mobile, 6 on desktop */}
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
             {[
               { src: '/images/products/broken-record-front.jpg', alt: 'Radiicato Editorial 01' },
               { src: '/images/products/we-are-who-we-are-front.jpg', alt: 'Radiicato Editorial 02' },
@@ -606,15 +609,15 @@ export default function HomePage() {
                 href="https://instagram.com/radiicato"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-card rounded-xl p-1.5 overflow-hidden block group"
+                className="glass-card rounded-lg sm:rounded-xl p-1 sm:p-1.5 overflow-hidden block group"
               >
-                <div className="relative aspect-square w-full rounded-lg overflow-hidden">
+                <div className="relative aspect-square w-full rounded-md sm:rounded-lg overflow-hidden">
                   <Image
                     src={img.src}
                     alt={img.alt}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    sizes="(max-width: 640px) 33vw, 16vw"
                   />
                   <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
