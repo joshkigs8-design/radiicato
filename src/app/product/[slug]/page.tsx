@@ -6,8 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { 
   Heart, Plus, Minus, Check, ArrowRight, ShieldCheck, 
-  Ruler, Truck, RotateCcw, Sparkles, ChevronDown, ChevronUp, Star, Eye,
-  AlertCircle, Loader2
+  Ruler, Star, Eye, AlertCircle, Loader2
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES } from '@/lib/utils';
@@ -98,10 +97,10 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="pt-36 pb-32 px-6 text-center max-w-lg mx-auto space-y-4 bg-white text-[#0A0A0A]">
-        <h1 className="text-2xl font-bold uppercase text-[#0A0A0A]">Product Not Found</h1>
-        <p className="text-xs text-[#71717A]">The requested garment could not be found in our current archives.</p>
-        <Link href="/shop" className="inline-block px-6 py-2.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase hover:bg-[#27272A]">
+      <div className="pt-36 pb-32 px-6 text-center max-w-lg mx-auto space-y-4 text-white font-sans">
+        <h1 className="text-2xl font-bold uppercase text-white">Product Not Found</h1>
+        <p className="text-xs text-white/60">The requested garment could not be found in our current archives.</p>
+        <Link href="/shop" className="inline-block px-6 py-2.5 glass-button text-white text-xs font-bold uppercase rounded-xl hover:bg-white hover:text-black transition-colors">
           Return to Shop
         </Link>
       </div>
@@ -137,6 +136,10 @@ export default function ProductDetailPage() {
 
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 1200);
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('open-cart'));
+    }
   };
 
   const handleBuyNow = () => {
@@ -148,26 +151,22 @@ export default function ProductDetailPage() {
     e.preventDefault();
     setReviewError('');
 
-    // 1. Validate Rating (1-5)
     const numericRating = Math.round(Number(reviewRating));
     if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
       setReviewError('Please select a valid rating between 1 and 5 stars.');
       return;
     }
 
-    // 2. Validate Customer Name
     if (!reviewName.trim() || reviewName.trim().length < 2) {
       setReviewError('Please enter your name (minimum 2 characters).');
       return;
     }
 
-    // 3. Validate Comment
     if (!reviewComment.trim() || reviewComment.trim().length < 5) {
-      setReviewError('Please provide a detailed review comment (minimum 5 characters) discussing drape, sizing, or textile weight.');
+      setReviewError('Please provide a detailed review comment (minimum 5 characters).');
       return;
     }
 
-    // 4. Validate Email (if provided)
     const emailToUse = reviewEmail.trim() || 'shopper@radiicato.co.ke';
     if (reviewEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reviewEmail.trim())) {
       setReviewError('Please enter a valid email address.');
@@ -189,17 +188,14 @@ export default function ProductDetailPage() {
         status: 'approved' as const,
       };
 
-      // 1. Update Reactive In-Memory & LocalStorage Store immediately
       addReview(reviewPayload);
 
-      // 2. Submits to Supabase `reviews` table if available
       try {
         await createReviewInSupabase(reviewPayload);
       } catch (sbError) {
         console.warn('Supabase reviews table note:', sbError);
       }
 
-      // 3. Display success toast & inline confirmation state
       setReviewSubmitted(true);
       setToastMessage(`Your ${numericRating}-star review has been published to the Atelier!`);
       setReviewComment('');
@@ -208,10 +204,7 @@ export default function ProductDetailPage() {
       setReviewEmail('');
       setReviewRating(5);
 
-      setTimeout(() => {
-        setToastMessage(null);
-      }, 5000);
-
+      setTimeout(() => setToastMessage(null), 5000);
       setTimeout(() => {
         setReviewSubmitted(false);
         setShowReviewForm(false);
@@ -224,103 +217,29 @@ export default function ProductDetailPage() {
     }
   };
 
-  // Related products
   const relatedProducts = products
     .filter((p) => p.id !== product.id && p.categoryId === product.categoryId)
     .slice(0, 4);
 
-  // SEO Schema.org Structured Data
-  const productJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    description: product.shortDescription || product.description,
-    image: product.images.map((img) => (img.url.startsWith('http') ? img.url : `https://radiicato.co.ke${img.url}`)),
-    sku: product.sku,
-    brand: {
-      '@type': 'Brand',
-      name: 'RADIICATO',
-    },
-    offers: {
-      '@type': 'Offer',
-      price: product.salePrice || product.price,
-      priceCurrency: 'KES',
-      availability: product.variants.some((v) => v.stockQuantity > 0)
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      url: `https://radiicato.co.ke/product/${product.slug}`,
-      priceValidUntil: '2027-12-31',
-      seller: {
-        '@type': 'Organization',
-        name: 'RADIICATO APPAREL CO.',
-      },
-    },
-    aggregateRating: reviews.length > 0 ? {
-      '@type': 'AggregateRating',
-      ratingValue: (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1),
-      reviewCount: reviews.length,
-    } : {
-      '@type': 'AggregateRating',
-      ratingValue: '5.0',
-      reviewCount: 14,
-    },
-  };
-
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Archive',
-        item: 'https://radiicato.co.ke',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Shop',
-        item: 'https://radiicato.co.ke/shop',
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: product.name,
-        item: `https://radiicato.co.ke/product/${product.slug}`,
-      },
-    ],
-  };
-
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-screen bg-white text-[#0A0A0A]">
-      {/* Schema.org Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-
+    <div className="pt-24 sm:pt-32 pb-32 px-4 sm:px-8 lg:px-12 max-w-[1600px] mx-auto min-h-screen text-white font-sans">
       {/* Breadcrumb */}
-      <nav className="pb-8 text-[10px] font-mono tracking-[0.15em] uppercase text-[#A1A1AA] flex items-center gap-2">
-        <Link href="/" className="hover:text-black transition-colors">ARCHIVE</Link>
+      <nav className="pb-6 sm:pb-8 text-[10px] sm:text-[11px] font-mono tracking-[0.18em] uppercase text-white/50 flex items-center gap-2">
+        <Link href="/" className="hover:text-white transition-colors">ARCHIVE</Link>
         <span>/</span>
-        <Link href="/shop" className="hover:text-black transition-colors">SHOP</Link>
+        <Link href="/shop" className="hover:text-white transition-colors">SHOP</Link>
         <span>/</span>
-        <span className="text-[#0A0A0A] font-bold">{product.name}</span>
+        <span className="text-white font-bold truncate max-w-[200px] sm:max-w-none">{product.name}</span>
       </nav>
 
       {/* Main Grid Layout: Left Gallery + Right Product Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14">
         {/* =========================================================================
-            LEFT COLUMN: EDITORIAL GALLERY
+            LEFT COLUMN: EDITORIAL GALLERY (7 Cols on desktop)
             ========================================================================= */}
-        <div className="space-y-4">
+        <div className="lg:col-span-7 space-y-4">
           {/* Main Large Image */}
-          <div className="relative aspect-[3/4] w-full bg-[#F4F4F5] overflow-hidden border border-[#E4E4E7] shadow-xs">
+          <div className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
             {primaryImage && (
               <Image
                 src={primaryImage.url}
@@ -328,40 +247,40 @@ export default function ProductDetailPage() {
                 fill
                 priority
                 className="object-cover object-center"
-                sizes="(max-width: 1024px) 100vw, 55vw"
+                sizes="(max-width: 1024px) 100vw, 58vw"
               />
             )}
 
             {/* Badge overlay */}
-            <div className="absolute top-4 left-4 flex flex-col gap-2">
+            <div className="absolute top-3.5 left-3.5 sm:top-5 sm:left-5 flex flex-col gap-2 pointer-events-none">
               {product.isLimitedDrop && (
-                <span className="bg-[#0A0A0A] text-white text-[10px] font-mono tracking-widest uppercase px-3 py-1 shadow-sm">
+                <span className="glass-pill bg-black/80 text-white text-[9px] sm:text-[10px] font-mono tracking-widest uppercase px-3 py-1">
                   LIMITED DROP ({product.dropPieceCount || 50} PIECES)
                 </span>
               )}
               {product.salePrice && (
-                <span className="bg-[#0A0A0A] text-white text-[10px] font-mono tracking-widest uppercase px-3 py-1 shadow-sm">
+                <span className="glass-pill bg-black/80 text-rose-300 text-[9px] sm:text-[10px] font-mono tracking-widest uppercase px-3 py-1">
                   SALE ARCHIVE
                 </span>
               )}
             </div>
 
-            {/* Subtle View count proof */}
-            <div className="absolute bottom-4 right-4 bg-white/90 border border-[#E4E4E7] px-3 py-1.5 text-[11px] font-mono text-[#0A0A0A] flex items-center gap-2 shadow-xs">
-              <Eye size={13} className="text-[#0A0A0A]" />
-              <span>18 people viewing this piece</span>
+            {/* View count proof */}
+            <div className="absolute bottom-3.5 right-3.5 sm:bottom-5 sm:right-5 glass-pill bg-black/75 px-3 py-1.5 text-[10px] sm:text-[11px] font-mono text-white/90 flex items-center gap-2">
+              <Eye size={13} className="text-white" />
+              <span>18 people viewing</span>
             </div>
           </div>
 
           {/* Thumbnails Stack */}
           {product.images.length > 1 && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-4 gap-2.5 sm:gap-3">
               {product.images.map((img, idx) => (
                 <button
                   key={img.id}
                   onClick={() => setSelectedImageIndex(idx)}
-                  className={`relative aspect-[3/4] bg-[#F4F4F5] overflow-hidden border transition-all ${
-                    selectedImageIndex === idx ? 'border-[#0A0A0A]' : 'border-transparent opacity-70 hover:opacity-100'
+                  className={`relative aspect-[3/4] bg-[#0a0a0a] rounded-xl overflow-hidden border transition-all cursor-pointer ${
+                    selectedImageIndex === idx ? 'border-white shadow-lg scale-[1.02]' : 'border-white/15 opacity-60 hover:opacity-100'
                   }`}
                 >
                   <Image
@@ -369,7 +288,7 @@ export default function ProductDetailPage() {
                     alt={img.altText || `View ${idx + 1}`}
                     fill
                     className="object-cover"
-                    sizes="50vw"
+                    sizes="25vw"
                   />
                 </button>
               ))}
@@ -378,17 +297,17 @@ export default function ProductDetailPage() {
         </div>
 
         {/* =========================================================================
-            RIGHT COLUMN: PRODUCT DETAILS & BUYING CONTROLS
+            RIGHT COLUMN: PRODUCT DETAILS & BUYING CONTROLS (5 Cols on desktop)
             ========================================================================= */}
-        <div className="space-y-8 lg:sticky lg:top-28 lg:self-start">
+        <div className="lg:col-span-5 space-y-6 sm:space-y-8 lg:sticky lg:top-28 lg:self-start">
           {/* Header */}
-          <div className="space-y-3 border-b border-[#E4E4E7] pb-6">
-            <div className="flex justify-between items-center text-xs font-mono text-[#71717A] uppercase">
+          <div className="space-y-3 border-b border-white/10 pb-6">
+            <div className="flex justify-between items-center text-[10px] sm:text-[11px] font-mono text-white/50 uppercase">
               <span>SKU: {activeVariant?.sku || product.sku}</span>
-              <span className="text-[#0A0A0A] font-bold">AUTHENTIC GARMENT</span>
+              <span className="text-white font-bold">NAIROBI ATELIER</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
+            <h1 className="pesos-text-face text-2xl sm:text-3xl lg:text-4xl font-bold uppercase tracking-[-0.03em] text-white">
               {product.name}
             </h1>
 
@@ -396,32 +315,34 @@ export default function ProductDetailPage() {
             <div className="flex items-baseline gap-3 pt-1">
               {product.salePrice ? (
                 <>
-                  <span className="text-2xl font-mono font-bold text-[#0A0A0A]">
+                  <span className="text-2xl sm:text-3xl font-mono font-bold text-white">
                     {formatKES(product.salePrice)}
                   </span>
-                  <span className="text-sm font-mono text-[#71717A] line-through">
+                  <span className="text-sm font-mono text-white/40 line-through">
                     {formatKES(product.price)}
                   </span>
-                  <span className="text-xs font-mono text-red-600 bg-red-50 px-2 py-0.5 border border-red-200 font-bold">
+                  <span className="text-[11px] font-mono text-rose-300 glass-pill px-2.5 py-0.5 border-rose-500/30 font-bold">
                     SAVE {formatKES(product.price - product.salePrice)}
                   </span>
                 </>
               ) : (
-                <span className="text-2xl font-mono font-bold text-[#0A0A0A]">
+                <span className="text-2xl sm:text-3xl font-mono font-bold text-white">
                   {formatKES(product.price)}
                 </span>
               )}
             </div>
 
-            <p className="text-sm text-[#71717A] leading-relaxed pt-2">
-              {product.shortDescription}
-            </p>
+            {product.shortDescription && (
+              <p className="text-xs sm:text-sm text-white/70 leading-relaxed pt-1">
+                {product.shortDescription}
+              </p>
+            )}
           </div>
 
           {/* Color Selection */}
-          <div className="space-y-3">
-            <div className="flex justify-between text-xs font-mono uppercase text-[#71717A]">
-              <span>COLORWAY: <strong className="text-[#0A0A0A] font-bold">{currentColor}</strong></span>
+          <div className="space-y-2.5">
+            <div className="flex justify-between text-xs font-mono uppercase text-white/60">
+              <span>COLORWAY: <strong className="text-white font-bold">{currentColor}</strong></span>
             </div>
             <div className="flex gap-2 flex-wrap">
               {availableColors.map((color) => (
@@ -429,15 +350,15 @@ export default function ProductDetailPage() {
                   key={color.name}
                   onClick={() => {
                     setSelectedColor(color.name);
-                    setSelectedSize(''); // Reset size when color changes
+                    setSelectedSize('');
                   }}
-                  className={`w-12 h-12 border flex items-center justify-center transition-all ${
-                    currentColor === color.name ? 'border-[#0A0A0A] bg-[#0A0A0A]' : 'border-[#E4E4E7] hover:border-[#0A0A0A] bg-white'
+                  className={`w-11 h-11 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
+                    currentColor === color.name ? 'border-white bg-white/20 shadow-md' : 'border-white/15 hover:border-white/40 bg-white/5'
                   }`}
                   title={color.name}
                 >
                   <span
-                    className="w-5 h-5 rounded-full border border-[#E4E4E7] block"
+                    className="w-4 h-4 rounded-full border border-white/20 block"
                     style={{ backgroundColor: color.hex }}
                   />
                 </button>
@@ -447,11 +368,11 @@ export default function ProductDetailPage() {
 
           {/* Size Selection & Inventory Matrix */}
           <div className="space-y-3">
-            <div className="flex justify-between items-center text-xs font-mono uppercase text-[#71717A]">
+            <div className="flex justify-between items-center text-xs font-mono uppercase text-white/60">
               <span>SELECT SIZE</span>
               <button
                 onClick={() => setSizeGuideOpen(true)}
-                className="text-[#0A0A0A] underline hover:text-[#0A0A0A] transition-colors flex items-center gap-1 text-[11px] font-bold"
+                className="text-white underline hover:opacity-70 transition-opacity flex items-center gap-1 text-[11px] font-bold cursor-pointer"
               >
                 <Ruler size={13} /> Size Guide
               </button>
@@ -467,12 +388,12 @@ export default function ProductDetailPage() {
                     key={variant.id}
                     disabled={isOut}
                     onClick={() => setSelectedSize(variant.size)}
-                    className={`w-12 h-12 border flex items-center justify-center text-[11px] font-mono font-semibold tracking-wider transition-all ${
+                    className={`w-12 h-12 rounded-xl text-[11px] font-mono font-bold tracking-wider transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]'
+                        ? 'bg-white text-black shadow-lg scale-105'
                         : isOut
-                        ? 'border-[#E4E4E7] opacity-30 line-through bg-white text-[#A1A1AA] cursor-not-allowed'
-                        : 'border-[#E4E4E7] hover:border-[#0A0A0A] bg-white text-[#0A0A0A]'
+                        ? 'border border-white/10 opacity-30 line-through bg-white/5 text-white/30 cursor-not-allowed'
+                        : 'border border-white/20 hover:border-white bg-white/5 text-white'
                     }`}
                   >
                     {variant.size}
@@ -481,20 +402,20 @@ export default function ProductDetailPage() {
               })}
             </div>
 
-            {/* Inventory Scarcity Status Bar */}
+            {/* Inventory Status Bar */}
             <div className="pt-1">
               {isOutOfStock ? (
-                <p className="text-xs font-mono text-red-700 bg-red-50 border border-red-200 p-2.5 font-medium">
-                  CURRENTLY SOLD OUT IN THIS SIZE. Check back for archival restock.
+                <p className="text-xs font-mono text-rose-300 glass-card p-3 rounded-xl border-rose-500/30">
+                  CURRENTLY SOLD OUT IN THIS SIZE.
                 </p>
               ) : isLowStock ? (
-                <p className="text-xs font-mono text-amber-800 bg-amber-50 border border-amber-200 p-2.5 flex items-center gap-2 font-medium">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                <p className="text-xs font-mono text-amber-300 glass-card p-3 rounded-xl border-amber-500/30 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
                   LOW STOCK: Only {activeVariant?.stockQuantity} pieces left in our Nairobi atelier.
                 </p>
               ) : (
-                <p className="text-xs font-mono text-[#0A0A0A] flex items-center gap-1.5 font-bold">
-                  <Check size={14} /> In Stock & Ready for Dispatch
+                <p className="text-xs font-mono text-emerald-300 flex items-center gap-1.5 font-bold">
+                  <Check size={14} /> In Stock &amp; Ready for Dispatch in Nairobi
                 </p>
               )}
             </div>
@@ -504,19 +425,19 @@ export default function ProductDetailPage() {
           <div className="space-y-3 pt-2">
             <div className="flex gap-3">
               {/* Stepper */}
-              <div className="flex items-center border border-[#E4E4E7] bg-white px-3 shadow-xs">
+              <div className="flex items-center glass-card rounded-xl px-2.5 py-1">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1 || isOutOfStock}
-                  className="text-[#52525B] hover:text-black p-1 disabled:opacity-30"
+                  className="text-white/60 hover:text-white p-1 disabled:opacity-30 cursor-pointer"
                 >
                   <Minus size={14} />
                 </button>
-                <span className="px-4 text-xs font-mono font-bold text-black">{quantity}</span>
+                <span className="px-3 text-xs font-mono font-bold text-white">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
                   disabled={isOutOfStock || (activeVariant && quantity >= activeVariant.stockQuantity)}
-                  className="text-[#52525B] hover:text-black p-1 disabled:opacity-30"
+                  className="text-white/60 hover:text-white p-1 disabled:opacity-30 cursor-pointer"
                 >
                   <Plus size={14} />
                 </button>
@@ -526,12 +447,12 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleAddToCart}
                 disabled={isOutOfStock || isAdded}
-                className={`w-full bg-[#0A0A0A] text-white py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase hover:opacity-80 transition-opacity flex items-center justify-center gap-2 ${
+                className={`flex-1 py-4 text-[12px] font-mono font-bold tracking-[0.14em] uppercase rounded-xl transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
                   isAdded
-                    ? 'bg-[#0A0A0A] text-white'
+                    ? 'bg-emerald-500 text-black'
                     : isOutOfStock
-                    ? 'bg-[#F4F4F5] text-[#A1A1AA] cursor-not-allowed border border-[#E4E4E7]'
-                    : 'bg-[#0A0A0A] text-white hover:bg-[#27272A]'
+                    ? 'bg-white/10 text-white/30 cursor-not-allowed border border-white/10'
+                    : 'glass-button bg-white text-black hover:bg-white/90'
                 }`}
               >
                 {isAdded ? (
@@ -549,14 +470,14 @@ export default function ProductDetailPage() {
               {/* Wishlist Button */}
               <button
                 onClick={() => toggleWishlist(product.id)}
-                className={`w-full border border-[#E4E4E7] py-3 text-[11px] font-mono tracking-wider uppercase hover:border-[#0A0A0A] flex justify-center items-center gap-2 mt-2 ${
+                className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                   inWish
-                    ? 'border-black bg-black text-white'
-                    : 'border-[#E4E4E7] bg-white text-black hover:border-black'
+                    ? 'bg-white text-black border-white'
+                    : 'glass-card border-white/20 text-white hover:border-white'
                 }`}
                 title={inWish ? 'Remove from wishlist' : 'Add to wishlist'}
               >
-                <Heart size={18} className={inWish ? 'fill-white' : ''} />
+                <Heart size={18} className={inWish ? 'fill-black' : ''} />
               </button>
             </div>
 
@@ -564,7 +485,7 @@ export default function ProductDetailPage() {
             {!isOutOfStock && (
               <button
                 onClick={handleBuyNow}
-                className="w-full py-3.5 border border-[#0A0A0A] hover:border-black bg-[#F4F4F5] hover:bg-[#0A0A0A] text-[#0A0A0A] hover:text-white text-xs font-bold tracking-widest uppercase transition-colors shadow-xs"
+                className="w-full py-3.5 glass-card rounded-xl text-white hover:border-white text-[11px] font-mono font-bold tracking-widest uppercase transition-all shadow-md active:scale-95 cursor-pointer"
               >
                 BUY NOW WITH M-PESA / CARD
               </button>
@@ -572,17 +493,17 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Sticky Mobile Add to Cart Bar */}
-          <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-[#E4E4E7] z-40 flex items-center gap-3 shadow-lg">
-            <div className="flex-1">
-              <span className="text-[10px] font-mono text-[#71717A] uppercase block truncate">{product.name}</span>
-              <span className="text-xs font-mono font-bold text-black">
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-black/90 backdrop-blur-2xl border-t border-white/15 z-40 flex items-center gap-3 shadow-[0_-8px_30px_rgba(0,0,0,0.8)] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] font-mono text-white/50 uppercase block truncate">{product.name}</span>
+              <span className="text-sm font-mono font-bold text-white">
                 {formatKES(product.salePrice || product.price)}
               </span>
             </div>
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className="bg-[#0A0A0A] text-white px-6 py-3 text-xs font-bold tracking-widest uppercase"
+              className="glass-button bg-white text-black px-6 py-3 text-xs font-mono font-bold tracking-wider uppercase rounded-xl active:scale-95 cursor-pointer"
             >
               {isOutOfStock ? 'SOLD OUT' : 'ADD TO BAG'}
             </button>
@@ -591,97 +512,89 @@ export default function ProductDetailPage() {
           {/* =========================================================================
               EXPANDABLE ACCORDIONS
               ========================================================================= */}
-          <div className="space-y-0">
+          <div className="space-y-0 pt-4">
             {/* Description & Materials */}
-            <div className="border-t border-[#E4E4E7]">
+            <div className="border-t border-white/10">
               <button
                 onClick={() => toggleAccordion('details')}
-                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.14em] uppercase py-4 text-white/90 hover:text-white transition-colors cursor-pointer"
               >
-                <span>FABRIC & MATERIAL SPECIFICATIONS</span>
+                <span>FABRIC &amp; SPECIFICATIONS</span>
                 {openAccordions.details ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.details && (
-                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
+                <div className="text-xs sm:text-sm text-white/70 leading-relaxed pb-4 space-y-2">
                   <p>{product.description}</p>
-                  <p className="font-mono text-black text-[11px] font-bold">TEXTILE: {product.material}</p>
+                  <p className="font-mono text-white text-[11px] font-bold">TEXTILE: {product.material}</p>
                 </div>
               )}
             </div>
 
             {/* Silhouette & Fit */}
-            <div className="border-t border-[#E4E4E7]">
+            <div className="border-t border-white/10">
               <button
                 onClick={() => toggleAccordion('fit')}
-                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.14em] uppercase py-4 text-white/90 hover:text-white transition-colors cursor-pointer"
               >
-                <span>SILHOUETTE & FIT ADVISORY</span>
+                <span>SILHOUETTE &amp; FIT ADVISORY</span>
                 {openAccordions.fit ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.fit && (
-                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
+                <div className="text-xs sm:text-sm text-white/70 leading-relaxed pb-4 space-y-1">
                   <p>{product.fit}</p>
-                  <p className="text-[11px] text-[#71717A]">
-                    Engineered with drop shoulders and structured armhole drape. Model is 6&apos;1&quot; (185 cm) wearing size L.
+                  <p className="text-[11px] text-white/50">
+                    Engineered with drop shoulders and boxy drape. Model is wearing size L.
                   </p>
                 </div>
               )}
             </div>
 
             {/* Garment Care */}
-            <div className="border-t border-[#E4E4E7]">
+            <div className="border-t border-white/10">
               <button
                 onClick={() => toggleAccordion('care')}
-                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.14em] uppercase py-4 text-white/90 hover:text-white transition-colors cursor-pointer"
               >
-                <span>CARE & WASH INSTRUCTIONS</span>
+                <span>CARE &amp; WASH INSTRUCTIONS</span>
                 {openAccordions.care ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.care && (
-                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
+                <div className="text-xs sm:text-sm text-white/70 leading-relaxed pb-4">
                   <p>{product.careInstructions}</p>
                 </div>
               )}
             </div>
 
             {/* Shipping & Delivery in Kenya */}
-            <div className="border-t border-[#E4E4E7]">
+            <div className="border-t border-white/10">
               <button
                 onClick={() => toggleAccordion('shipping')}
-                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.14em] uppercase py-4 text-white/90 hover:text-white transition-colors cursor-pointer"
               >
-                <span>KENYAN & GLOBAL DELIVERY</span>
+                <span>KENYAN &amp; GLOBAL DELIVERY</span>
                 {openAccordions.shipping ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.shipping && (
-                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
-                  <p>
-                    <strong className="text-black">Nairobi:</strong> Same-day dispatch on orders placed before 2:00 PM EAT.
-                  </p>
-                  <p>
-                    <strong className="text-black">Kiambu, Mombasa, Kisumu, Nakuru:</strong> 1-2 business days via Fargo Courier.
-                  </p>
-                  <p>
-                    <strong className="text-black">Free Express Shipping:</strong> Unlocked automatically on all Kenyan orders above KES 10,000.
-                  </p>
+                <div className="text-xs sm:text-sm text-white/70 leading-relaxed pb-4 space-y-1">
+                  <p><strong className="text-white">Nairobi:</strong> Same-day dispatch on orders placed before 2:00 PM EAT.</p>
+                  <p><strong className="text-white">Kiambu, Mombasa, Kisumu, Nakuru:</strong> 1-2 business days via Fargo Courier.</p>
+                  <p><strong className="text-white">Free Express Shipping:</strong> Unlocked automatically on all Kenyan orders above KES 10,000.</p>
                 </div>
               )}
             </div>
 
             {/* Returns & Exchanges */}
-            <div className="border-t border-[#E4E4E7]">
+            <div className="border-t border-white/10">
               <button
                 onClick={() => toggleAccordion('returns')}
-                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.12em] uppercase py-4"
+                className="w-full flex justify-between items-center text-[11px] font-mono font-semibold tracking-[0.14em] uppercase py-4 text-white/90 hover:text-white transition-colors cursor-pointer"
               >
                 <span>7-DAY EXCHANGE POLICY</span>
                 {openAccordions.returns ? <span>−</span> : <span>+</span>}
               </button>
               {openAccordions.returns && (
-                <div className="text-sm text-[#71717A] leading-relaxed pb-4">
-                  <p>
-                    Complimentary size exchanges within 7 days of delivery across Nairobi. Garments must be unworn with original metallic tags attached.
-                  </p>
+                <div className="text-xs sm:text-sm text-white/70 leading-relaxed pb-4">
+                  <p>Complimentary size exchanges within 7 days of delivery across Nairobi. Garments must be unworn with original metallic tags attached.</p>
                 </div>
               )}
             </div>
@@ -692,53 +605,50 @@ export default function ProductDetailPage() {
       {/* =========================================================================
           VERIFIED CUSTOMER REVIEWS
           ========================================================================= */}
-      {/* =========================================================================
-          VERIFIED CUSTOMER REVIEWS
-          ========================================================================= */}
-      <section id="reviews-section" className="mt-28 pt-16 border-t border-[#E4E4E7]">
-        <div className="flex flex-col md:flex-row justify-between md:items-end pb-8 border-b border-[#E4E4E7] gap-4">
+      <section id="reviews-section" className="mt-20 sm:mt-28 pt-12 sm:pt-16 border-t border-white/10">
+        <div className="flex flex-col md:flex-row justify-between md:items-end pb-8 border-b border-white/10 gap-4">
           <div>
-            <span className="text-[10px] font-mono tracking-widest uppercase text-[#0A0A0A] font-bold">CLIENT TESTIMONIALS</span>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#0A0A0A] mt-1">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-white/50 font-bold block mb-1">CLIENT TESTIMONIALS</span>
+            <h2 className="pesos-text-face text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white">
               COMMUNITY REVIEWS ({reviews.length})
             </h2>
           </div>
           <div className="flex items-center gap-4 flex-wrap">
             {avgRating ? (
               <div className="flex items-center gap-2">
-                <div className="flex text-[#0A0A0A]">
+                <div className="flex text-amber-400">
                   {[...Array(Math.round(Number(avgRating)))].map((_, i) => (
-                    <Star key={i} size={16} className="fill-[#0A0A0A]" />
+                    <Star key={i} size={15} className="fill-amber-400" />
                   ))}
                 </div>
-                <span className="text-xs font-mono text-black font-bold">{avgRating} / 5.0 RATING</span>
+                <span className="text-xs font-mono text-white font-bold">{avgRating} / 5.0</span>
               </div>
             ) : (
-              <span className="text-xs font-mono text-[#71717A] uppercase tracking-wider">NO REVIEWS YET</span>
+              <span className="text-xs font-mono text-white/50 uppercase tracking-wider">NO REVIEWS YET</span>
             )}
             <button
               onClick={() => setShowReviewForm(!showReviewForm)}
-              className="px-4 py-2 bg-[#0A0A0A] text-white hover:bg-[#27272A] text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
+              className="glass-button text-white px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-xl hover:bg-white hover:text-black transition-all cursor-pointer"
             >
               {showReviewForm ? 'CLOSE REVIEW FORM' : 'WRITE A REVIEW'}
             </button>
           </div>
         </div>
 
-        {/* Write a Review Form (Animated & Collapsible) */}
+        {/* Write a Review Form */}
         {showReviewForm && (
-          <div className="mt-8 mt-8 max-w-2xl">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">Leave an Atelier Review</h3>
-            <p className="text-xs text-[#71717A] mt-1 font-mono">Share your thoughts on textile weight, drape, and sizing.</p>
+          <div className="mt-8 max-w-2xl glass-card rounded-2xl p-6 sm:p-8 border-white/15">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white">Leave an Atelier Review</h3>
+            <p className="text-xs text-white/60 mt-1 font-mono">Share your thoughts on textile weight, drape, and sizing.</p>
 
             {reviewSubmitted ? (
-              <div className="mt-4 p-5 bg-[#F4F4F5] border border-[#DCE4D3] text-xs text-[#0A0A0A] flex items-center gap-3 animate-in fade-in duration-200">
-                <div className="w-8 h-8 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center shrink-0">
+              <div className="mt-4 p-5 glass-panel rounded-xl text-xs text-white flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center shrink-0">
                   <Check size={18} />
                 </div>
                 <div>
-                  <h4 className="font-bold uppercase tracking-wider text-[#0A0A0A] text-xs">Review Published to Atelier</h4>
-                  <p className="text-[11px] text-[#52525B] font-mono mt-0.5">
+                  <h4 className="font-bold uppercase tracking-wider text-white text-xs">Review Published to Atelier</h4>
+                  <p className="text-[11px] text-white/70 font-mono mt-0.5">
                     Thank you! Your verified community review is now live on this garment.
                   </p>
                 </div>
@@ -747,73 +657,73 @@ export default function ProductDetailPage() {
               <form onSubmit={handleSubmitReview} className="mt-6 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1">Your Name *</label>
+                    <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Your Name *</label>
                     <input
                       type="text"
                       required
                       placeholder="E.G. JOSHUA KIGEN"
                       value={reviewName}
                       onChange={(e) => setReviewName(e.target.value)}
-                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm focus:outline-none focus:border-[#0A0A0A] transition-colors placeholder-[#A1A1AA]"
+                      className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white transition-colors placeholder-white/30"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1">Email (Private) *</label>
+                    <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Email (Private) *</label>
                     <input
                       type="email"
                       required
                       placeholder="E.G. JOSHUA@GMAIL.COM"
                       value={reviewEmail}
                       onChange={(e) => setReviewEmail(e.target.value)}
-                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm focus:outline-none focus:border-[#0A0A0A] transition-colors placeholder-[#A1A1AA]"
+                      className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white transition-colors placeholder-white/30"
                     />
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 pt-1">
-                  <span className="text-xs font-mono text-[#71717A] uppercase font-semibold">Rating:</span>
+                  <span className="text-xs font-mono text-white/60 uppercase font-semibold">Rating:</span>
                   <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((num) => (
                       <button
                         key={num}
                         type="button"
                         onClick={() => setReviewRating(num)}
-                        className="p-1 text-[#0A0A0A] hover:scale-110 transition-transform"
+                        className="p-1 text-white hover:scale-110 transition-transform cursor-pointer"
                       >
-                        <Star size={20} className={num <= reviewRating ? 'fill-[#0A0A0A] text-[#0A0A0A]' : 'text-[#E4E4E7]'} />
+                        <Star size={18} className={num <= reviewRating ? 'fill-amber-400 text-amber-400' : 'text-white/20'} />
                       </button>
                     ))}
                   </div>
-                  <span className="text-xs font-mono font-bold text-black ml-2">{reviewRating}.0 / 5.0</span>
+                  <span className="text-xs font-mono font-bold text-white ml-2">{reviewRating}.0 / 5.0</span>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1">Review Headline *</label>
+                  <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Review Headline *</label>
                   <input
                     type="text"
                     required
                     placeholder="HEADLINE (E.G. UNMATCHED HEAVYWEIGHT 280 GSM DRAPE)"
                     value={reviewTitle}
                     onChange={(e) => setReviewTitle(e.target.value)}
-                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm focus:outline-none focus:border-[#0A0A0A] transition-colors placeholder-[#A1A1AA]"
+                    className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white transition-colors placeholder-white/30"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1">Detailed Review *</label>
+                  <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Detailed Review *</label>
                   <textarea
                     rows={4}
                     required
                     placeholder="HOW DOES IT FIT? WHAT DO YOU THINK OF THE 3D METALLIC CHROME EMBLEM AND COMBED COTTON?"
                     value={reviewComment}
                     onChange={(e) => setReviewComment(e.target.value)}
-                    className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm focus:outline-none focus:border-[#0A0A0A] transition-colors placeholder-[#A1A1AA]"
+                    className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white transition-colors placeholder-white/30"
                   />
-                  <p className="text-[10px] font-mono text-[#71717A] mt-1">Minimum 5 characters required.</p>
+                  <p className="text-[10px] font-mono text-white/40 mt-1">Minimum 5 characters required.</p>
                 </div>
 
                 {reviewError && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+                  <div className="p-3 glass-card rounded-xl border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
                     <AlertCircle size={15} className="shrink-0" />
                     <span className="font-mono text-[11px]">{reviewError}</span>
                   </div>
@@ -822,7 +732,7 @@ export default function ProductDetailPage() {
                 <button
                   type="submit"
                   disabled={isSubmittingReview}
-                  className="bg-[#0A0A0A] text-white px-8 py-3.5 text-xs font-bold tracking-widest uppercase hover:bg-[#27272A] shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="glass-button bg-white text-black px-8 py-3 text-xs font-mono font-bold tracking-widest uppercase rounded-xl hover:bg-white/90 shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmittingReview ? (
                     <>
@@ -838,19 +748,18 @@ export default function ProductDetailPage() {
           </div>
         )}
 
-        {/* Existing Reviews List or Clean Empty State */}
+        {/* Existing Reviews List */}
         {reviews.length === 0 ? (
-          <div className="mt-8 p-12 bg-[#FAFAF9] border border-[#E4E4E7] text-center space-y-3">
-            <Sparkles size={24} className="mx-auto text-[#0A0A0A]" />
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">NO COMMUNITY REVIEWS YET</h3>
-            <p className="text-xs text-[#71717A] max-w-sm mx-auto font-mono">
+          <div className="mt-8 p-10 glass-card rounded-2xl text-center space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white">NO COMMUNITY REVIEWS YET</h3>
+            <p className="text-xs text-white/60 max-w-sm mx-auto font-mono">
               Be the first to share your experience wearing this atelier garment.
             </p>
             {!showReviewForm && (
               <div className="pt-2">
                 <button
                   onClick={() => setShowReviewForm(true)}
-                  className="inline-block px-6 py-2.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#27272A] transition-colors"
+                  className="glass-button text-white px-6 py-2.5 text-xs font-mono font-bold uppercase tracking-widest rounded-xl hover:bg-white hover:text-black transition-all cursor-pointer"
                 >
                   BE THE FIRST TO REVIEW
                 </button>
@@ -858,24 +767,24 @@ export default function ProductDetailPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-8">
             {reviews.map((rev) => (
-              <div key={rev.id} className="border-b border-[#E4E4E7] py-6 space-y-4">
+              <div key={rev.id} className="glass-card rounded-2xl p-5 space-y-3 border-white/10">
                 <div className="flex justify-between items-center">
-                  <div className="flex text-[#0A0A0A]">
+                  <div className="flex text-amber-400">
                     {[...Array(rev.rating)].map((_, i) => (
-                      <Star key={i} size={14} className="fill-[#0A0A0A]" />
+                      <Star key={i} size={13} className="fill-amber-400" />
                     ))}
                   </div>
                   {rev.isVerifiedPurchase && (
-                    <span className="text-[10px] font-mono text-[#0A0A0A] font-bold flex items-center gap-1">
-                      <ShieldCheck size={12} /> VERIFIED BUYER
+                    <span className="text-[10px] font-mono text-emerald-300 font-bold flex items-center gap-1">
+                      <ShieldCheck size={12} /> VERIFIED
                     </span>
                   )}
                 </div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]">&ldquo;{rev.title}&rdquo;</h4>
-                <p className="text-xs text-[#52525B] leading-relaxed font-light">{rev.comment}</p>
-                <div className="pt-2 border-t border-[#E4E4E7] text-[10px] font-mono text-[#71717A] flex justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-white">&ldquo;{rev.title}&rdquo;</h4>
+                <p className="text-xs text-white/70 leading-relaxed font-light">{rev.comment}</p>
+                <div className="pt-2 border-t border-white/10 text-[10px] font-mono text-white/40 flex justify-between">
                   <span>{rev.customerName}</span>
                   <span>{new Date(rev.createdAt).toLocaleDateString()}</span>
                 </div>
@@ -887,14 +796,14 @@ export default function ProductDetailPage() {
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <section className="mt-28 pt-16 border-t border-[#E4E4E7]">
-          <div className="pb-8 border-b border-[#E4E4E7] mb-12">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-[#0A0A0A] font-bold">CURATED HARMONY</span>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#0A0A0A] mt-1">
+        <section className="mt-20 sm:mt-28 pt-12 sm:pt-16 border-t border-white/10">
+          <div className="pb-6 sm:pb-8 border-b border-white/10 mb-8 sm:mb-12">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-white/50 font-bold block mb-1">CURATED HARMONY</span>
+            <h2 className="pesos-text-face text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white">
               PAIR WITH THIS PIECE
             </h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {relatedProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
@@ -904,38 +813,38 @@ export default function ProductDetailPage() {
 
       {/* Size Guide Modal */}
       {sizeGuideOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white border border-[#E4E4E7] max-w-xl w-full p-8 text-[#0A0A0A] relative shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in font-sans">
+          <div className="glass-panel-heavy rounded-2xl border border-white/20 max-w-xl w-full p-6 sm:p-8 text-white relative shadow-2xl">
             <button
               onClick={() => setSizeGuideOpen(false)}
-              className="absolute top-4 right-4 text-[#71717A] hover:text-black"
+              className="absolute top-4 right-4 text-white/60 hover:text-white p-1 rounded-full cursor-pointer"
             >
               ✕
             </button>
-            <h3 className="text-lg font-bold uppercase tracking-wider text-[#0A0A0A]">RADIICATO SIZE MATRIX</h3>
-            <p className="text-xs text-[#52525B] mt-1 font-mono">Measurements in centimeters (cm). Garments cut boxy & oversized.</p>
+            <h3 className="text-lg font-bold uppercase tracking-wider text-white">RADIICATO SIZE MATRIX</h3>
+            <p className="text-xs text-white/60 mt-1 font-mono">Measurements in centimeters (cm). Garments cut boxy &amp; oversized.</p>
 
             <div className="mt-6 overflow-x-auto">
-              <table className="w-full text-xs font-mono text-left border border-[#E4E4E7]">
-                <thead className="bg-[#F4F4F5] text-[#0A0A0A]">
+              <table className="w-full text-xs font-mono text-left border border-white/10">
+                <thead className="bg-white/5 text-white">
                   <tr>
-                    <th className="p-2.5 border-b border-[#E4E4E7]">SIZE</th>
-                    <th className="p-2.5 border-b border-[#E4E4E7]">CHEST (PIT-TO-PIT)</th>
-                    <th className="p-2.5 border-b border-[#E4E4E7]">LENGTH</th>
-                    <th className="p-2.5 border-b border-[#E4E4E7]">SLEEVE</th>
+                    <th className="p-2.5 border-b border-white/10">SIZE</th>
+                    <th className="p-2.5 border-b border-white/10">CHEST (PIT-TO-PIT)</th>
+                    <th className="p-2.5 border-b border-white/10">LENGTH</th>
+                    <th className="p-2.5 border-b border-white/10">SLEEVE</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E4E4E7]">
-                  <tr><td className="p-2.5 font-bold">S</td><td className="p-2.5">58 cm</td><td className="p-2.5">72 cm</td><td className="p-2.5">23 cm</td></tr>
-                  <tr><td className="p-2.5 font-bold">M</td><td className="p-2.5">61 cm</td><td className="p-2.5">74 cm</td><td className="p-2.5">24 cm</td></tr>
-                  <tr><td className="p-2.5 font-bold">L</td><td className="p-2.5">64 cm</td><td className="p-2.5">76 cm</td><td className="p-2.5">25 cm</td></tr>
-                  <tr><td className="p-2.5 font-bold">XL</td><td className="p-2.5">67 cm</td><td className="p-2.5">78 cm</td><td className="p-2.5">26 cm</td></tr>
-                  <tr><td className="p-2.5 font-bold">XXL</td><td className="p-2.5">70 cm</td><td className="p-2.5">80 cm</td><td className="p-2.5">27 cm</td></tr>
+                <tbody className="divide-y divide-white/10 text-white/80">
+                  <tr><td className="p-2.5 font-bold text-white">S</td><td className="p-2.5">58 cm</td><td className="p-2.5">72 cm</td><td className="p-2.5">23 cm</td></tr>
+                  <tr><td className="p-2.5 font-bold text-white">M</td><td className="p-2.5">61 cm</td><td className="p-2.5">74 cm</td><td className="p-2.5">24 cm</td></tr>
+                  <tr><td className="p-2.5 font-bold text-white">L</td><td className="p-2.5">64 cm</td><td className="p-2.5">76 cm</td><td className="p-2.5">25 cm</td></tr>
+                  <tr><td className="p-2.5 font-bold text-white">XL</td><td className="p-2.5">67 cm</td><td className="p-2.5">78 cm</td><td className="p-2.5">26 cm</td></tr>
+                  <tr><td className="p-2.5 font-bold text-white">XXL</td><td className="p-2.5">70 cm</td><td className="p-2.5">80 cm</td><td className="p-2.5">27 cm</td></tr>
                 </tbody>
               </table>
             </div>
 
-            <p className="text-[11px] text-[#71717A] mt-4">
+            <p className="text-[11px] text-white/60 mt-4 leading-relaxed">
               Take your regular size for an intended relaxed streetwear silhouette, or size down one size for a fitted tailor drape.
             </p>
           </div>
@@ -944,8 +853,8 @@ export default function ProductDetailPage() {
 
       {/* Floating Review Success Toast */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#0A0A0A] text-white px-5 py-3.5 shadow-2xl border border-[#27272A] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-3 duration-300">
-          <div className="w-5 h-5 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center shrink-0">
+        <div className="fixed bottom-6 right-6 z-50 glass-card bg-black/90 text-white px-5 py-3.5 rounded-xl shadow-2xl border border-white/20 flex items-center gap-3 animate-fade-in">
+          <div className="w-5 h-5 rounded-full bg-emerald-500 text-black flex items-center justify-center shrink-0">
             <Check size={12} />
           </div>
           <span className="text-xs font-mono tracking-wider">{toastMessage}</span>

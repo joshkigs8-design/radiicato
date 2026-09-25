@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Search } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 
 interface NavbarProps {
@@ -52,7 +52,7 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 z-40 flex h-[var(--navbar-height)] w-full items-center px-6 transition-all duration-300 ${
+        className={`fixed top-0 left-0 z-40 flex h-[var(--navbar-height)] w-full items-center px-4 sm:px-6 transition-all duration-300 ${
           isScrolled
             ? 'glass-panel-heavy'
             : 'bg-black/35 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.3)]'
@@ -68,17 +68,17 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
               width={180}
               height={70}
               priority
-              className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 hover:scale-105"
+              className="h-9 sm:h-12 w-auto object-contain transition-transform duration-300 hover:scale-105"
             />
           </Link>
 
-          {/* Desktop Nav Links — PESOS exact layout */}
+          {/* Desktop Nav Links */}
           <div className="pesos-nav__links flex items-center gap-8 font-sans transition-colors duration-300 text-white">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-[17px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${
+                className={`text-[16px] lg:text-[17px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${
                   isActive(link.href) ? 'text-white' : 'text-white/80'
                 }`}
               >
@@ -99,10 +99,19 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
               <option value="TZS" className="text-black">TZS</option>
             </select>
 
+            {/* Search Trigger */}
+            <button
+              onClick={onOpenSearch}
+              className="relative flex items-center transition-opacity hover:opacity-50 cursor-pointer p-1.5 rounded-full hover:bg-white/10 text-white"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" aria-hidden />
+            </button>
+
             {/* Shopping Bag */}
             <button
               onClick={onOpenCart}
-              className="relative flex items-center transition-opacity hover:opacity-50 cursor-pointer p-1.5 rounded-full hover:bg-white/10"
+              className="relative flex items-center transition-opacity hover:opacity-50 cursor-pointer p-1.5 rounded-full hover:bg-white/10 text-white"
               aria-label="Cart"
             >
               <ShoppingBag className="h-5 w-5" aria-hidden />
@@ -114,25 +123,35 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
             </button>
           </div>
 
-          {/* Mobile Menu Toggle — PESOS animated hamburger */}
-          <div className="pesos-mobile-menu">
+          {/* Mobile Menu & Actions */}
+          <div className="pesos-mobile-menu gap-3">
+            {/* Mobile search icon */}
+            <button
+              onClick={onOpenSearch}
+              className="relative flex items-center p-1.5 text-white/80 hover:text-white transition-opacity"
+              aria-label="Search archive"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+
             {/* Mobile cart icon */}
             <button
               onClick={onOpenCart}
-              className="mr-4 relative flex items-center transition-opacity hover:opacity-50"
+              className="relative flex items-center p-1.5 text-white/80 hover:text-white transition-opacity"
               aria-label="Cart"
             >
-              <ShoppingBag className="h-5 w-5 text-white" />
+              <ShoppingBag className="h-5 w-5" />
               {cartSummary.itemsCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 h-4 w-4 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">
+                <span className="absolute -top-1 -right-1.5 h-4 w-4 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">
                   {cartSummary.itemsCount}
                 </span>
               )}
             </button>
 
+            {/* Hamburger Toggle */}
             <button
               type="button"
-              className="pesos-mobile-menu__toggle"
+              className="pesos-mobile-menu__toggle ml-1"
               aria-expanded={mobileMenuOpen}
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -147,25 +166,43 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
 
       {/* Mobile Drawer — Fullscreen glass backdrop blur */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 top-[var(--navbar-height)] glass-panel-heavy z-50 flex flex-col justify-between p-7 animate-fade-in text-white md:hidden">
-          <div className="space-y-6 pt-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-3xl font-bold uppercase tracking-tight text-white hover:opacity-60 transition-opacity"
-              >
-                {link.name}
-              </Link>
-            ))}
+        <div className="fixed inset-0 top-[var(--navbar-height)] glass-panel-heavy z-50 flex flex-col justify-between p-6 sm:p-8 animate-fade-in text-white md:hidden overflow-y-auto">
+          <div className="space-y-6 pt-2">
+            {/* Search Pill inside mobile drawer */}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenSearch();
+              }}
+              className="w-full glass-card p-3 rounded-xl flex items-center justify-between text-xs font-mono tracking-widest uppercase text-white/70 hover:text-white border-white/15"
+            >
+              <span className="flex items-center gap-2">
+                <Search size={14} /> SEARCH ARCHIVE
+              </span>
+              <span className="text-[10px] text-white/40">OPEN ↗</span>
+            </button>
+
+            <div className="space-y-5 pt-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block text-3xl font-bold uppercase tracking-tight transition-opacity ${
+                    isActive(link.href) ? 'text-white' : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
           </div>
 
-          <div className="border-t border-white/15 pt-6 pb-4 space-y-3">
+          <div className="border-t border-white/15 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] space-y-3">
             {/* Currency selector mobile */}
             <select
               aria-label="Display currency"
-              className="cursor-pointer rounded-full border bg-transparent px-3 py-1.5 text-[14px] font-medium tracking-[0.06em] border-white/30 text-white w-auto"
+              className="cursor-pointer rounded-xl border bg-black/60 px-3.5 py-2 text-[13px] font-medium tracking-[0.06em] border-white/20 text-white w-auto"
             >
               <option value="KES" className="text-black" selected>KES</option>
               <option value="USD" className="text-black">USD</option>
@@ -173,7 +210,7 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
               <option value="GBP" className="text-black">GBP</option>
             </select>
 
-            <div className="text-[12px] font-mono tracking-[0.16em] uppercase text-white/60 space-y-2 pt-2">
+            <div className="text-[11px] font-mono tracking-[0.16em] uppercase text-white/50 space-y-1 pt-2">
               <p className="text-white font-bold">NAIROBI, KENYA</p>
               <p>WE ARE WHO WE ARE.</p>
               <p>© 2026 RADIICATO</p>

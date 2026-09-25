@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useParams, notFound } from 'next/navigation';
-import { ArrowLeft, Clock, ShieldCheck, Sparkles } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { ArrowLeft, Clock } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { ProductCard } from '@/components/product/ProductCard';
 
@@ -38,12 +38,12 @@ export default function SingleCollectionPage() {
 
   if (!collection) {
     return (
-      <div className="pt-36 pb-32 px-6 text-center max-w-lg mx-auto space-y-4">
-        <h1 className="text-2xl font-bold uppercase text-[#0A0A0A] font-display">Collection Not Found</h1>
-        <p className="text-xs text-[#71717A]">This archival capsule does not exist or has been retired.</p>
+      <div className="pt-36 pb-32 px-6 text-center max-w-lg mx-auto space-y-4 text-white font-sans">
+        <h1 className="text-2xl font-bold uppercase text-white font-display">Collection Not Found</h1>
+        <p className="text-xs text-white/60">This archival capsule does not exist or has been retired.</p>
         <Link 
           href="/collections" 
-          className="inline-block px-6 py-3 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#27272A] transition-colors"
+          className="inline-block px-6 py-3 glass-button text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-white hover:text-black transition-colors"
         >
           Back to Collections
         </Link>
@@ -53,71 +53,73 @@ export default function SingleCollectionPage() {
 
   // Get products for this collection
   const collectionProducts = products.filter(
-    (p) => p.collectionId === collection.id || collection.productIds.includes(p.id)
+    (p) => p.collectionId === collection.id || collection.productIds?.includes(p.id)
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-black text-white font-sans">
       {/* Hero Banner */}
-      <section className="relative min-h-[60vh] flex items-end pb-16 px-5 sm:px-8 lg:px-12 pt-32 overflow-hidden">
+      <section className="relative min-h-[55vh] sm:min-h-[65vh] flex items-end pb-12 sm:pb-16 px-4 sm:px-8 lg:px-12 pt-28 sm:pt-36 overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 z-0">
           <Image
             src={collection.bannerImage || collection.coverImage}
             alt={collection.name}
             fill
             priority
-            className="object-cover object-center brightness-[0.7]"
+            className="object-cover object-center brightness-[0.65] contrast-[1.05]"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-[1400px] w-full mx-auto space-y-6">
+        <div className="relative z-10 max-w-[1600px] w-full mx-auto space-y-4 sm:space-y-6">
           <Link
             href="/collections"
-            className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-zinc-300 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-white/70 hover:text-white transition-colors"
           >
-            <ArrowLeft size={14} /> Back to All Collections
+            <ArrowLeft size={13} /> Back to All Collections
           </Link>
 
-          <div className="max-w-3xl space-y-4">
-            <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/60 block font-bold">
-              CAPSULE SERIES
+          <div className="max-w-3xl space-y-2 sm:space-y-3">
+            <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.24em] uppercase text-white/60 block font-bold">
+              CAPSULE SERIES // NAIROBI
             </span>
-            <h1 className="text-display-lg font-black uppercase text-white">
+            <h1 className="pesos-text-face text-3xl sm:text-5xl lg:text-7xl font-bold uppercase tracking-[-0.04em] text-white">
               {collection.name}
             </h1>
-            <p className="text-sm text-white/80 font-light leading-relaxed max-w-xl">
-              {collection.description}
-            </p>
+            {collection.description && (
+              <p className="text-xs sm:text-sm text-white/80 font-normal leading-relaxed max-w-xl">
+                {collection.description}
+              </p>
+            )}
           </div>
 
           {/* Scheduled Drop Countdown Bar */}
           {collection.isScheduled && (
-            <div className="p-6 bg-black/80 border border-white/10 max-w-md mt-6 space-y-3 shadow-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-white flex items-center gap-2 font-bold">
-                  <Clock size={14} /> UPCOMING DROP COUNTDOWN
+            <div className="p-4 sm:p-6 glass-card rounded-2xl border border-white/20 max-w-md mt-4 sm:mt-6 space-y-3 shadow-2xl">
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-white">
+                <span className="flex items-center gap-2 font-bold">
+                  <Clock size={13} /> DROP COUNTDOWN
                 </span>
-                <span className="text-[10px] font-mono text-zinc-300">OCTOBER 15, 2026</span>
+                <span className="text-white/60">OCTOBER 15, 2026</span>
               </div>
 
-              <div className="grid grid-cols-4 gap-2 text-center pt-2">
-                <div className="bg-white/10 p-2.5 border border-white/10">
-                  <div className="text-2xl font-black font-mono text-white">{String(timeLeft.days).padStart(2, '0')}</div>
-                  <div className="text-[9px] font-mono text-zinc-300 uppercase">DAYS</div>
+              <div className="grid grid-cols-4 gap-2 text-center pt-1">
+                <div className="glass-pill p-2 sm:p-2.5 rounded-xl border border-white/10">
+                  <div className="text-xl sm:text-2xl font-black font-mono text-white">{String(timeLeft.days).padStart(2, '0')}</div>
+                  <div className="text-[8px] sm:text-[9px] font-mono text-white/60 uppercase">DAYS</div>
                 </div>
-                <div className="bg-white/10 p-2.5 border border-white/10">
-                  <div className="text-2xl font-black font-mono text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
-                  <div className="text-[9px] font-mono text-zinc-300 uppercase">HOURS</div>
+                <div className="glass-pill p-2 sm:p-2.5 rounded-xl border border-white/10">
+                  <div className="text-xl sm:text-2xl font-black font-mono text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
+                  <div className="text-[8px] sm:text-[9px] font-mono text-white/60 uppercase">HOURS</div>
                 </div>
-                <div className="bg-white/10 p-2.5 border border-white/10">
-                  <div className="text-2xl font-black font-mono text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                  <div className="text-[9px] font-mono text-zinc-300 uppercase">MINS</div>
+                <div className="glass-pill p-2 sm:p-2.5 rounded-xl border border-white/10">
+                  <div className="text-xl sm:text-2xl font-black font-mono text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                  <div className="text-[8px] sm:text-[9px] font-mono text-white/60 uppercase">MINS</div>
                 </div>
-                <div className="bg-white/10 p-2.5 border border-white/10">
-                  <div className="text-2xl font-black font-mono text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                  <div className="text-[9px] font-mono text-zinc-300 uppercase">SECS</div>
+                <div className="glass-pill p-2 sm:p-2.5 rounded-xl border border-white/10">
+                  <div className="text-xl sm:text-2xl font-black font-mono text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                  <div className="text-[8px] sm:text-[9px] font-mono text-white/60 uppercase">SECS</div>
                 </div>
               </div>
             </div>
@@ -126,23 +128,23 @@ export default function SingleCollectionPage() {
       </section>
 
       {/* Products in Collection */}
-      <section className="py-20 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto">
-        <div className="flex justify-between items-center pb-8 border-b border-[#E4E4E7] mb-12">
-          <h2 className="text-xs font-mono tracking-widest uppercase text-[#71717A] font-bold">
+      <section className="py-12 sm:py-20 px-4 sm:px-8 lg:px-12 max-w-[1600px] mx-auto">
+        <div className="flex justify-between items-baseline pb-5 sm:pb-6 border-b border-white/10 mb-8 sm:mb-12">
+          <h2 className="text-[11px] sm:text-xs font-mono tracking-widest uppercase text-white/60 font-bold">
             PIECES IN THIS RELEASE ({collectionProducts.length})
           </h2>
-          <span className="text-xs font-mono text-[#0A0A0A] font-bold">ORIGINAL ARCHIVAL GARMENTS</span>
+          <span className="text-[10px] sm:text-xs font-mono text-white font-bold hidden sm:inline">ORIGINAL ARCHIVAL GARMENTS</span>
         </div>
 
         {collectionProducts.length === 0 ? (
-          <div className="py-20 text-center text-[#71717A] space-y-3">
+          <div className="py-16 text-center text-white/60 space-y-3 glass-card rounded-2xl p-8">
             <p className="text-sm">No products currently assigned to this capsule.</p>
-            <Link href="/shop" className="text-xs text-[#0A0A0A] underline uppercase tracking-wider font-semibold">
+            <Link href="/shop" className="text-xs text-white underline uppercase tracking-wider font-semibold">
               Browse All Products
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
             {collectionProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

@@ -14,8 +14,8 @@ export function Footer() {
   if (isAdmin) return null;
 
   return (
-    <footer className="relative z-10 mt-auto flex min-h-screen w-full flex-col border-t border-white/15 glass-panel-heavy font-sans text-white">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-6 pb-10 pt-[calc(var(--navbar-height)+2rem)] md:pb-14 md:pt-[calc(var(--navbar-height)+3rem)]">
+    <footer className="relative z-10 mt-auto flex min-h-[auto] sm:min-h-screen w-full flex-col border-t border-white/15 glass-panel-heavy font-sans text-white">
+      <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-4 sm:px-6 pb-10 pt-10 sm:pt-[calc(var(--navbar-height)+3rem)] md:pb-14">
 
         {/* Top: Massive "Let's work together." & "© 26" watermark */}
         <div className="flex items-start justify-between gap-6">

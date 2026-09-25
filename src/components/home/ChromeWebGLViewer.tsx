@@ -279,12 +279,15 @@ export function ChromeWebGLViewer() {
       // On narrow mobile screens (aspect < 1.25), we dynamically adjust camera Z
       // so the 4.8-wide logo comfortably fills ~74% of the screen width with ~13% safe margins.
       if (aspect < 1.25) {
-        const targetVisibleWidth = 6.4; // 4.8 / 0.75
+        // Logo non-transparent artwork is ~3.77 units wide.
+        // targetVisibleWidth = 5.2 units guarantees logo occupies ~73% of screen width
+        // with ~13.5% safe breathing margins on left and right across any phone width.
+        const targetVisibleWidth = 5.2;
         const halfFovRad = (camera.fov * Math.PI) / 360;
         const requiredZ = targetVisibleWidth / (2 * Math.tan(halfFovRad) * aspect);
         camera.position.z = THREE.MathUtils.clamp(requiredZ, 7.5, 17.5);
         // Elevate model slightly on phone portrait so it sits in the upper visual sweet spot
-        stateRef.current.baseY = THREE.MathUtils.lerp(0.35, 0, THREE.MathUtils.clamp((aspect - 0.45) / 0.8, 0, 1));
+        stateRef.current.baseY = THREE.MathUtils.lerp(0.32, 0, THREE.MathUtils.clamp((aspect - 0.45) / 0.8, 0, 1));
       } else {
         camera.position.z = 7.5;
         stateRef.current.baseY = 0;
@@ -397,11 +400,11 @@ export function ChromeWebGLViewer() {
         }}
       />
 
-      {/* Bottom Pinned Frosted Glass CTA — PESOS Exact Match */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-4 sm:bottom-6 z-20 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      {/* Bottom Pinned Frosted Glass CTA */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-4 sm:bottom-6 z-20 flex justify-center px-4 pb-[env(safe-area-inset-bottom,0px)]">
         <Link
           href="/shop"
-          className="group pointer-events-auto glass-button rounded-xl px-7 py-3.5 sm:px-9 sm:py-4 text-center font-sans text-[13px] sm:text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] shadow-2xl transition-all duration-300 hover:scale-105"
+          className="group pointer-events-auto glass-button rounded-xl px-7 py-3.5 sm:px-9 sm:py-4 text-center font-sans text-[13px] sm:text-[14px] font-semibold uppercase leading-[1.3] tracking-[0.14em] shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95"
         >
           <span className="text-white transition-colors group-hover:text-black">
             Shop latest collection

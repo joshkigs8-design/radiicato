@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  SlidersHorizontal, LayoutGrid, Rows3, X, ChevronDown, Check, RotateCcw 
+  SlidersHorizontal, LayoutGrid, Rows3, X, RotateCcw 
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { ProductCard } from '@/components/product/ProductCard';
@@ -140,33 +140,33 @@ function ShopContent() {
     searchQuery !== '';
 
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-screen text-[#0A0A0A]">
+    <div className="pt-24 sm:pt-32 pb-24 px-4 sm:px-8 lg:px-12 max-w-[1600px] mx-auto min-h-screen text-white font-sans">
       {/* Editorial Header */}
-      <div className="pb-10 border-b border-[#E4E4E7] flex flex-col md:flex-row justify-between md:items-end gap-6">
+      <div className="pb-8 sm:pb-10 border-b border-white/10 flex flex-col md:flex-row justify-between md:items-end gap-4">
         <div>
-          <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] font-bold">
-            ALL PRODUCTS
+          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.22em] uppercase text-white/50 font-bold block mb-1">
+            ALL ARCHIVES // NAIROBI
           </span>
-          <h1 className="text-display-md font-black uppercase mt-2">
+          <h1 className="pesos-text-face text-3xl sm:text-5xl lg:text-6xl font-bold uppercase tracking-[-0.04em] text-white">
             SHOP THE DROP
           </h1>
         </div>
-        <p className="text-[11px] font-mono text-[#71717A] uppercase">
+        <p className="text-[11px] font-mono text-white/60 uppercase">
           SHOWING {filteredProducts.length} OF {products.length} ARCHIVAL PIECES
         </p>
       </div>
 
       {/* Control Toolbar (Search, Filter toggles, Layout & Sort) */}
-      <div className="py-6 border-b border-[#E4E4E7] flex flex-wrap items-center justify-between gap-4">
+      <div className="py-4 sm:py-6 border-b border-white/10 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
         {/* Mobile Filter Button */}
         <button
           onClick={() => setMobileFilterOpen(true)}
-          className="lg:hidden flex items-center gap-2 px-4 py-2 border border-[#E4E4E7] bg-white text-[10px] font-mono tracking-[0.15em] uppercase text-[#0A0A0A] hover:border-[#0A0A0A]"
+          className="lg:hidden flex items-center gap-2 px-3.5 py-2 glass-button rounded-xl text-[10px] font-mono tracking-[0.14em] uppercase text-white"
         >
-          <SlidersHorizontal size={14} />
-          <span>FILTER CATALOG</span>
+          <SlidersHorizontal size={13} />
+          <span>FILTER ({filteredProducts.length})</span>
           {hasActiveFilters && (
-            <span className="w-1.5 h-1.5 bg-[#0A0A0A]"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
           )}
         </button>
 
@@ -174,75 +174,74 @@ function ShopContent() {
         <div className="flex-1 max-w-xs">
           <input
             type="text"
-            placeholder="FILTER BY KEYWORD / SKU"
+            placeholder="FILTER BY KEYWORD / SKU..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] uppercase tracking-wider text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
+            className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2 text-[11px] uppercase tracking-wider text-white placeholder-white/40 focus:outline-none focus:border-white transition-colors"
           />
         </div>
 
         {/* View Mode & Sort (Desktop) */}
-        <div className="flex items-center gap-6 ml-auto">
+        <div className="flex items-center gap-3 sm:gap-6 ml-auto">
           {/* Sort Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-[#71717A] uppercase tracking-[0.15em] hidden sm:inline">SORT BY:</span>
+            <span className="text-[10px] font-mono text-white/50 uppercase tracking-[0.15em] hidden sm:inline">SORT BY:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent border-b border-[#E4E4E7] py-2 text-[11px] font-mono uppercase text-[#0A0A0A] focus:outline-none focus:border-[#0A0A0A] appearance-none pr-6 cursor-pointer"
-              style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%230A0A0A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.2em center', backgroundSize: '0.6em auto' }}
+              className="bg-[#0a0a0a] border border-white/20 rounded-lg px-3 py-1.5 text-[11px] font-mono uppercase text-white focus:outline-none focus:border-white cursor-pointer"
             >
-              <option value="featured">FEATURED</option>
-              <option value="newest">NEW ARRIVALS</option>
-              <option value="bestseller">BEST SELLERS</option>
-              <option value="price-low">PRICE: LOW TO HIGH</option>
-              <option value="price-high">PRICE: HIGH TO LOW</option>
+              <option value="featured" className="bg-black text-white">FEATURED</option>
+              <option value="newest" className="bg-black text-white">NEW ARRIVALS</option>
+              <option value="bestseller" className="bg-black text-white">BEST SELLERS</option>
+              <option value="price-low" className="bg-black text-white">PRICE: LOW TO HIGH</option>
+              <option value="price-high" className="bg-black text-white">PRICE: HIGH TO LOW</option>
             </select>
           </div>
 
           {/* Grid Toggle (Desktop) */}
-          <div className="hidden sm:flex items-center gap-1">
+          <div className="hidden sm:flex items-center gap-1.5">
             <button
               onClick={() => setViewMode('grid-4')}
-              className={`border border-[#E4E4E7] p-1.5 transition-colors ${
-                viewMode === 'grid-4' ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'text-[#71717A] hover:border-[#0A0A0A] hover:text-[#0A0A0A]'
+              className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                viewMode === 'grid-4' ? 'bg-white text-black' : 'glass-button text-white/70 hover:text-white'
               }`}
               title="4-column grid"
             >
-              <LayoutGrid size={16} />
+              <LayoutGrid size={15} />
             </button>
             <button
               onClick={() => setViewMode('grid-3')}
-              className={`border border-[#E4E4E7] p-1.5 transition-colors ${
-                viewMode === 'grid-3' ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'text-[#71717A] hover:border-[#0A0A0A] hover:text-[#0A0A0A]'
+              className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                viewMode === 'grid-3' ? 'bg-white text-black' : 'glass-button text-white/70 hover:text-white'
               }`}
               title="3-column grid"
             >
-              <LayoutGrid size={18} className="rotate-45" />
+              <LayoutGrid size={15} className="rotate-45" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`border border-[#E4E4E7] p-1.5 transition-colors ${
-                viewMode === 'list' ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'text-[#71717A] hover:border-[#0A0A0A] hover:text-[#0A0A0A]'
+              className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                viewMode === 'list' ? 'bg-white text-black' : 'glass-button text-white/70 hover:text-white'
               }`}
               title="Editorial list"
             >
-              <Rows3 size={16} />
+              <Rows3 size={15} />
             </button>
           </div>
         </div>
       </div>
 
       {/* Main Layout (Desktop Sidebar Filters + Grid) */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pt-10">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-10 pt-8 sm:pt-10">
         {/* Desktop Sidebar Filters */}
-        <aside className="hidden lg:block lg:col-span-1 space-y-8 pr-6">
-          <div className="flex items-center justify-between pb-4 border-b border-[#E4E4E7]">
-            <span className="text-[11px] font-mono tracking-[0.15em] uppercase font-bold text-[#0A0A0A]">REFINE CATALOG</span>
+        <aside className="hidden lg:block lg:col-span-1 space-y-6 pr-4">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10">
+            <span className="text-[11px] font-mono tracking-[0.16em] uppercase font-bold text-white">REFINE ARCHIVE</span>
             {hasActiveFilters && (
               <button
                 onClick={resetFilters}
-                className="text-[10px] font-mono uppercase text-[#71717A] hover:text-[#0A0A0A] flex items-center gap-1 font-bold"
+                className="text-[10px] font-mono uppercase text-white/60 hover:text-white flex items-center gap-1 font-bold cursor-pointer"
               >
                 <RotateCcw size={11} /> Reset
               </button>
@@ -250,13 +249,13 @@ function ShopContent() {
           </div>
 
           {/* Category Filter */}
-          <div className="space-y-3 pb-6 border-b border-[#E4E4E7]">
-            <h4 className="text-[10px] font-mono tracking-[0.15em] uppercase text-[#0A0A0A] font-semibold">CATEGORIES</h4>
+          <div className="space-y-2 pb-5 border-b border-white/10">
+            <h4 className="text-[10px] font-mono tracking-[0.16em] uppercase text-white/50 font-semibold">CATEGORIES</h4>
             <div className="space-y-1 text-xs">
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`block w-full text-left py-1 tracking-wider uppercase transition-colors ${
-                  selectedCategory === 'all' ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A] hover:text-[#0A0A0A]'
+                className={`block w-full text-left py-1 tracking-wider uppercase transition-colors cursor-pointer ${
+                  selectedCategory === 'all' ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                 }`}
               >
                 All Silhouettes
@@ -265,8 +264,8 @@ function ShopContent() {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.slug)}
-                  className={`block w-full text-left py-1 tracking-wider uppercase transition-colors ${
-                    selectedCategory === cat.slug ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A] hover:text-[#0A0A0A]'
+                  className={`block w-full text-left py-1 tracking-wider uppercase transition-colors cursor-pointer ${
+                    selectedCategory === cat.slug ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                   }`}
                 >
                   {cat.name}
@@ -276,13 +275,13 @@ function ShopContent() {
           </div>
 
           {/* Collection Filter */}
-          <div className="space-y-3 pb-6 border-b border-[#E4E4E7]">
-            <h4 className="text-[10px] font-mono tracking-[0.15em] uppercase text-[#0A0A0A] font-semibold">COLLECTIONS</h4>
+          <div className="space-y-2 pb-5 border-b border-white/10">
+            <h4 className="text-[10px] font-mono tracking-[0.16em] uppercase text-white/50 font-semibold">COLLECTIONS</h4>
             <div className="space-y-1 text-xs">
               <button
                 onClick={() => setSelectedCollection('all')}
-                className={`block w-full text-left py-1 tracking-wider uppercase transition-colors ${
-                  selectedCollection === 'all' ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A] hover:text-[#0A0A0A]'
+                className={`block w-full text-left py-1 tracking-wider uppercase transition-colors cursor-pointer ${
+                  selectedCollection === 'all' ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                 }`}
               >
                 All Collections
@@ -291,8 +290,8 @@ function ShopContent() {
                 <button
                   key={col.id}
                   onClick={() => setSelectedCollection(col.slug)}
-                  className={`block w-full text-left py-1 tracking-wider uppercase transition-colors ${
-                    selectedCollection === col.slug ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A] hover:text-[#0A0A0A]'
+                  className={`block w-full text-left py-1 tracking-wider uppercase transition-colors cursor-pointer ${
+                    selectedCollection === col.slug ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                   }`}
                 >
                   {col.name}
@@ -302,15 +301,15 @@ function ShopContent() {
           </div>
 
           {/* Size Filter */}
-          <div className="space-y-3 pb-6 border-b border-[#E4E4E7]">
-            <h4 className="text-[10px] font-mono tracking-[0.15em] uppercase text-[#0A0A0A] font-semibold">SIZE MATRIX</h4>
-            <div className="grid grid-cols-4 gap-2">
+          <div className="space-y-2.5 pb-5 border-b border-white/10">
+            <h4 className="text-[10px] font-mono tracking-[0.16em] uppercase text-white/50 font-semibold">SIZE MATRIX</h4>
+            <div className="grid grid-cols-4 gap-1.5">
               <button
                 onClick={() => setSelectedSize('all')}
-                className={`border text-[10px] font-mono px-3 py-1.5 transition-colors ${
+                className={`rounded-lg text-[10px] font-mono px-2.5 py-1.5 transition-colors cursor-pointer ${
                   selectedSize === 'all'
-                    ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]'
-                    : 'border-[#E4E4E7] text-[#71717A] hover:border-[#0A0A0A] hover:text-[#0A0A0A]'
+                    ? 'bg-white text-black font-bold'
+                    : 'glass-button text-white/70 hover:text-white'
                 }`}
               >
                 ALL
@@ -319,10 +318,10 @@ function ShopContent() {
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
-                  className={`border text-[10px] font-mono px-3 py-1.5 transition-colors ${
+                  className={`rounded-lg text-[10px] font-mono px-2.5 py-1.5 transition-colors cursor-pointer ${
                     selectedSize === size
-                      ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]'
-                      : 'border-[#E4E4E7] text-[#71717A] hover:border-[#0A0A0A] hover:text-[#0A0A0A]'
+                      ? 'bg-white text-black font-bold'
+                      : 'glass-button text-white/70 hover:text-white'
                   }`}
                 >
                   {size}
@@ -332,13 +331,13 @@ function ShopContent() {
           </div>
 
           {/* Color Filter */}
-          <div className="space-y-3 pb-6 border-b border-[#E4E4E7]">
-            <h4 className="text-[10px] font-mono tracking-[0.15em] uppercase text-[#0A0A0A] font-semibold">COLORWAY</h4>
-            <div className="space-y-2">
+          <div className="space-y-2 pb-5 border-b border-white/10">
+            <h4 className="text-[10px] font-mono tracking-[0.16em] uppercase text-white/50 font-semibold">COLORWAY</h4>
+            <div className="space-y-1.5">
               <button
                 onClick={() => setSelectedColor('all')}
-                className={`text-xs block py-1 uppercase tracking-wider ${
-                  selectedColor === 'all' ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A] hover:text-[#0A0A0A]'
+                className={`text-xs block py-1 uppercase tracking-wider cursor-pointer ${
+                  selectedColor === 'all' ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                 }`}
               >
                 All Colors
@@ -347,12 +346,12 @@ function ShopContent() {
                 <button
                   key={c.name}
                   onClick={() => setSelectedColor(c.name)}
-                  className={`flex items-center gap-3 text-xs py-1 uppercase tracking-wider transition-colors ${
-                    selectedColor === c.name ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A] hover:text-[#0A0A0A]'
+                  className={`flex items-center gap-2.5 text-xs py-1 uppercase tracking-wider transition-colors cursor-pointer ${
+                    selectedColor === c.name ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                   }`}
                 >
                   <span
-                    className="w-3 h-3 border border-[#E4E4E7] inline-block"
+                    className="w-2.5 h-2.5 rounded-full border border-white/20 inline-block"
                     style={{ backgroundColor: c.hex }}
                   />
                   <span>{c.name}</span>
@@ -362,10 +361,10 @@ function ShopContent() {
           </div>
 
           {/* Price Range Slider */}
-          <div className="space-y-3 pb-6 border-b border-[#E4E4E7]">
-            <div className="flex justify-between text-[10px] font-mono tracking-widest uppercase text-[#71717A]">
+          <div className="space-y-2 pb-5 border-b border-white/10">
+            <div className="flex justify-between text-[10px] font-mono tracking-widest uppercase text-white/60">
               <span>MAX PRICE</span>
-              <span className="text-[#0A0A0A] font-bold">{formatKES(maxPrice)}</span>
+              <span className="text-white font-bold">{formatKES(maxPrice)}</span>
             </div>
             <input
               type="range"
@@ -374,18 +373,18 @@ function ShopContent() {
               step={500}
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="w-full accent-[#0A0A0A] bg-[#E4E4E7] h-0.5 appearance-none cursor-pointer"
+              className="w-full accent-white bg-white/20 h-1 rounded-lg appearance-none cursor-pointer"
             />
           </div>
 
           {/* In Stock Only Toggle */}
-          <div className="pt-2">
-            <label className="flex items-center gap-3 cursor-pointer text-[10px] font-mono tracking-widest uppercase text-[#71717A] hover:text-[#0A0A0A]">
+          <div className="pt-1">
+            <label className="flex items-center gap-2.5 cursor-pointer text-[10px] font-mono tracking-widest uppercase text-white/70 hover:text-white">
               <input
                 type="checkbox"
                 checked={availabilityOnly}
                 onChange={(e) => setAvailabilityOnly(e.target.checked)}
-                className="w-4 h-4 accent-[#0A0A0A] border-[#E4E4E7]"
+                className="w-3.5 h-3.5 accent-white rounded"
               />
               <span>In-Stock Pieces Only</span>
             </label>
@@ -395,52 +394,54 @@ function ShopContent() {
         {/* Product Grid Area */}
         <main className="lg:col-span-3">
           {filteredProducts.length === 0 ? (
-            <div className="py-24 text-center space-y-4 border border-[#E4E4E7] p-12">
-              <p className="text-[11px] font-mono font-bold tracking-[0.15em] uppercase text-[#0A0A0A]">
+            <div className="py-20 text-center space-y-4 glass-card rounded-2xl p-8 sm:p-12">
+              <p className="text-[12px] font-mono font-bold tracking-[0.16em] uppercase text-white">
                 NO PIECES FOUND
               </p>
-              <p className="text-xs text-[#71717A] max-w-sm mx-auto">
-                No items match your currently applied filters. Clear filters or adjust your price range.
+              <p className="text-xs text-white/60 max-w-sm mx-auto">
+                No garments match your currently applied filters. Clear filters or adjust your price range.
               </p>
               <button
                 onClick={resetFilters}
-                className="mt-6 border border-[#0A0A0A] text-[#0A0A0A] px-6 py-3 text-[11px] font-mono font-bold tracking-[0.15em] uppercase hover:bg-[#0A0A0A] hover:text-white transition-colors"
+                className="mt-4 glass-button text-white px-6 py-2.5 text-[11px] font-mono font-bold tracking-[0.14em] uppercase rounded-xl hover:bg-white hover:text-black transition-all cursor-pointer"
               >
                 RESET FILTERS
               </button>
             </div>
           ) : viewMode === 'list' ? (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {filteredProducts.map((p) => (
                 <div
                   key={p.id}
-                  className="group flex flex-col sm:flex-row gap-6 p-4 border border-[#E4E4E7] transition-colors hover:border-[#0A0A0A]"
+                  className="glass-card rounded-xl sm:rounded-2xl flex flex-col sm:flex-row gap-4 sm:gap-6 p-3 sm:p-4 group transition-colors"
                 >
-                  <Link href={`/product/${p.slug}`} className="relative h-48 sm:h-40 w-full sm:w-32 shrink-0 overflow-hidden bg-[#F4F4F5]">
+                  <Link href={`/product/${p.slug}`} className="relative h-44 sm:h-36 w-full sm:w-28 shrink-0 overflow-hidden bg-[#0a0a0a] rounded-lg border border-white/10">
                     {p.images[0] && (
                       <Image src={p.images.find((image) => image.isPrimary)?.url || p.images[0].url} alt={p.name} fill sizes="128px" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                     )}
                   </Link>
-                  <div className="flex-1 space-y-2 py-2">
-                    <span className="text-[10px] font-mono text-[#71717A] uppercase tracking-wider">{p.sku}</span>
-                    <Link href={`/product/${p.slug}`}><h3 className="text-lg font-bold uppercase tracking-wider text-[#0A0A0A] group-hover:text-[#71717A] transition-colors">{p.name}</h3></Link>
-                    <p className="text-sm text-[#71717A] line-clamp-2 max-w-xl font-light">
+                  <div className="flex-1 space-y-1.5 py-1">
+                    <span className="text-[10px] font-mono text-white/50 uppercase tracking-wider">{p.sku}</span>
+                    <Link href={`/product/${p.slug}`}><h3 className="text-base font-bold uppercase tracking-wider text-white group-hover:opacity-70 transition-opacity">{p.name}</h3></Link>
+                    <p className="text-xs text-white/70 line-clamp-2 max-w-xl font-light">
                       {p.shortDescription}
                     </p>
-                    <p className="text-[10px] font-mono tracking-wider text-[#A1A1AA] uppercase">
+                    <p className="text-[10px] font-mono tracking-wider text-white/50 uppercase pt-1">
                       {p.material} • {p.fit}
                     </p>
                   </div>
-                  <div className="sm:self-center sm:text-right shrink-0">
-                    <p className="text-sm font-mono font-bold text-[#0A0A0A]">{formatKES(p.salePrice || p.price)}</p>
-                    <Link href={`/product/${p.slug}`} className="mt-3 inline-block border-b border-[#0A0A0A] pb-0.5 text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#0A0A0A] hover:text-[#71717A] hover:border-[#71717A] transition-colors">View piece</Link>
+                  <div className="sm:self-center sm:text-right shrink-0 pt-2 sm:pt-0">
+                    <p className="text-sm font-mono font-bold text-white">{formatKES(p.salePrice || p.price)}</p>
+                    <Link href={`/product/${p.slug}`} className="mt-2 inline-block glass-pill px-3 py-1 text-[10px] font-mono font-bold tracking-[0.14em] uppercase text-white hover:border-white transition-colors">
+                      View piece →
+                    </Link>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div
-              className={`grid gap-4 sm:gap-6 ${
+              className={`grid gap-3 sm:gap-6 ${
                 viewMode === 'grid-3'
                   ? 'grid-cols-2 md:grid-cols-3'
                   : 'grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
@@ -459,30 +460,30 @@ function ShopContent() {
         <div className="fixed inset-0 z-50 flex">
           <div
             onClick={() => setMobileFilterOpen(false)}
-            className="fixed inset-0 bg-black/30 transition-opacity"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity"
           />
-          <div className="relative w-full max-w-xs bg-white border-r border-[#E4E4E7] p-6 overflow-y-auto text-[#0A0A0A] space-y-6">
-            <div className="flex justify-between items-center pb-4 border-b border-[#E4E4E7]">
-              <span className="text-[11px] font-mono tracking-[0.15em] font-bold uppercase text-[#0A0A0A]">FILTER CATALOG</span>
+          <div className="relative w-full max-w-xs bg-[#0a0a0a]/95 backdrop-blur-2xl border-r border-white/15 p-6 overflow-y-auto text-white space-y-6">
+            <div className="flex justify-between items-center pb-4 border-b border-white/10">
+              <span className="text-[11px] font-mono tracking-[0.16em] font-bold uppercase text-white">FILTER CATALOG</span>
               <button
                 onClick={() => setMobileFilterOpen(false)}
-                className="p-1 text-[#71717A] hover:text-[#0A0A0A]"
+                className="p-1 text-white/60 hover:text-white rounded-full"
               >
                 <X size={16} />
               </button>
             </div>
 
             {/* Mobile Categories */}
-            <div className="space-y-3 pb-6 border-b border-[#E4E4E7]">
-              <h4 className="text-[10px] font-mono tracking-[0.15em] font-bold uppercase text-[#0A0A0A]">Categories</h4>
-              <div className="space-y-2 text-xs uppercase tracking-wider">
+            <div className="space-y-2.5 pb-5 border-b border-white/10">
+              <h4 className="text-[10px] font-mono tracking-[0.15em] font-bold uppercase text-white/50">Categories</h4>
+              <div className="space-y-1.5 text-xs uppercase tracking-wider">
                 <button
                   onClick={() => {
                     setSelectedCategory('all');
                     setMobileFilterOpen(false);
                   }}
-                  className={`block w-full text-left ${
-                    selectedCategory === 'all' ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A]'
+                  className={`block w-full text-left py-1 ${
+                    selectedCategory === 'all' ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                   }`}
                 >
                   All
@@ -494,8 +495,8 @@ function ShopContent() {
                       setSelectedCategory(cat.slug);
                       setMobileFilterOpen(false);
                     }}
-                    className={`block w-full text-left ${
-                      selectedCategory === cat.slug ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A]'
+                    className={`block w-full text-left py-1 ${
+                      selectedCategory === cat.slug ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                     }`}
                   >
                     {cat.name}
@@ -505,16 +506,16 @@ function ShopContent() {
             </div>
 
             {/* Mobile Collections */}
-            <div className="space-y-3 pb-6 border-b border-[#E4E4E7]">
-              <h4 className="text-[10px] font-mono tracking-[0.15em] font-bold uppercase text-[#0A0A0A]">Collections</h4>
-              <div className="space-y-2 text-xs uppercase tracking-wider">
+            <div className="space-y-2.5 pb-5 border-b border-white/10">
+              <h4 className="text-[10px] font-mono tracking-[0.15em] font-bold uppercase text-white/50">Collections</h4>
+              <div className="space-y-1.5 text-xs uppercase tracking-wider">
                 <button
                   onClick={() => {
                     setSelectedCollection('all');
                     setMobileFilterOpen(false);
                   }}
-                  className={`block w-full text-left ${
-                    selectedCollection === 'all' ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A]'
+                  className={`block w-full text-left py-1 ${
+                    selectedCollection === 'all' ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                   }`}
                 >
                   All
@@ -526,8 +527,8 @@ function ShopContent() {
                       setSelectedCollection(col.slug);
                       setMobileFilterOpen(false);
                     }}
-                    className={`block w-full text-left ${
-                      selectedCollection === col.slug ? 'text-[#0A0A0A] font-bold' : 'text-[#71717A]'
+                    className={`block w-full text-left py-1 ${
+                      selectedCollection === col.slug ? 'text-white font-bold' : 'text-white/60 hover:text-white'
                     }`}
                   >
                     {col.name}
@@ -536,16 +537,13 @@ function ShopContent() {
               </div>
             </div>
 
-            {/* Mobile Reset */}
-            <div className="pt-4">
+            {/* Mobile Apply */}
+            <div className="pt-2">
               <button
-                onClick={() => {
-                  resetFilters();
-                  setMobileFilterOpen(false);
-                }}
-                className="w-full py-4 bg-[#0A0A0A] text-white text-[11px] font-mono font-bold tracking-[0.15em] uppercase hover:opacity-80 transition-opacity"
+                onClick={() => setMobileFilterOpen(false)}
+                className="w-full py-3.5 glass-button bg-white text-black text-[11px] font-mono font-bold tracking-[0.15em] uppercase rounded-xl hover:bg-white/90 transition-all shadow-xl"
               >
-                APPLY & CLOSE
+                APPLY & VIEW RESULTS
               </button>
             </div>
           </div>
@@ -558,7 +556,7 @@ function ShopContent() {
 export default function ShopPage() {
   return (
     <Suspense fallback={
-      <div className="pt-36 pb-32 px-6 text-center text-[10px] font-mono text-[#71717A] tracking-widest uppercase">
+      <div className="pt-36 pb-32 px-6 text-center text-[10px] font-mono text-white/50 tracking-widest uppercase">
         LOADING ARCHIVE...
       </div>
     }>

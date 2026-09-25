@@ -44,17 +44,19 @@ export default function CartPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-[60vh] flex flex-col justify-center items-center bg-white text-[#0A0A0A]">
-        <div className="w-16 h-16 border border-[#E4E4E7] flex items-center justify-center text-[#E4E4E7] mb-6">
+      <div className="pt-28 sm:pt-36 pb-32 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-[60vh] flex flex-col justify-center items-center bg-black text-white font-sans">
+        <div className="w-16 h-16 rounded-2xl glass-card flex items-center justify-center text-white/40 mb-6">
           <Tag size={28} />
         </div>
-        <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A] mb-4">Your Bag Is Empty</h1>
-        <p className="text-sm text-[#71717A] max-w-xs text-center mb-8">
+        <h1 className="pesos-text-face text-2xl sm:text-4xl font-bold uppercase tracking-tight text-white mb-3">
+          Your Bag Is Empty
+        </h1>
+        <p className="text-xs sm:text-sm text-white/60 max-w-xs text-center mb-8">
           Explore our foundational silhouettes, heavyweight hoodies, and limited drops.
         </p>
         <Link
           href="/shop"
-          className="inline-block border border-[#0A0A0A] text-[#0A0A0A] px-8 py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase hover:bg-[#0A0A0A] hover:text-white transition-colors"
+          className="glass-button bg-white text-black hover:bg-white/90 px-8 py-4 text-xs font-mono font-bold tracking-[0.15em] uppercase rounded-xl transition-all shadow-xl active:scale-95"
         >
           Discover Shop
         </Link>
@@ -63,41 +65,44 @@ export default function CartPage() {
   }
 
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-screen bg-white text-[#0A0A0A]">
-      <div className="mb-8">
-        <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A]">
+    <div className="pt-24 sm:pt-32 pb-32 px-4 sm:px-8 lg:px-12 max-w-[1600px] mx-auto min-h-screen bg-black text-white font-sans">
+      <div className="mb-8 sm:mb-12 border-b border-white/10 pb-6">
+        <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.22em] uppercase text-white/50 block mb-1 font-bold">
+          SHOPPING BAG // {cartSummary.itemsCount} ITEMS
+        </span>
+        <h1 className="pesos-text-face text-3xl sm:text-5xl font-bold uppercase tracking-[-0.04em] text-white">
           YOUR BAG
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-14">
         {/* Left Column: Cart Items List */}
         <div className="lg:col-span-2 space-y-6">
           {/* Free Shipping Notice */}
-          <div className="py-4 border-b border-[#E4E4E7]">
+          <div className="py-4 border-b border-white/10">
             {remainingForFree > 0 ? (
-              <p className="text-[10px] font-mono uppercase tracking-wider text-[#71717A]">
-                Add <span className="text-[#0A0A0A] font-bold">{formatKES(remainingForFree)}</span> more for free express shipping.
+              <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/70">
+                Add <span className="text-white font-bold">{formatKES(remainingForFree)}</span> more for free express shipping.
               </p>
             ) : (
-              <p className="text-[10px] font-mono uppercase tracking-wider text-[#0A0A0A] font-bold flex items-center gap-1.5">
-                <ShieldCheck size={14} /> Free Express Delivery Unlocked
+              <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white font-bold flex items-center gap-1.5">
+                <ShieldCheck size={14} className="text-emerald-400" /> Free Express Delivery Unlocked Across Kenya
               </p>
             )}
-            <div className="w-full bg-[#F4F4F5] h-0.5 mt-2 overflow-hidden">
+            <div className="w-full bg-white/10 h-1 mt-2.5 rounded-full overflow-hidden">
               <div
-                className="bg-[#0A0A0A] h-full transition-all duration-500"
+                className="bg-white h-full transition-all duration-500 rounded-full"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
           </div>
 
-          {/* Items Table */}
-          <div className="border-t border-[#E4E4E7]">
+          {/* Items List */}
+          <div className="divide-y divide-white/10 border-t border-b border-white/10">
             {cart.map((item) => (
-              <div key={item.id} className="py-6 border-b border-[#E4E4E7] flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
-                <div className="flex gap-6 items-center w-full sm:w-auto">
-                  <div className="relative w-24 h-32 bg-[#F4F4F5] overflow-hidden flex-shrink-0">
+              <div key={item.id} className="py-5 sm:py-6 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center justify-between">
+                <div className="flex gap-4 sm:gap-6 items-center w-full sm:w-auto">
+                  <div className="relative w-20 h-24 sm:w-24 sm:h-32 bg-[#0a0a0a] rounded-xl overflow-hidden flex-shrink-0 border border-white/10">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -107,17 +112,17 @@ export default function CartPage() {
                     />
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex-1">
                     <Link
                       href={`/product/${item.slug}`}
-                      className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A] hover:text-[#71717A] transition-colors"
+                      className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white hover:text-white/70 transition-colors line-clamp-1"
                     >
                       {item.name}
                     </Link>
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-[#71717A] uppercase mt-1">
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-white/50 uppercase mt-0.5">
                       <span className="flex items-center gap-1">
                         <span
-                          className="w-2.5 h-2.5 border border-[#E4E4E7] inline-block"
+                          className="w-2.5 h-2.5 rounded-full border border-white/20 inline-block"
                           style={{ backgroundColor: item.colorHex }}
                         />
                         {item.colorName}
@@ -127,17 +132,17 @@ export default function CartPage() {
                         SIZE {item.size}
                       </span>
                     </div>
-                    <p className="text-xs font-mono text-[#0A0A0A] pt-2">
+                    <p className="text-xs sm:text-sm font-mono font-bold text-white pt-1">
                       {formatKES(item.price)}
                     </p>
 
-                    <div className="pt-2 flex gap-4 text-[10px] font-mono text-[#71717A]">
+                    <div className="pt-1 flex gap-4 text-[10px] font-mono text-white/50">
                       <button
                         onClick={() => {
                           toggleWishlist(item.productId);
                           removeFromCart(item.id);
                         }}
-                        className="hover:text-[#0A0A0A] uppercase tracking-wider transition-colors"
+                        className="hover:text-white uppercase tracking-wider transition-colors cursor-pointer"
                       >
                         Save for later
                       </button>
@@ -146,31 +151,31 @@ export default function CartPage() {
                 </div>
 
                 {/* Quantity Controls & Total */}
-                <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4">
-                  <div className="flex items-center border border-[#E4E4E7]">
+                <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4 pt-2 sm:pt-0">
+                  <div className="flex items-center rounded-lg border border-white/20 bg-white/5 overflow-hidden">
                     <button
                       onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                      className="w-8 h-8 text-[#71717A] hover:text-[#0A0A0A] flex items-center justify-center transition-colors"
+                      className="w-8 h-8 text-white/70 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <Minus size={12} />
                     </button>
-                    <span className="w-8 h-8 text-xs font-mono text-center flex items-center justify-center text-[#0A0A0A]">{item.quantity}</span>
+                    <span className="w-8 h-8 text-xs font-mono text-center flex items-center justify-center text-white font-bold">{item.quantity}</span>
                     <button
                       onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
                       disabled={item.quantity >= item.maxStock}
-                      className="w-8 h-8 text-[#71717A] hover:text-[#0A0A0A] flex items-center justify-center transition-colors disabled:opacity-30"
+                      className="w-8 h-8 text-white/70 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors disabled:opacity-30 cursor-pointer"
                     >
                       <Plus size={12} />
                     </button>
                   </div>
 
                   <div className="text-right">
-                    <p className="text-sm font-mono font-bold text-[#0A0A0A]">
+                    <p className="text-sm sm:text-base font-mono font-bold text-white">
                       {formatKES(item.price * item.quantity)}
                     </p>
                     <button
                       onClick={() => removeFromCart(item.id)}
-                      className="text-[10px] font-mono text-[#A1A1AA] hover:text-[#0A0A0A] mt-2 inline-flex items-center gap-1 uppercase tracking-wider transition-colors"
+                      className="text-[10px] font-mono text-white/40 hover:text-white mt-1.5 inline-flex items-center gap-1 uppercase tracking-wider transition-colors cursor-pointer"
                     >
                       <Trash2 size={12} /> Remove
                     </button>
@@ -183,14 +188,14 @@ export default function CartPage() {
 
         {/* Right Column: Order Summary */}
         <div className="lg:col-span-1">
-          <div className="p-8 border border-[#E4E4E7] space-y-6 sticky top-32">
-            <h2 className="text-[11px] font-mono font-semibold tracking-[0.15em] uppercase text-[#0A0A0A] mb-6">
+          <div className="glass-panel-heavy rounded-2xl border border-white/15 p-6 sm:p-8 space-y-6 sticky top-28 shadow-2xl">
+            <h2 className="text-[11px] font-mono font-semibold tracking-[0.18em] uppercase text-white mb-4">
               ORDER SUMMARY
             </h2>
 
             {/* Promo Code Form */}
             <form onSubmit={handleApplyPromo} className="space-y-2">
-              <label className="text-[10px] font-mono tracking-wider uppercase text-[#71717A] block">
+              <label className="text-[10px] font-mono tracking-wider uppercase text-white/50 block">
                 PROMOTIONAL CODE
               </label>
               <div className="flex gap-2">
@@ -199,52 +204,52 @@ export default function CartPage() {
                   placeholder="E.G. FIRSTDROP"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
-                  className="flex-1 bg-white border border-[#E4E4E7] px-3 py-2 text-[11px] uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
+                  className="flex-1 bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-[11px] uppercase text-white placeholder-white/30 font-mono focus:outline-none focus:border-white transition-colors"
                 />
                 <button
                   type="submit"
-                  className="bg-[#0A0A0A] text-white text-[11px] font-mono font-bold px-4 uppercase tracking-[0.1em] hover:opacity-80 transition-opacity"
+                  className="glass-button text-white text-[11px] font-mono font-bold px-4 uppercase tracking-[0.1em] rounded-xl hover:bg-white hover:text-black transition-all cursor-pointer"
                 >
                   APPLY
                 </button>
               </div>
               {appliedDiscount && (
-                <p className="text-[10px] font-mono text-[#0A0A0A] uppercase tracking-wider mt-2">
+                <p className="text-[10px] font-mono text-emerald-300 uppercase tracking-wider mt-2">
                   Code {appliedDiscount.code} applied (-{formatKES(appliedDiscount.amount)})
                 </p>
               )}
               {couponError && (
-                <p className="text-[10px] font-mono text-red-600 uppercase tracking-wider mt-2">{couponError}</p>
+                <p className="text-[10px] font-mono text-rose-400 uppercase tracking-wider mt-2">{couponError}</p>
               )}
             </form>
 
             {/* Calculations */}
-            <div className="space-y-2 pt-6">
-              <div className="flex justify-between text-sm py-2">
-                <span className="text-[#71717A]">Subtotal</span>
-                <span className="font-mono text-[#0A0A0A]">{formatKES(cartSummary.subtotal)}</span>
+            <div className="space-y-2 pt-4 border-t border-white/10 text-white/80">
+              <div className="flex justify-between text-xs sm:text-sm py-1 font-mono">
+                <span className="text-white/60">Subtotal</span>
+                <span className="font-bold text-white">{formatKES(cartSummary.subtotal)}</span>
               </div>
               {appliedDiscount && (
-                <div className="flex justify-between text-sm py-2">
-                  <span className="text-[#71717A]">Discount ({appliedDiscount.code})</span>
-                  <span className="font-mono text-[#0A0A0A]">- {formatKES(appliedDiscount.amount)}</span>
+                <div className="flex justify-between text-xs sm:text-sm py-1 font-mono">
+                  <span className="text-white/60">Discount ({appliedDiscount.code})</span>
+                  <span className="font-bold text-emerald-400">- {formatKES(appliedDiscount.amount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-sm py-2">
-                <span className="text-[#71717A]">Shipping</span>
-                <span className="text-[#0A0A0A] text-xs font-mono uppercase tracking-wider">Calculated next</span>
+              <div className="flex justify-between text-xs sm:text-sm py-1 font-mono">
+                <span className="text-white/60">Shipping</span>
+                <span className="text-xs uppercase tracking-wider text-white/70">Calculated next</span>
               </div>
-              <div className="flex justify-between text-lg font-mono font-bold text-[#0A0A0A] border-t border-[#0A0A0A] pt-4 mt-4">
-                <span className="text-[11px] uppercase tracking-wider flex items-end">Estimated Total</span>
+              <div className="flex justify-between text-base sm:text-lg font-mono font-bold text-white border-t border-white/15 pt-4 mt-3">
+                <span className="text-[11px] uppercase tracking-wider text-white/60 flex items-end">Estimated Total</span>
                 <span>{formatKES(finalTotal)}</span>
               </div>
             </div>
 
             {/* Checkout Button */}
-            <div className="pt-4">
+            <div className="pt-2">
               <Link
                 href="/checkout"
-                className="w-full bg-[#0A0A0A] text-white py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
+                className="w-full glass-button bg-white text-black hover:bg-white/90 py-4 text-[12px] font-mono font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-2 rounded-xl transition-all shadow-xl active:scale-95"
               >
                 <span>PROCEED TO CHECKOUT</span>
                 <ArrowRight size={14} />
@@ -256,4 +261,3 @@ export default function CartPage() {
     </div>
   );
 }
-
