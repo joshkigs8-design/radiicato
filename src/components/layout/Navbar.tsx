@@ -93,13 +93,13 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
             />
           </Link>
 
-          {/* Desktop Nav Links — PESOS exact layout */}
-          <div className="pesos-nav__links flex items-center gap-8 font-sans transition-colors duration-300 text-white">
+          {/* Desktop Nav Links — Strictly hidden on mobile (<768px), visible on md+ */}
+          <div className="hidden md:flex items-center gap-6 lg:gap-8 font-sans transition-colors duration-300 text-white">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-[17px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${
+                className={`text-[15px] lg:text-[17px] font-medium uppercase tracking-[0.08em] transition-opacity hover:opacity-50 ${
                   isActive(link.href) ? 'text-white' : 'text-white/80'
                 }`}
               >
@@ -145,19 +145,11 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
             </button>
           </div>
 
-          {/* Mobile Header Actions — Search, Bag, Hamburger */}
-          <div className="pesos-mobile-menu gap-2 sm:gap-3">
-            <button
-              onClick={onOpenSearch}
-              className="p-2 rounded-full hover:bg-white/10 transition-colors text-white"
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5" />
-            </button>
-
+          {/* Mobile Header Actions — Strictly Bag & Hamburger, zero congestion */}
+          <div className="flex md:hidden items-center gap-2">
             <button
               onClick={onOpenCart}
-              className="relative p-2 rounded-full hover:bg-white/10 transition-colors text-white"
+              className="relative p-2 rounded-full hover:bg-white/10 transition-colors text-white cursor-pointer"
               aria-label="Cart"
             >
               <ShoppingBag className="h-5 w-5" />
@@ -170,7 +162,7 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
 
             <button
               type="button"
-              className="pesos-mobile-menu__toggle ml-1 p-2"
+              className="pesos-mobile-menu__toggle ml-1 p-2 cursor-pointer"
               aria-expanded={mobileMenuOpen}
               aria-label={mobileMenuOpen ? 'Close navigation sidebar' : 'Open navigation sidebar'}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
