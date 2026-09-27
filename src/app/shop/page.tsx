@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useMemo, Suspense } from 'react';
+import React, { useState, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  SlidersHorizontal, LayoutGrid, Rows3, X, ChevronDown, Check, RotateCcw
+  SlidersHorizontal, LayoutGrid, Rows3, X, ChevronDown, Check, RotateCcw,
+  GalleryHorizontal, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { ProductCard } from '@/components/product/ProductCard';
+import { JumiaProductSlider } from '@/components/shop/JumiaProductSlider';
 import { Size } from '@/types';
 import { formatKES } from '@/lib/utils';
 
@@ -21,6 +23,7 @@ function ShopContent() {
   const initialSearch = searchParams.get('search') || '';
 
   const { products, categories, collections } = useStore();
+  const filteredSliderRef = useRef<HTMLDivElement>(null);
 
   // Filters State
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
@@ -31,7 +34,7 @@ function ShopContent() {
   const [availabilityOnly, setAvailabilityOnly] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
   const [sortBy, setSortBy] = useState<string>('featured');
-  const [viewMode, setViewMode] = useState<'grid-4' | 'grid-3' | 'list'>('grid-4');
+  const [viewMode, setViewMode] = useState<'grid-4' | 'grid-3' | 'list' | 'slide'>('grid-4');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Available unique colors across products
@@ -156,6 +159,11 @@ function ShopContent() {
         </p>
       </div>
 
+      {/* Jumia-Style Featured Sliding Product Rail */}
+      <div className="pt-8">
+        <JumiaProductSlider products={products} />
+      </div>
+
       {/* Control Toolbar (Search, Filter toggles, Layout & Sort) */}
       <div className="py-6 border-b border-[#E4E4E7] flex flex-wrap items-center justify-between gap-4">
         {/* Mobile Filter Button */}
@@ -228,6 +236,16 @@ function ShopContent() {
               title="Editorial list"
             >
               <Rows3 size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode('slide')}
+              className={`border border-[#E4E4E7] p-1.5 transition-colors flex items-center gap-1.5 px-2 ${
+                viewMode === 'slide' ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'text-[#71717A] hover:border-[#0A0A0A] hover:text-[#0A0A0A]'
+              }`}
+              title="Horizontal slide rail view"
+            >
+              <GalleryHorizontal size={15} />
+              <span className="text-[9px] font-mono tracking-wider uppercase font-bold">SLIDE</span>
             </button>
           </div>
         </div>
@@ -437,6 +455,55 @@ function ShopContent() {
                   </div>
                 </div>
               ))}
+            </div>
+          ) : viewMode === 'slide' ? (
+            <div className="border border-[#E4E4E7] bg-white p-4 sm:p-6 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#E4E4E7]">
+                <div className="flex items-center gap-2">
+                  <GalleryHorizontal size={15} />
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0A0A0A]">
+                    SLIDING CATALOG ({filteredProducts.length} PIECES)
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (filteredSliderRef.current) {
+                        filteredSliderRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+                      }
+                    }}
+                    className="p-1.5 border border-[#E4E4E7] hover:border-[#0A0A0A] bg-white text-[#0A0A0A] transition-colors cursor-pointer"
+                    aria-label="Slide items left"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (filteredSliderRef.current) {
+                        filteredSliderRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+                      }
+                    }}
+                    className="p-1.5 border border-[#E4E4E7] hover:border-[#0A0A0A] bg-white text-[#0A0A0A] transition-colors cursor-pointer"
+                    aria-label="Slide items right"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Horizontal Slide Rail */}
+              <div
+                ref={filteredSliderRef}
+                className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 pb-4 scrollbar-none"
+              >
+                {filteredProducts.map((product) => (
+                  <div key={product.id} className="w-[230px] sm:w-[260px] md:w-[280px] shrink-0 snap-start">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <div

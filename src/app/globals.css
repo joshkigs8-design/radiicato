@@ -203,12 +203,6 @@
   .pesos-below-navbar-fixed {
     padding-top: var(--navbar-height);
     min-height: calc(100vh - var(--navbar-height));
-    min-height: calc(100svh - var(--navbar-height));
-  }
-  @supports (min-height: 100dvh) {
-    .pesos-below-navbar-fixed {
-      min-height: calc(100dvh - var(--navbar-height));
-    }
   }
 
   /* Navigation */
