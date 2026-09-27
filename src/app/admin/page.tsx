@@ -2,17 +2,19 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { 
-  TrendingUp, ShoppingCart, DollarSign, Package, AlertTriangle, 
-  Users, CheckCircle2, ArrowUpRight, ArrowDownRight, Filter, 
-  Plus, ExternalLink, Calendar 
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  TrendingUp, ShoppingCart, DollarSign, Package, AlertTriangle,
+  Users, CheckCircle2, ArrowUpRight, ArrowDownRight, Filter,
+  Plus, ExternalLink, Calendar
 } from 'lucide-react';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, 
-  ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend 
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend
 } from 'recharts';
 import { useStore } from '@/lib/use-store';
 import { formatKES } from '@/lib/utils';
+import { fadeInUp, staggerContainer } from '@/lib/motion-variants';
 
 // Demo Revenue & Orders Analytics over time
 const REVENUE_DATA_30D = [
@@ -33,16 +35,40 @@ const CATEGORY_SALES = [
   { name: 'Caps & Accessories', value: 8, color: '#9CA3AF' },
 ];
 
+// Helper for count-up animation
+function CountUp({ value, format }: { value: number, format?: (v: number) => string }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  React.useEffect(() => {
+    let start = 0;
+    const end = value;
+    const duration = 1500;
+    const increment = end / (duration / 16);
+
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setDisplayValue(end);
+        clearInterval(timer);
+      } else {
+        setDisplayValue(Math.floor(start));
+      }
+    }, 16);
+
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return <span>{format ? format(displayValue) : displayValue}</span>;
+}
+
 export default function AdminDashboardPage() {
   const { products, orders, categories, collections } = useStore();
   const [dateRange, setDateRange] = useState<'today' | '7d' | '30d' | '90d' | 'year'>('30d');
 
-  // Calculate Real Dashboard Metrics
   const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
   const pendingOrders = orders.filter((o) => o.fulfillmentStatus === 'processing' || o.fulfillmentStatus === 'paid').length;
   const avgOrderValue = orders.length > 0 ? Math.round(totalRevenue / orders.length) : 0;
 
-  // Inventory analysis
   const lowStockItems = useMemo(() => {
     const list: { product: string; variant: string; sku: string; stock: number }[] = [];
     products.forEach((p) => {
@@ -60,24 +86,13 @@ export default function AdminDashboardPage() {
     return list;
   }, [products]);
 
-  const outOfStockItems = useMemo(() => {
-    const list: { product: string; variant: string; sku: string }[] = [];
-    products.forEach((p) => {
-      p.variants.forEach((v) => {
-        if (v.stockQuantity === 0) {
-          list.push({
-            product: p.name,
-            variant: `${v.colorName} / ${v.size}`,
-            sku: v.sku,
-          });
-        }
-      });
-    });
-    return list;
-  }, [products]);
-
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto pb-16">
+    <motion.div
+      initial="initial"
+      animate="animate"
+      variants={fadeInUp}
+      className="space-y-8 max-w-[1600px] mx-auto pb-16"
+    >
       {/* Top Header & Date Filter Strip */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
@@ -87,7 +102,6 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        {/* Date Filter Pills */}
         <div className="flex items-center gap-2">
           <div className="flex bg-[#F3F4F6] p-1 rounded-md border border-[#E5E7EB] text-xs font-mono">
             {(['today', '7d', '30d', '90d', 'year'] as const).map((r) => (
@@ -115,70 +129,41 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* KPI Cards Grid (10 metrics) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {/* Card 1: Total Revenue */}
-        <div className="p-4 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-1">
-          <div className="flex justify-between items-center text-[#6B7280]">
-            <span className="text-xs font-medium uppercase tracking-wider">Total Sales</span>
-            <DollarSign size={16} className="text-[#4D5936]" />
-          </div>
-          <div className="text-xl font-bold font-mono text-[#111827]">{formatKES(totalRevenue)}</div>
-          <div className="flex items-center gap-1 text-[11px] text-[#10B981] font-mono">
-            <ArrowUpRight size={12} />
-            <span>+24.8% vs last month</span>
-          </div>
-        </div>
-
-        {/* Card 2: Total Orders */}
-        <div className="p-4 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-1">
-          <div className="flex justify-between items-center text-[#6B7280]">
-            <span className="text-xs font-medium uppercase tracking-wider">Orders Count</span>
-            <ShoppingCart size={16} className="text-[#4D5936]" />
-          </div>
-          <div className="text-xl font-bold font-mono text-[#111827]">{orders.length}</div>
-          <div className="flex items-center gap-1 text-[11px] text-[#10B981] font-mono">
-            <ArrowUpRight size={12} />
-            <span>+18.2% conversion</span>
-          </div>
-        </div>
-
-        {/* Card 3: Awaiting Fulfillment */}
-        <div className="p-4 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-1">
-          <div className="flex justify-between items-center text-[#6B7280]">
-            <span className="text-xs font-medium uppercase tracking-wider">To Fulfill</span>
-            <Package size={16} className="text-[#F59E0B]" />
-          </div>
-          <div className="text-xl font-bold font-mono text-[#F59E0B]">{pendingOrders}</div>
-          <p className="text-[11px] text-[#6B7280]">Dispatches pending courier</p>
-        </div>
-
-        {/* Card 4: Average Order Value */}
-        <div className="p-4 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-1">
-          <div className="flex justify-between items-center text-[#6B7280]">
-            <span className="text-xs font-medium uppercase tracking-wider">Avg Order Value</span>
-            <TrendingUp size={16} className="text-[#4D5936]" />
-          </div>
-          <div className="text-xl font-bold font-mono text-[#111827]">{formatKES(avgOrderValue)}</div>
-          <p className="text-[11px] text-[#6B7280]">Across 3 items per basket</p>
-        </div>
-
-        {/* Card 5: Low Stock Variants */}
-        <div className="p-4 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-1">
-          <div className="flex justify-between items-center text-[#6B7280]">
-            <span className="text-xs font-medium uppercase tracking-wider">Low Stock Alerts</span>
-            <AlertTriangle size={16} className="text-[#EF4444]" />
-          </div>
-          <div className="text-xl font-bold font-mono text-[#EF4444]">{lowStockItems.length}</div>
-          <Link href="/admin/inventory" className="text-[11px] text-[#4D5936] font-semibold hover:underline block">
-            Review stock matrix &rarr;
-          </Link>
-        </div>
-      </div>
+      {/* KPI Cards Grid */}
+      <motion.div
+        variants={staggerContainer}
+        className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"
+      >
+        {[
+          { label: 'Total Sales', val: totalRevenue, icon: DollarSign, color: '#4D5936', format: formatKES, trend: '+24.8% vs last month' },
+          { label: 'Orders Count', val: orders.length, icon: ShoppingCart, color: '#4D5936', trend: '+18.2% conversion' },
+          { label: 'To Fulfill', val: pendingOrders, icon: Package, color: '#F59E0B', trend: 'Dispatches pending courier' },
+          { label: 'Avg Order Value', val: avgOrderValue, icon: TrendingUp, color: '#4D5936', format: formatKES, trend: 'Across 3 items per basket' },
+          { label: 'Low Stock Alerts', val: lowStockItems.length, icon: AlertTriangle, color: '#EF4444', trend: 'Review stock matrix →' },
+        ].map((kpi, i) => (
+          <motion.div
+            key={i}
+            variants={fadeInUp}
+            whileHover={{ y: -4, boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }}
+            className="p-4 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-1 transition-all"
+          >
+            <div className="flex justify-between items-center text-[#6B7280]">
+              <span className="text-xs font-medium uppercase tracking-wider">{kpi.label}</span>
+              <kpi.icon size={16} style={{ color: kpi.color }} />
+            </div>
+            <div className="text-xl font-bold font-mono text-[#111827]">
+              <CountUp value={kpi.val} format={kpi.format} />
+            </div>
+            <div className="flex items-center gap-1 text-[11px] text-[#10B981] font-mono">
+              {kpi.label === 'Low Stock Alerts' ? null : <ArrowUpRight size={12} />}
+              <span className={kpi.label === 'Low Stock Alerts' ? 'text-[#6B7280]' : ''}>{kpi.trend}</span>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
 
       {/* Analytics Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Main Chart: Revenue & Orders Over Time */}
         <div className="lg:col-span-8 p-6 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-4">
           <div className="flex justify-between items-center">
             <div>
@@ -206,13 +191,20 @@ export default function AdminDashboardPage() {
                   formatter={(value: number) => [formatKES(value), 'Revenue']}
                   contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', color: '#fff', borderRadius: '6px' }}
                 />
-                <Area type="monotone" dataKey="revenue" stroke="#4D5936" strokeWidth={2} fillOpacity={1} fill="url(#revenueGrad)" />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#4D5936"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#revenueGrad)"
+                  animationDuration={2000}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Donut Chart: Sales by Category */}
         <div className="lg:col-span-4 p-6 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-4">
           <div>
             <h3 className="text-sm font-bold text-[#111827]">Sales by Category</h3>
@@ -230,6 +222,8 @@ export default function AdminDashboardPage() {
                   outerRadius={80}
                   paddingAngle={4}
                   dataKey="value"
+                  animationBegin={200}
+                  animationDuration={1200}
                 >
                   {CATEGORY_SALES.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -257,9 +251,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Tables: Recent Orders & Inventory Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: Recent Orders Table */}
         <div className="lg:col-span-8 bg-white border border-[#E5E7EB] rounded-lg shadow-sm overflow-hidden">
           <div className="p-5 border-b border-[#E5E7EB] flex justify-between items-center">
             <div>
@@ -313,7 +305,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Right: Low Stock Alerts */}
         <div className="lg:col-span-4 bg-white border border-[#E5E7EB] rounded-lg shadow-sm p-5 space-y-4">
           <div className="flex justify-between items-center border-b border-[#E5E7EB] pb-3">
             <div>
@@ -333,7 +324,13 @@ export default function AdminDashboardPage() {
               <p className="text-xs text-[#6B7280]">All inventory levels healthy.</p>
             ) : (
               lowStockItems.map((item, idx) => (
-                <div key={idx} className="p-3 bg-[#FEF2F2] border border-[#FEE2E2] rounded-md flex justify-between items-center text-xs">
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="p-3 bg-[#FEF2F2] border border-[#FEE2E2] rounded-md flex justify-between items-center text-xs"
+                >
                   <div>
                     <p className="font-bold text-[#991B1B]">{item.product}</p>
                     <p className="text-[10px] text-[#7F1D1D] font-mono">{item.variant} • {item.sku}</p>
@@ -341,13 +338,12 @@ export default function AdminDashboardPage() {
                   <span className="px-2 py-1 bg-[#DC2626] text-white rounded font-mono font-bold text-xs">
                     {item.stock} left
                   </span>
-                </div>
+                </motion.div>
               ))
             )}
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
-
