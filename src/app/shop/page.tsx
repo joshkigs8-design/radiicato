@@ -75,118 +75,13 @@ function ShopEditorialLanding() {
               INDEPENDENT LUXURY STREETWEAR ENGINEERED IN NAIROBI. THE INAUGURAL STATEMENT UNITING BROKEN RECORD, WE ARE WHO WE ARE, AND SIGNATURE SKULL CAPS.
             </p>
 
-            {/* Prominent SHOP NOW Button */}
-            <div className="pt-3 sm:pt-4">
-              <Link
-                href="/collections/early-2026"
-                className="inline-flex items-center justify-center gap-3 px-10 sm:px-14 py-4 sm:py-5 bg-white text-black hover:bg-zinc-200 text-xs sm:text-sm font-mono font-bold uppercase tracking-[0.22em] rounded-xl transition-all shadow-2xl hover:scale-[1.02]"
-              >
-                <span>SHOP NOW</span>
-                <ArrowRight size={16} />
-              </Link>
-            </div>
+
           </div>
         </div>
       </div>
 
-      {/* Curated Edits Vignette Inside Early 2026 Collection */}
-      <div className="mt-12 sm:mt-16 pt-8 border-t border-[#E4E4E7]">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
-          <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#71717A] font-bold block mb-1">
-              INSIDE THE COLLECTION
-            </span>
-            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-[#0A0A0A]">
-              3 CURATED EDITS · 1 UNIFIED DROP
-            </h2>
-          </div>
-          <Link
-            href="/collections/early-2026"
-            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#0A0A0A] hover:opacity-60 transition-opacity font-bold"
-          >
-            <span>ENTER COLLECTION</span>
-            <ArrowRight size={14} />
-          </Link>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Edit 01 */}
-          <Link
-            href="/collections/early-2026?capsule=broken-record"
-            className="group block p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] bg-[#FAFAFA] hover:border-[#0A0A0A] transition-all"
-          >
-            <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-[#F4F4F5]">
-              <Image
-                src="/images/products/broken-record-front.jpg"
-                alt="Broken Record Edit"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-            </div>
-            <span className="text-[10px] font-mono tracking-widest uppercase text-[#71717A] block">
-              EDIT 01 // 3 PIECES
-            </span>
-            <h3 className="text-base font-black uppercase text-[#0A0A0A] mt-1 group-hover:text-black">
-              BROKEN RECORD
-            </h3>
-            <p className="text-xs text-[#71717A] mt-1.5 font-mono line-clamp-2">
-              Heavyweight 280 GSM combed cotton with 3D chrome medallion and shattered MF DOOM vinyl tracklist reverse.
-            </p>
-          </Link>
 
-          {/* Edit 02 */}
-          <Link
-            href="/collections/early-2026?capsule=we-are-who-we-are"
-            className="group block p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] bg-[#FAFAFA] hover:border-[#0A0A0A] transition-all"
-          >
-            <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-[#F4F4F5]">
-              <Image
-                src="/images/products/we-are-who-we-are-front.jpg"
-                alt="We Are Who We Are Edit"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-            </div>
-            <span className="text-[10px] font-mono tracking-widest uppercase text-[#71717A] block">
-              EDIT 02 // 3 PIECES
-            </span>
-            <h3 className="text-base font-black uppercase text-[#0A0A0A] mt-1 group-hover:text-black">
-              WE ARE WHO WE ARE
-            </h3>
-            <p className="text-xs text-[#71717A] mt-1.5 font-mono line-clamp-2">
-              Raw Nairobi street culture and expressive lettering cut for creatives who refuse to conform.
-            </p>
-          </Link>
-
-          {/* Edit 03 */}
-          <Link
-            href="/collections/early-2026?capsule=skull-caps"
-            className="group block p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] bg-[#FAFAFA] hover:border-[#0A0A0A] transition-all"
-          >
-            <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-[#F4F4F5]">
-              <Image
-                src="/images/products/radiicato-skull-cap-black.jpg"
-                alt="Skull Caps Edit"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-            </div>
-            <span className="text-[10px] font-mono tracking-widest uppercase text-[#71717A] block">
-              EDIT 03 // 3 COLOURWAYS
-            </span>
-            <h3 className="text-base font-black uppercase text-[#0A0A0A] mt-1 group-hover:text-black">
-              SIGNATURE SKULL CAPS
-            </h3>
-            <p className="text-xs text-[#71717A] mt-1.5 font-mono line-clamp-2">
-              Form-fitting contoured knit in Onyx Black, Slate Grey, and Midnight Camo with liquid chrome insignia.
-            </p>
-          </Link>
-        </div>
-      </div>
-    </div>
   );
 }
 

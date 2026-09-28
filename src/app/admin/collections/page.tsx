@@ -245,7 +245,7 @@ export default function AdminCollectionsPage() {
                     <option value="live">Live</option>
                     <option value="scheduled">Scheduled Drop</option>
                     <option value="draft">Draft</option>
-                    <option value="archived">Archived</option>
+
                   </select>
                 </div>
 

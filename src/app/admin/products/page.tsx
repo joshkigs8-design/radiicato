@@ -129,7 +129,7 @@ export default function AdminProductsPage() {
             <option value="active">Active</option>
             <option value="draft">Draft</option>
             <option value="scheduled">Scheduled</option>
-            <option value="archived">Archived</option>
+
             <option value="sold_out">Sold Out</option>
           </select>
         </div>
