@@ -17,7 +17,9 @@ import {
   fetchProductsFromSupabase,
   updateOrderInSupabase,
   updateVariantStockInSupabase,
-  createReviewInSupabase
+  createReviewInSupabase,
+  fetchCouponsFromSupabase,
+  upsertCouponInSupabase
 } from './supabase';
 
 // Initial Orders (Representing live Kenyan streetwear dispatches and M-PESA payments)
@@ -521,6 +523,12 @@ class RadiicatoStore {
           this.homepageCMS.announcementText = active.message;
           this.homepageCMS.isAnnouncementActive = true;
         }
+        this.notify();
+      }
+
+      const coupons = await fetchCouponsFromSupabase();
+      if (coupons) {
+        this.coupons = coupons;
         this.notify();
       }
     } catch (err) {
@@ -1049,6 +1057,17 @@ class RadiicatoStore {
   // --- COUPONS ---
   public getCoupons(): Coupon[] {
     return [...this.coupons];
+  }
+
+  public async saveCoupon(coupon: Coupon) {
+    const result = await upsertCouponInSupabase(coupon);
+    if (!result.success) return result;
+
+    const index = this.coupons.findIndex((existing) => existing.id === coupon.id);
+    if (index >= 0) this.coupons[index] = coupon;
+    else this.coupons.unshift(coupon);
+    this.notify();
+    return { success: true };
   }
 
   public validateCoupon(code: string, subtotal: number): { valid: boolean; discountAmount: number; message: string; coupon?: Coupon } {

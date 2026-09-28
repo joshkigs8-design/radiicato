@@ -5,7 +5,7 @@ import { store } from './store';
 import { 
   Product, Category, Collection, CartItem, Order, 
   Review, LookbookItem, HomepageCMS, AdminNotification, 
-  AuditLog, StoreSettings, AdminUser 
+  AuditLog, StoreSettings, AdminUser, Coupon
 } from '@/types';
 
 export function useStore() {
@@ -60,6 +60,7 @@ export function useStore() {
     // Order & Checkout Actions
     placeOrder: (order: Parameters<typeof store.placeOrder>[0]) => store.placeOrder(order),
     validateCoupon: (code: string, subtotal: number) => store.validateCoupon(code, subtotal),
+    saveCoupon: (coupon: Coupon) => store.saveCoupon(coupon),
 
     // Admin Operations
     saveProduct: (prod: Product) => store.saveProduct(prod),

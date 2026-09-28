@@ -7,9 +7,9 @@ import { formatKES } from '@/lib/utils';
 import { Coupon } from '@/types';
 
 export default function AdminDiscountsPage() {
-  const { coupons } = useStore();
-  const [couponsList, setCouponsList] = useState<Coupon[]>(coupons);
+  const { coupons, saveCoupon } = useStore();
   const [modalOpen, setModalOpen] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Form State
   const [code, setCode] = useState('');
@@ -19,12 +19,12 @@ export default function AdminDiscountsPage() {
   const [maxDiscount, setMaxDiscount] = useState<number | undefined>(2000);
   const [usageLimit, setUsageLimit] = useState(200);
 
-  const handleCreateCoupon = (e: React.FormEvent) => {
+  const handleCreateCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!code.trim()) return;
 
     const newCoupon: Coupon = {
-      id: `c-${Date.now()}`,
+      id: crypto.randomUUID(),
       code: code.trim().toUpperCase(),
       discountType: type,
       value: Number(value),
@@ -36,15 +36,20 @@ export default function AdminDiscountsPage() {
       isActive: true,
     };
 
-    setCouponsList([newCoupon, ...couponsList]);
+    const result = await saveCoupon(newCoupon);
+    if (!result.success) {
+      setSaveError(('error' in result && result.error) || 'Unable to save this discount.');
+      return;
+    }
+
+    setSaveError(null);
     setModalOpen(false);
     setCode('');
   };
 
-  const toggleActive = (id: string) => {
-    setCouponsList(
-      couponsList.map((c) => (c.id === id ? { ...c, isActive: !c.isActive } : c))
-    );
+  const toggleActive = async (coupon: Coupon) => {
+    const result = await saveCoupon({ ...coupon, isActive: !coupon.isActive });
+    if (!result.success) setSaveError(('error' in result && result.error) || 'Unable to update this discount.');
   };
 
   return (
@@ -69,7 +74,12 @@ export default function AdminDiscountsPage() {
 
       {/* Coupons List Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {couponsList.map((coupon) => (
+        {saveError && (
+          <div className="col-span-full rounded-md border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+            {saveError}
+          </div>
+        )}
+        {coupons.map((coupon) => (
           <div
             key={coupon.id}
             className="p-5 bg-white border border-[#E5E7EB] rounded-lg shadow-sm space-y-4 flex flex-col justify-between"
@@ -105,7 +115,7 @@ export default function AdminDiscountsPage() {
 
             <div className="pt-3 border-t border-[#E5E7EB] flex justify-between items-center text-xs">
               <button
-                onClick={() => toggleActive(coupon.id)}
+                onClick={() => toggleActive(coupon)}
                 className="text-[#4D5936] font-bold hover:underline"
               >
                 {coupon.isActive ? 'Deactivate' : 'Activate'}
@@ -116,7 +126,7 @@ export default function AdminDiscountsPage() {
             </div>
           </div>
         ))}
-        {!couponsList.length && (
+        {!coupons.length && (
           <div className="col-span-full border border-dashed border-[#D1D5DB] bg-white p-12 text-center">
             <Tag size={24} className="mx-auto text-[#9CA3AF]" />
             <p className="mt-3 text-sm font-semibold text-[#374151]">No discounts yet</p>

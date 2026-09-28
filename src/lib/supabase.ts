@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
+import { Coupon } from '@/types';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mmxosaqhcuikgbzqlpgk.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_AH27_5iybTl_L7ixQuVWsg_f-KyshKa';
@@ -188,6 +189,55 @@ export async function deleteStoreAnnouncementFromSupabase(id: string) {
   } catch (err: any) {
     return { success: false, error: err.message };
   }
+}
+
+export async function fetchCouponsFromSupabase(): Promise<Coupon[] | null> {
+  const { data, error } = await (supabase as any)
+    .from('coupons')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.warn('Supabase coupons query note:', error.message);
+    return null;
+  }
+
+  return (data || []).map((coupon: any) => ({
+    id: coupon.id,
+    code: coupon.code,
+    discountType: coupon.discount_type,
+    value: Number(coupon.value),
+    minOrder: Number(coupon.min_order || 0),
+    maxDiscount: coupon.max_discount == null ? undefined : Number(coupon.max_discount),
+    startDate: coupon.start_date,
+    endDate: coupon.end_date || undefined,
+    usageLimit: coupon.usage_limit == null ? undefined : Number(coupon.usage_limit),
+    timesUsed: Number(coupon.times_used || 0),
+    isActive: Boolean(coupon.is_active),
+  }));
+}
+
+export async function upsertCouponInSupabase(coupon: Coupon) {
+  const { data, error } = await (supabase as any)
+    .from('coupons')
+    .upsert({
+      id: coupon.id,
+      code: coupon.code,
+      discount_type: coupon.discountType,
+      value: coupon.value,
+      min_order: coupon.minOrder,
+      max_discount: coupon.maxDiscount ?? null,
+      start_date: coupon.startDate,
+      end_date: coupon.endDate ?? null,
+      usage_limit: coupon.usageLimit ?? null,
+      times_used: coupon.timesUsed,
+      is_active: coupon.isActive,
+    })
+    .select('*')
+    .single();
+
+  if (error) return { success: false, error: error.message };
+  return { success: true, data };
 }
 
 /**
