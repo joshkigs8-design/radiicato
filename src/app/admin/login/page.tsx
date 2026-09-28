@@ -10,11 +10,10 @@ import {
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { supabase } from '@/lib/supabase';
-import { AdminRole } from '@/types';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { loginAdmin, switchAdminRole, adminUsers } = useStore();
+  const { loginAdmin } = useStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,53 +39,30 @@ export default function AdminLoginPage() {
         });
 
         if (!authError && data.user) {
-          loginAdmin(trimmedEmail, 'SUPER_ADMIN');
-          setSuccess(true);
-          setTimeout(() => {
-            router.push('/admin');
-          }, 400);
-          return;
-        } else if (authError && trimmedEmail === 'radiicato8@gmail.com' && password === 'Josh3940.') {
-          // Auto-provision in Supabase Auth on first login if not yet registered
-          try {
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-              email: trimmedEmail,
-              password: password,
-              options: {
-                data: {
-                  full_name: 'Joshua Kigen',
-                  role: 'super_admin',
-                },
-              },
-            });
-            if (!signUpError && signUpData.user) {
-              loginAdmin(trimmedEmail, 'SUPER_ADMIN');
-              setSuccess(true);
-              setTimeout(() => {
-                router.push('/admin');
-              }, 400);
-              return;
-            }
-          } catch (signUpErr) {
-            console.warn('Auto sign-up attempt error:', signUpErr);
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('email, role')
+            .eq('id', data.user.id)
+            .maybeSingle();
+          const profile = profileData as { email: string; role: string } | null;
+
+          if (!profileError && profile?.email === 'radiicato8@gmail.com' && profile.role === 'super_admin') {
+            loginAdmin(profile.email, 'SUPER_ADMIN');
+            setSuccess(true);
+            setTimeout(() => {
+              router.push('/admin');
+            }, 400);
+            return;
           }
+
+          await supabase.auth.signOut();
         }
       } catch (authErr) {
         console.warn('Supabase login error:', authErr);
       }
     }
 
-    // 2. Direct verification for owner credentials
-    if (trimmedEmail === 'radiicato8@gmail.com' && password === 'Josh3940.') {
-      loginAdmin(trimmedEmail, 'SUPER_ADMIN');
-      setSuccess(true);
-      setTimeout(() => {
-        router.push('/admin');
-      }, 400);
-      return;
-    }
-
-    setError('Invalid credentials. Access is strictly restricted to the atelier owner.');
+    setError('Invalid credentials or owner account. Access is strictly restricted to the atelier owner.');
     setLoading(false);
   };
 
@@ -158,12 +134,12 @@ export default function AdminLoginPage() {
                 Owner Email Address
               </label>
               <div className="relative">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="radiicato8@gmail.com"
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="radiicato8@gmail.com"
                   className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all"
                 />
               </div>

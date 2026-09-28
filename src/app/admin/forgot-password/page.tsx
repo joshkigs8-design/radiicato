@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,25 +8,28 @@ import {
   ShieldCheck, ArrowRight, Eye, EyeOff, KeyRound, 
   AlertCircle, CheckCircle2, ArrowLeft, Mail, RefreshCw, Lock
 } from 'lucide-react';
-import { useStore } from '@/lib/use-store';
 import { supabase } from '@/lib/supabase';
 
 export default function AdminForgotPasswordPage() {
   const router = useRouter();
-  const { requestPasswordReset, completePasswordReset, adminUsers } = useStore();
-
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [email, setEmail] = useState('');
-  const [recoveryCode, setRecoveryCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const [simulatedToken, setSimulatedToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(3);
+
+  useEffect(() => {
+    if (!supabase) return;
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') setStep(2);
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
 
   // Live Password Strength Calculation
   const passwordStrength = useMemo(() => {
@@ -58,26 +61,22 @@ export default function AdminForgotPasswordPage() {
 
     const trimmedEmail = email.trim().toLowerCase();
 
-    // Trigger Supabase password reset email dispatch if configured
-    if (supabase) {
-      supabase.auth.resetPasswordForEmail(trimmedEmail).catch((err) => {
-        console.warn('Supabase reset request note:', err);
-      });
+    if (!supabase) {
+      setError('Supabase is not configured.');
+      setLoading(false);
+      return;
     }
 
-    setTimeout(() => {
-      const res = requestPasswordReset(trimmedEmail);
-      if (!res.success) {
-        setError(res.error || 'Unable to locate registered staff account.');
-        setLoading(false);
+    supabase.auth.resetPasswordForEmail(trimmedEmail, {
+      redirectTo: `${window.location.origin}/admin/forgot-password`,
+    }).then(({ error: resetError }) => {
+      setLoading(false);
+      if (resetError) {
+        setError(resetError.message);
         return;
       }
-
-      setSimulatedToken(res.resetCode || 'RAD-842918');
-      setRecoveryCode(res.resetCode || 'RAD-842918');
-      setLoading(false);
-      setStep(2);
-    }, 600);
+      setSuccessMsg('A secure password reset link has been sent to the owner email address.');
+    });
   };
 
   // Handle Step 2: Set New Password
@@ -85,10 +84,6 @@ export default function AdminForgotPasswordPage() {
     e.preventDefault();
     setError(null);
 
-    if (!recoveryCode.trim()) {
-      setError('Please provide the 6-digit recovery code.');
-      return;
-    }
     if (newPassword.length < 8) {
       setError('New password must be at least 8 characters long.');
       return;
@@ -100,23 +95,18 @@ export default function AdminForgotPasswordPage() {
 
     setLoading(true);
 
-    const trimmedEmail = email.trim().toLowerCase();
-
-    // Update password in Supabase Auth if session active
-    if (supabase) {
-      supabase.auth.updateUser({ password: newPassword }).catch((err) => {
-        console.warn('Supabase password rotation note:', err);
-      });
+    if (!supabase) {
+      setError('Supabase is not configured.');
+      setLoading(false);
+      return;
     }
 
-    setTimeout(() => {
-      const res = completePasswordReset(trimmedEmail, recoveryCode);
-      if (!res.success) {
-        setError(res.error || 'Password update failed.');
+    supabase.auth.updateUser({ password: newPassword }).then(({ error: updateError }) => {
+      if (updateError) {
+        setError(updateError.message);
         setLoading(false);
         return;
       }
-
       setLoading(false);
       setStep(3);
 
@@ -130,7 +120,7 @@ export default function AdminForgotPasswordPage() {
           router.push('/admin/login');
         }
       }, 1000);
-    }, 600);
+    });
   };
 
   return (
@@ -201,6 +191,13 @@ export default function AdminForgotPasswordPage() {
             </div>
           )}
 
+          {successMsg && (
+            <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-lg flex items-start gap-2.5 text-xs text-emerald-300">
+              <CheckCircle2 size={16} className="shrink-0 text-emerald-400 mt-0.5" />
+              <span>{successMsg}</span>
+            </div>
+          )}
+
           {/* STEP 1: Enter Registered Email */}
           {step === 1 && (
             <form onSubmit={handleRequestToken} className="space-y-4">
@@ -237,22 +234,6 @@ export default function AdminForgotPasswordPage() {
           {/* STEP 2: Enter Token & New Password */}
           {step === 2 && (
             <form onSubmit={handleResetPassword} className="space-y-4">
-
-              {/* Code Field */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] flex items-center justify-between">
-                  <span>6-Digit Security Token</span>
-                  <span className="text-[10px] text-[#71717A]">Check email</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={recoveryCode}
-                  onChange={(e) => setRecoveryCode(e.target.value)}
-                  placeholder="RAD-XXXXXX"
-                  className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all font-mono uppercase tracking-widest text-center"
-                />
-              </div>
 
               {/* New Password Field */}
               <div className="space-y-1.5">

@@ -1,9 +1,29 @@
--- ==============================================================================
+-- ===============================================================================
 -- RADIICATO STREETWEAR PLATFORM — SUPABASE POSTGRESQL PRODUCTION SCHEMA
 -- Engineered for Nairobi Atelier & International E-Commerce
 -- Brand: RADIICATO
--- ==============================================================================
+-- ===============================================================================
+-- WARNING: This is a destructive reset. Run it only against the intended project.
+-- The Auth user itself is managed by Supabase Auth and is intentionally preserved.
+BEGIN;
 
+DROP TABLE IF EXISTS
+    public.audit_logs, public.admin_notifications, public.newsletter_subscribers,
+    public.store_announcements, public.store_settings, public.media,
+    public.drop_waitlists, public.lookbook_items, public.reviews, public.payments,
+    public.order_items, public.orders, public.coupons, public.shipping_zones,
+    public.addresses, public.customers, public.inventory_transactions,
+    public.product_variants, public.product_images, public.products,
+    public.collections, public.categories, public.profiles
+CASCADE;
+
+DROP SEQUENCE IF EXISTS public.order_number_seq CASCADE;
+DROP FUNCTION IF EXISTS public.handle_updated_at() CASCADE;
+DROP FUNCTION IF EXISTS public.set_order_number() CASCADE;
+DROP FUNCTION IF EXISTS public.handle_order_inventory_deduction() CASCADE;
+DROP FUNCTION IF EXISTS public.update_customer_spending() CASCADE;
+DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
+DROP FUNCTION IF EXISTS public.is_owner() CASCADE;
 -- ------------------------------------------------------------------------------
 -- 0. EXTENSIONS & STORAGE BUCKETS INITIALIZATION
 -- ------------------------------------------------------------------------------
@@ -37,6 +57,22 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- The only staff account is the Supabase Auth user with this email.
+CREATE OR REPLACE FUNCTION public.is_owner()
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT EXISTS (
+        SELECT 1 FROM public.profiles
+        WHERE id = auth.uid()
+          AND email = 'radiicato8@gmail.com'
+          AND role = 'super_admin'
+    );
+$$;
 
 -- ------------------------------------------------------------------------------
 -- 2. CATEGORIES
@@ -248,10 +284,14 @@ CREATE TABLE IF NOT EXISTS public.orders (
     discount_code TEXT,
     shipping_fee NUMERIC(10, 2) NOT NULL DEFAULT 0.00,
     total NUMERIC(10, 2) NOT NULL,
-    payment_method TEXT NOT NULL CHECK (payment_method IN ('mpesa', 'card', 'paystack', 'cash_on_delivery')),
+    payment_method TEXT NOT NULL DEFAULT 'manual_mpesa' CHECK (payment_method IN ('manual_mpesa', 'cash', 'bank_transfer', 'mpesa', 'card', 'paystack', 'cash_on_delivery')),
     payment_status TEXT NOT NULL DEFAULT 'pending' CHECK (payment_status IN ('pending', 'completed', 'failed', 'refunded')),
     fulfillment_status TEXT NOT NULL DEFAULT 'pending' CHECK (fulfillment_status IN ('pending', 'paid', 'processing', 'packed', 'shipped', 'delivered', 'cancelled', 'refunded')),
     mpesa_receipt_number TEXT,
+    payment_received_at TIMESTAMPTZ,
+    payment_reference TEXT,
+    order_source TEXT NOT NULL DEFAULT 'phone' CHECK (order_source IN ('phone', 'admin')),
+    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
     tracking_number TEXT,
     carrier TEXT DEFAULT 'Fargo Courier',
     internal_notes TEXT,
@@ -395,7 +435,7 @@ CREATE TABLE IF NOT EXISTS public.store_announcements (
     priority INT NOT NULL DEFAULT 1,
     starts_at TIMESTAMPTZ DEFAULT NOW(),
     expires_at TIMESTAMPTZ,
-    created_by TEXT DEFAULT 'joshkigs8@gmail.com',
+    created_by TEXT DEFAULT 'radiicato8@gmail.com',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -525,12 +565,12 @@ BEGIN
     INSERT INTO public.profiles (id, full_name, email, role)
     VALUES (
         NEW.id,
-        COALESCE(NEW.raw_user_meta_data->>'full_name', CASE WHEN NEW.email = 'joshkigs8@gmail.com' THEN 'Joshua Kigen' ELSE split_part(NEW.email, '@', 1) END),
+        COALESCE(NEW.raw_user_meta_data->>'full_name', CASE WHEN NEW.email = 'radiicato8@gmail.com' THEN 'Joshua Kigen' ELSE split_part(NEW.email, '@', 1) END),
         NEW.email,
-        CASE WHEN NEW.email = 'joshkigs8@gmail.com' THEN 'super_admin' ELSE COALESCE(NEW.raw_user_meta_data->>'role', 'customer') END
+        CASE WHEN NEW.email = 'radiicato8@gmail.com' THEN 'super_admin' ELSE COALESCE(NEW.raw_user_meta_data->>'role', 'customer') END
     )
     ON CONFLICT (id) DO UPDATE SET
-        role = CASE WHEN EXCLUDED.email = 'joshkigs8@gmail.com' THEN 'super_admin' ELSE EXCLUDED.role END,
+        role = CASE WHEN EXCLUDED.email = 'radiicato8@gmail.com' THEN 'super_admin' ELSE EXCLUDED.role END,
         full_name = EXCLUDED.full_name,
         updated_at = NOW();
     RETURN NEW;
@@ -581,27 +621,32 @@ ALTER TABLE public.lookbook_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.drop_waitlists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.store_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.store_announcements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.shipping_zones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.inventory_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.media ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.admin_notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- 0. Profiles Policies
-DROP POLICY IF EXISTS "Allow public insert for profile creation" ON public.profiles;
-CREATE POLICY "Allow public insert for profile creation" 
-    ON public.profiles FOR INSERT 
-    WITH CHECK (true);
-
 DROP POLICY IF EXISTS "Public can view profiles" ON public.profiles;
-CREATE POLICY "Public can view profiles" 
-    ON public.profiles FOR SELECT 
-    USING (true);
+CREATE POLICY "Owner can view own profile"
+    ON public.profiles FOR SELECT TO authenticated
+    USING (public.is_owner() AND id = auth.uid());
 
 DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
 CREATE POLICY "Users can update their own profile" 
     ON public.profiles FOR UPDATE 
-    USING (auth.uid() = id);
+    USING (public.is_owner() AND auth.uid() = id)
+    WITH CHECK (public.is_owner() AND auth.uid() = id);
 
 DROP POLICY IF EXISTS "Admins have full access to profiles" ON public.profiles;
 CREATE POLICY "Admins have full access to profiles" 
     ON public.profiles TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 -- 1. Storefront Public Read Policies (Allowing active & scheduled drops like Skull Caps)
 DROP POLICY IF EXISTS "Public can view active or scheduled products" ON public.products;
@@ -661,70 +706,63 @@ CREATE POLICY "Public can submit reviews"
     WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
-CREATE POLICY "Public can create orders" 
-    ON public.orders FOR INSERT 
-    WITH CHECK (true);
-
 DROP POLICY IF EXISTS "Public can create order items" ON public.order_items;
-CREATE POLICY "Public can create order items" 
-    ON public.order_items FOR INSERT 
-    WITH CHECK (true);
 
 -- 3. Authenticated Staff / Admin Full Access Policies
 DROP POLICY IF EXISTS "Admins have full access to products" ON public.products;
 CREATE POLICY "Admins have full access to products" 
     ON public.products TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to product_images" ON public.product_images;
 CREATE POLICY "Admins have full access to product_images" 
     ON public.product_images TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to product_variants" ON public.product_variants;
 CREATE POLICY "Admins have full access to product_variants" 
     ON public.product_variants TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to categories" ON public.categories;
 CREATE POLICY "Admins have full access to categories" 
     ON public.categories TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to collections" ON public.collections;
 CREATE POLICY "Admins have full access to collections" 
     ON public.collections TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to orders" ON public.orders;
 CREATE POLICY "Admins have full access to orders" 
     ON public.orders TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to order_items" ON public.order_items;
 CREATE POLICY "Admins have full access to order_items" 
     ON public.order_items TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to reviews" ON public.reviews;
 CREATE POLICY "Admins have full access to reviews" 
     ON public.reviews TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to lookbook" ON public.lookbook_items;
 CREATE POLICY "Admins have full access to lookbook" 
     ON public.lookbook_items TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to store_settings" ON public.store_settings;
 CREATE POLICY "Admins have full access to store_settings" 
     ON public.store_settings TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 DROP POLICY IF EXISTS "Admins have full access to store_announcements" ON public.store_announcements;
 CREATE POLICY "Admins have full access to store_announcements" 
     ON public.store_announcements TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 -- 4. Newsletter Policies
 ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
@@ -737,7 +775,27 @@ CREATE POLICY "Public can subscribe to newsletter"
 DROP POLICY IF EXISTS "Admins have full access to newsletter_subscribers" ON public.newsletter_subscribers;
 CREATE POLICY "Admins have full access to newsletter_subscribers" 
     ON public.newsletter_subscribers TO authenticated 
-    USING (true) WITH CHECK (true);
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+
+-- Private operational tables are owner-only. There are no public payment or order reads.
+CREATE POLICY "Owner can manage customers" ON public.customers TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+CREATE POLICY "Owner can manage addresses" ON public.addresses TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+CREATE POLICY "Owner can manage shipping zones" ON public.shipping_zones TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+CREATE POLICY "Owner can manage coupons" ON public.coupons TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+CREATE POLICY "Owner can manage inventory transactions" ON public.inventory_transactions TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+CREATE POLICY "Owner can manage payments" ON public.payments TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+CREATE POLICY "Owner can manage media" ON public.media TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+CREATE POLICY "Owner can manage admin notifications" ON public.admin_notifications TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
+CREATE POLICY "Owner can manage audit logs" ON public.audit_logs TO authenticated
+    USING (public.is_owner()) WITH CHECK (public.is_owner());
 
 -- ------------------------------------------------------------------------------
 -- STORAGE BUCKET RLS POLICIES (FOR COLLECTION & PRODUCT PHOTO UPLOADS)
@@ -771,40 +829,42 @@ DROP POLICY IF EXISTS "Authenticated Users Can Upload Collections Images" ON sto
 CREATE POLICY "Authenticated Users Can Upload Collections Images"
     ON storage.objects FOR INSERT
     TO authenticated
-    WITH CHECK (bucket_id = 'collections');
+    WITH CHECK (public.is_owner() AND bucket_id = 'collections');
 
 DROP POLICY IF EXISTS "Authenticated Users Can Upload Products Images" ON storage.objects;
 CREATE POLICY "Authenticated Users Can Upload Products Images"
     ON storage.objects FOR INSERT
     TO authenticated
-    WITH CHECK (bucket_id = 'products');
+    WITH CHECK (public.is_owner() AND bucket_id = 'products');
 
 DROP POLICY IF EXISTS "Authenticated Users Can Upload Lookbook Images" ON storage.objects;
 CREATE POLICY "Authenticated Users Can Upload Lookbook Images"
     ON storage.objects FOR INSERT
     TO authenticated
-    WITH CHECK (bucket_id = 'lookbook');
+    WITH CHECK (public.is_owner() AND bucket_id = 'lookbook');
 
 DROP POLICY IF EXISTS "Authenticated Users Can Upload Media Assets" ON storage.objects;
 CREATE POLICY "Authenticated Users Can Upload Media Assets"
     ON storage.objects FOR INSERT
     TO authenticated
-    WITH CHECK (bucket_id = 'media');
+    WITH CHECK (public.is_owner() AND bucket_id = 'media');
 
 DROP POLICY IF EXISTS "Authenticated Users Can Upload Founder Images" ON storage.objects;
 CREATE POLICY "Authenticated Users Can Upload Founder Images"
     ON storage.objects FOR INSERT
     TO authenticated
-    WITH CHECK (bucket_id = 'founder');
+    WITH CHECK (public.is_owner() AND bucket_id = 'founder');
 
 DROP POLICY IF EXISTS "Authenticated Users Can Update Storage Objects" ON storage.objects;
 CREATE POLICY "Authenticated Users Can Update Storage Objects"
     ON storage.objects FOR UPDATE
     TO authenticated
-    USING (bucket_id IN ('collections', 'products', 'lookbook', 'media', 'founder'));
+    USING (public.is_owner() AND bucket_id IN ('collections', 'products', 'lookbook', 'media', 'founder'));
 
 DROP POLICY IF EXISTS "Authenticated Users Can Delete Storage Objects" ON storage.objects;
 CREATE POLICY "Authenticated Users Can Delete Storage Objects"
     ON storage.objects FOR DELETE
     TO authenticated
-    USING (bucket_id IN ('collections', 'products', 'lookbook', 'media', 'founder'));
+    USING (public.is_owner() AND bucket_id IN ('collections', 'products', 'lookbook', 'media', 'founder'));
+
+COMMIT;

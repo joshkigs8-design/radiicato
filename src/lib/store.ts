@@ -21,7 +21,7 @@ import {
 } from './supabase';
 
 // Initial Orders (Representing live Kenyan streetwear dispatches and M-PESA payments)
-const INITIAL_ORDERS: Order[] = [
+const INITIAL_ORDERS: Order[] = []; /* legacy demo orders removed from runtime
   {
     id: 'ord-rad-001',
     orderNumber: 'RAD-2026-00421',
@@ -321,7 +321,7 @@ const INITIAL_ORDERS: Order[] = [
     createdAt: '2026-09-09T14:00:00Z',
     updatedAt: '2026-09-10T09:00:00Z',
   },
-];
+]; */
 
 // Storefront Announcements & Free Delivery Notifications (Managed dynamically via Admin & Supabase)
 export const INITIAL_STORE_ANNOUNCEMENTS: StoreAnnouncement[] = [];
@@ -378,7 +378,7 @@ class RadiicatoStore {
   private loadFromStorage() {
     if (this.initialized) return;
     try {
-      const CURRENT_STORE_VERSION = 'rad_v20_early_2026_drop';
+      const CURRENT_STORE_VERSION = 'rad_v21_supabase_orders';
       const storedVersion = localStorage.getItem('rad_store_ver');
       if (storedVersion !== CURRENT_STORE_VERSION) {
         localStorage.clear();

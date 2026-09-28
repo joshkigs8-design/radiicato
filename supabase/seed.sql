@@ -340,14 +340,17 @@ ON CONFLICT (id) DO UPDATE SET
     is_active = EXCLUDED.is_active;
 
 -- ------------------------------------------------------------------------------
--- 12. SINGLE ATELIER OWNER / SUPER ADMIN INITIALIZER
--- Grants Super Admin role to joshkigs8@gmail.com
--- ------------------------------------------------------------------------------
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
-        UPDATE public.profiles
-        SET role = 'super_admin', full_name = 'Joshua Kigen'
-        WHERE email = 'joshkigs8@gmail.com';
+          INSERT INTO public.profiles (id, full_name, email, role)
+          SELECT id, 'Joshua Kigen', email, 'super_admin'
+          FROM auth.users
+          WHERE email = 'radiicato8@gmail.com'
+          ON CONFLICT (id) DO UPDATE SET
+                full_name = 'Joshua Kigen',
+                email = 'radiicato8@gmail.com',
+                role = 'super_admin',
+                updated_at = NOW();
+        WHERE email = 'radiicato8@gmail.com';
     END IF;
 END $$;

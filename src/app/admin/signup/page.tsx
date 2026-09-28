@@ -103,8 +103,14 @@ export default function AdminSignUpPage() {
     setLoading(true);
 
     const trimmedEmail = email.trim().toLowerCase();
-    const isSuperAdminEmail = trimmedEmail === 'radiicato8@gmail.com';
-    const assignedRole = isSuperAdminEmail ? 'SUPER_ADMIN' : role;
+    if (trimmedEmail !== 'radiicato8@gmail.com') {
+      setError('Only the registered atelier owner can access admin authentication.');
+      setLoading(false);
+      return;
+    }
+
+    const isSuperAdminEmail = true;
+    const assignedRole = 'SUPER_ADMIN';
 
     // 1. Authenticate & Register with Supabase Auth
     const registerWithSupabase = async () => {
