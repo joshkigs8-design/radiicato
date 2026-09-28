@@ -11,10 +11,10 @@ export const INITIAL_SETTINGS: StoreSettings = {
   mpesaPaybill: '729831',
   mpesaAccountName: 'RADIICATO APPAREL LTD',
   mpesaPasskey: 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919',
-  paystackPublicKey: 'pk_test_radiicato_9837198273891723',
+  paystackPublicKey: 'pk_test_.radiicato_9837198273891723',
   enableMpesa: true,
   enablePaystack: true,
-  socialInstagram: 'https://instagram.com/_radiicato',
+  socialInstagram: 'https://instagram.com/_.radiicato',
   socialTiktok: 'https://tiktok.com/@radiicato',
   socialTwitter: 'https://twitter.com/radiicato',
 };
