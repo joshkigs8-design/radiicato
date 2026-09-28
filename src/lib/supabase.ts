@@ -240,6 +240,70 @@ export async function upsertCouponInSupabase(coupon: Coupon) {
   return { success: true, data };
 }
 
+export async function fetchOrdersFromSupabase() {
+  const { data, error } = await (supabase as any)
+    .from('orders')
+    .select('*, order_items(*)')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.warn('Supabase orders query note:', error.message);
+    return null;
+  }
+
+  return (data || []).map((order: any) => ({
+    id: order.id,
+    orderNumber: order.order_number,
+    customerId: order.customer_id || undefined,
+    customerName: order.customer_name,
+    email: order.email || '',
+    phone: order.phone,
+    shippingAddress: {
+      fullName: order.customer_name,
+      email: order.email || '',
+      phone: order.phone,
+      county: order.shipping_county,
+      town: order.shipping_town,
+      streetAddress: order.shipping_address,
+      deliveryInstructions: order.delivery_instructions || undefined,
+    },
+    items: (order.order_items || []).map((item: any) => ({
+      id: item.id,
+      orderId: order.id,
+      productId: item.product_id || '',
+      variantId: item.variant_id || '',
+      productName: item.product_name,
+      variantTitle: item.variant_title,
+      sku: item.sku,
+      price: Number(item.price),
+      quantity: Number(item.quantity),
+      total: Number(item.total),
+      imageUrl: item.image_url || '',
+    })),
+    subtotal: Number(order.subtotal),
+    discount: Number(order.discount || 0),
+    discountCode: order.discount_code || undefined,
+    shippingFee: Number(order.shipping_fee || 0),
+    total: Number(order.total),
+    paymentMethod: order.payment_method,
+    paymentStatus: order.payment_status,
+    fulfillmentStatus: order.fulfillment_status,
+    trackingNumber: order.tracking_number || undefined,
+    carrier: order.carrier || undefined,
+    internalNotes: order.internal_notes || undefined,
+    paymentDetails: order.mpesa_receipt_number ? {
+      provider: 'mpesa',
+      reference: order.payment_reference || order.mpesa_receipt_number,
+      mpesaReceiptNumber: order.mpesa_receipt_number,
+      phoneNumber: order.phone,
+      paidAt: order.payment_received_at || undefined,
+    } : undefined,
+    timeline: [],
+    createdAt: order.created_at,
+    updatedAt: order.updated_at,
+  }));
+}
+
 /**
  * Fetch products from Supabase
  */

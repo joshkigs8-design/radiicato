@@ -19,7 +19,8 @@ import {
   updateVariantStockInSupabase,
   createReviewInSupabase,
   fetchCouponsFromSupabase,
-  upsertCouponInSupabase
+  upsertCouponInSupabase,
+  fetchOrdersFromSupabase
 } from './supabase';
 
 // Initial Orders (Representing live Kenyan streetwear dispatches and M-PESA payments)
@@ -529,6 +530,12 @@ class RadiicatoStore {
       const coupons = await fetchCouponsFromSupabase();
       if (coupons) {
         this.coupons = coupons;
+        this.notify();
+      }
+
+      const orders = await fetchOrdersFromSupabase();
+      if (orders) {
+        this.orders = orders;
         this.notify();
       }
     } catch (err) {
