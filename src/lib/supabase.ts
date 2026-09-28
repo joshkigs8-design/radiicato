@@ -10,12 +10,8 @@ export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
-export const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceKey || supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
+// Keep one browser GoTrue client. All writes use RLS and the authenticated owner session.
+export const supabaseAdmin = supabase;
 
 export type StorageBucket = 'collections' | 'products' | 'lookbook' | 'media';
 
@@ -356,7 +352,6 @@ export async function createOrderInSupabase(order: any) {
         delivery_instructions: order.shippingAddress?.deliveryInstructions || null,
         subtotal: order.subtotal,
         discount: order.discount,
-        discount_code: order.discountCode || null,
         shipping_fee: order.shippingFee,
         total: order.total,
         payment_method: order.paymentMethod === 'mpesa' ? 'manual_mpesa' : order.paymentMethod,
