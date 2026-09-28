@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Clock, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { ProductCard } from '@/components/product/ProductCard';
 import { isLegacySkullCapProduct } from '@/lib/utils';
@@ -56,7 +56,7 @@ function CollectionView() {
   const params = useParams();
   const searchParams = useSearchParams();
   const slug = params.slug as string;
-  const initialEdit = (searchParams.get('capsule') as EditKey) || 'all';
+  const initialEdit: EditKey = (searchParams.get('capsule') as EditKey) || 'all';
 
   const { getCollectionBySlug, products } = useStore();
   const [activeEdit, setActiveEdit] = useState<EditKey>(initialEdit);
@@ -84,6 +84,65 @@ function CollectionView() {
   const brokenRecordProducts = allProducts.filter(EDITS[0].filterFn);
   const weAreProducts = allProducts.filter(EDITS[1].filterFn);
   const skullCapProducts = allProducts.filter(EDITS[2].filterFn);
+
+  if (activeEdit === 'all') {
+    return (
+      <div className="min-h-screen bg-[#090909] text-white px-4 pb-20 pt-28 sm:px-8 sm:pt-36 lg:px-12">
+        <main className="mx-auto max-w-[1400px]">
+          <header className="mb-10 max-w-3xl sm:mb-14">
+            <Link
+              href="/shop"
+              className="mb-8 inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-white/55 transition-colors hover:text-white sm:mb-12"
+            >
+              <ArrowLeft size={14} /> Back to Shop
+            </Link>
+            <span className="mb-3 block text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-white/50">
+              RADIICATO // DEBUT LAUNCH
+            </span>
+            <h1 className="pesos-text-face text-[clamp(38px,7vw,88px)] font-black leading-[0.9] text-white">
+              EARLY 2026 COLLECTION
+            </h1>
+            <p className="mt-5 max-w-2xl text-xs font-mono uppercase leading-relaxed tracking-[0.14em] text-white/60 sm:text-sm">
+              THREE CURATED EDITS ENGINEERED IN NAIROBI. CHOOSE THE WORLD YOU WANT TO ENTER.
+            </p>
+          </header>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {EDITS.map((edit) => (
+              <Link
+                key={edit.id}
+                href={`/collections/${slug}?capsule=${edit.id}`}
+                className="group relative isolate min-h-[520px] overflow-hidden rounded-[2px] border border-white/20 bg-white/[0.04] shadow-[0_18px_50px_rgba(0,0,0,0.35)] transition-colors duration-500 hover:border-white/40 focus-visible:border-white sm:min-h-[600px]"
+              >
+                <Image
+                  src={edit.bannerImage}
+                  alt={edit.name}
+                  fill
+                  className="-z-20 object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  sizes="(max-width: 767px) 100vw, 33vw"
+                />
+                <div className="absolute inset-0 -z-10 bg-black/35 transition-colors duration-500 group-hover:bg-black/25" />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/35 to-black/10" />
+
+                <div className="absolute inset-x-4 bottom-4 border border-white/20 bg-black/35 p-5 backdrop-blur-xl transition-transform duration-500 group-hover:-translate-y-1 sm:inset-x-5 sm:bottom-5 sm:p-6">
+                  <span className="mb-4 block text-[10px] font-mono uppercase tracking-[0.25em] text-white/60">
+                    EDIT {edit.number}
+                  </span>
+                  <h2 className="pesos-text-face max-w-[12ch] text-3xl font-black leading-[0.9] text-white sm:text-4xl">
+                    {edit.id === 'skull-caps' ? 'SKULL CAPS' : edit.name}
+                  </h2>
+                  <span className="mt-8 flex items-center justify-between border-t border-white/20 pt-4 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-white/75">
+                    View edit
+                    <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white text-[#0A0A0A]">
@@ -131,16 +190,6 @@ function CollectionView() {
           </span>
 
           <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setActiveEdit('all')}
-              className={`px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wider transition-all ${
-                activeEdit === 'all'
-                  ? 'bg-[#0A0A0A] text-white font-bold shadow-sm'
-                  : 'bg-[#F4F4F5] text-[#71717A] hover:bg-[#E4E4E7] hover:text-[#0A0A0A]'
-              }`}
-            >
-              ALL EDITS ({allProducts.length})
-            </button>
             {EDITS.map((edit) => (
               <button
                 key={edit.id}
@@ -161,7 +210,7 @@ function CollectionView() {
       {/* Main Content Area */}
       <main className="py-12 sm:py-20 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto space-y-20 sm:space-y-28">
         {/* EDIT 01: BROKEN RECORD */}
-        {(activeEdit === 'all' || activeEdit === 'broken-record') && (
+        {activeEdit === 'broken-record' && (
           <section id="edit-broken-record" className="space-y-8">
             {/* Edit Editorial Header */}
             <div className="border-b border-[#E4E4E7] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -191,7 +240,7 @@ function CollectionView() {
         )}
 
         {/* EDIT 02: WE ARE WHO WE ARE */}
-        {(activeEdit === 'all' || activeEdit === 'we-are-who-we-are') && (
+        {activeEdit === 'we-are-who-we-are' && (
           <section id="edit-we-are-who-we-are" className="space-y-8">
             {/* Edit Editorial Header */}
             <div className="border-b border-[#E4E4E7] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -221,7 +270,7 @@ function CollectionView() {
         )}
 
         {/* EDIT 03: SIGNATURE SKULL CAPS */}
-        {(activeEdit === 'all' || activeEdit === 'skull-caps') && (
+        {activeEdit === 'skull-caps' && (
           <section id="edit-skull-caps" className="space-y-8">
             {/* Edit Editorial Header */}
             <div className="border-b border-[#E4E4E7] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -251,16 +300,14 @@ function CollectionView() {
         )}
 
         {/* Return to All Filter Button if filtered */}
-        {activeEdit !== 'all' && (
-          <div className="text-center pt-8 border-t border-[#E4E4E7]">
-            <button
-              onClick={() => setActiveEdit('all')}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#0A0A0A] text-white text-xs font-mono uppercase tracking-widest rounded-lg hover:bg-[#27272A] transition-colors"
-            >
-              <ArrowLeft size={14} /> View All Edits In Collection
-            </button>
-          </div>
-        )}
+        <div className="text-center pt-8 border-t border-[#E4E4E7]">
+          <button
+            onClick={() => setActiveEdit('all')}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#0A0A0A] text-white text-xs font-mono uppercase tracking-widest rounded-lg hover:bg-[#27272A] transition-colors"
+          >
+            <ArrowLeft size={14} /> View All Edits In Collection
+          </button>
+        </div>
       </main>
     </div>
   );
