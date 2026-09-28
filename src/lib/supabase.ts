@@ -338,10 +338,14 @@ export async function createOrderInSupabase(order: any) {
 
   try {
     const orderId = crypto.randomUUID();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: 'Please sign in before submitting an order.' };
+
     const { data: orderData, error: orderError } = await (client as any)
       .from('orders')
       .insert({
         id: orderId,
+        user_id: user.id,
         order_number: order.orderNumber,
         customer_name: order.customerName,
         email: order.email,

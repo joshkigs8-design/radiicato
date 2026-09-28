@@ -272,6 +272,7 @@ CREATE TABLE IF NOT EXISTS public.coupons (
 CREATE TABLE IF NOT EXISTS public.orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_number TEXT UNIQUE NOT NULL,
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
     customer_id UUID REFERENCES public.customers(id) ON DELETE SET NULL,
     customer_name TEXT NOT NULL,
     email TEXT NOT NULL,
@@ -707,16 +708,34 @@ CREATE POLICY "Public can submit reviews"
     WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
+DROP POLICY IF EXISTS "Customers can view own orders" ON public.orders;
+CREATE POLICY "Customers can view own orders"
+    ON public.orders FOR SELECT TO authenticated
+    USING (user_id = auth.uid() OR public.is_owner());
+
 CREATE POLICY "Public can submit order requests"
     ON public.orders FOR INSERT
-    TO anon, authenticated
-    WITH CHECK (payment_status = 'pending' AND fulfillment_status = 'pending');
+    TO authenticated
+    WITH CHECK (user_id = auth.uid() AND payment_status = 'pending' AND fulfillment_status = 'pending');
 
 DROP POLICY IF EXISTS "Public can create order items" ON public.order_items;
+DROP POLICY IF EXISTS "Customers can view own order items" ON public.order_items;
+CREATE POLICY "Customers can view own order items"
+    ON public.order_items FOR SELECT TO authenticated
+    USING (EXISTS (
+        SELECT 1 FROM public.orders
+        WHERE orders.id = order_items.order_id
+          AND (orders.user_id = auth.uid() OR public.is_owner())
+    ));
+
 CREATE POLICY "Public can submit order items"
     ON public.order_items FOR INSERT
-    TO anon, authenticated
-    WITH CHECK (true);
+    TO authenticated
+    WITH CHECK (EXISTS (
+        SELECT 1 FROM public.orders
+        WHERE orders.id = order_items.order_id
+          AND orders.user_id = auth.uid()
+    ));
 
 -- 3. Authenticated Staff / Admin Full Access Policies
 DROP POLICY IF EXISTS "Admins have full access to products" ON public.products;
