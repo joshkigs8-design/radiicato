@@ -38,7 +38,7 @@ const EDITS: EditGroup[] = [
     name: 'WE ARE WHO WE ARE',
     tagline: 'NAIROBI STREET CULTURE · HAND-LETTERED TYPOGRAPHY · UNCOMPROMISING DRAPE',
     description: 'Raw Nairobi street culture and uncompromising streetwear silhouette. Cut from heavyweight deep onyx fleece and organic cotton, designed locally for creatives who refuse to blend in.',
-    bannerImage: '/images/products/we-are-who-we-are-front.jpg',
+    bannerImage: '/images/we-are-who-we-are.jpg',
     filterFn: (p: Product) => p.slug.includes('we-are-who-we-are') || p.id.includes('we-are-who-we-are'),
   },
   {
