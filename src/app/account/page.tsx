@@ -67,7 +67,7 @@ export default function AccountDashboardPage() {
         <div className="pb-10 border-b border-[#E4E4E7] mb-12 flex flex-col md:flex-row justify-between md:items-end gap-6">
           <div>
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">
-              CLIENT CONCIERGE & ARCHIVE
+              CLIENT CONCIERGE & ACCOUNT
             </p>
             <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A]">
               MY ACCOUNT
@@ -206,7 +206,7 @@ export default function AccountDashboardPage() {
 
               {wishlistedProducts.length === 0 ? (
                 <div className="p-12 text-center bg-white border border-[#E4E4E7] text-sm text-[#71717A]">
-                  Your wishlist is empty. Tap the heart on any archival piece to save it.
+                  Your wishlist is empty. Tap the heart on any piece to save it.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">

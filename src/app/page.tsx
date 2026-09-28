@@ -369,135 +369,26 @@ export default function HomePage() {
 
 
       {/* =========================================================================
-          09 — THE END: SHOP THE LATEST COLLECTION
-          The official finale of the homepage experience
+          09 — THE END: SHOP THE LATEST COLLECTION BUTTON
+          Directs shoppers straight to the shop
           ========================================================================= */}
-      <section id="shop-latest-collection" className="w-full bg-black py-16 sm:py-28 px-4 sm:px-10 lg:px-14 border-b border-white/10">
-        <div className="max-w-[1400px] mx-auto text-center space-y-10 sm:space-y-14">
-          <div className="space-y-3 sm:space-y-4 max-w-2xl mx-auto">
-            <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase text-white/50 block">
-              OFFICIAL ATELIER DROPS // NAIROBI
-            </span>
-            <h2 className="pesos-text-face text-[clamp(28px,5.5vw,72px)] font-bold uppercase tracking-[-0.04em] leading-[0.9] text-white">
-              SHOP THE LATEST COLLECTION
-            </h2>
-            <p className="text-[13px] sm:text-[15px] font-mono uppercase tracking-[0.16em] text-white/70">
-              HEAVYWEIGHT 280 GSM ATELIER PIECES &amp; ERGONOMIC HEADWEAR
-            </p>
-          </div>
-
-          {/* Collection Showcase Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 text-left">
-            {/* Capsule 03: Skull Caps */}
-            <Link
-              href="/collections/skull-caps"
-              className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col group transition-all duration-300 hover:border-white/40 block"
-            >
-              <div className="relative aspect-[4/5] w-full bg-[#0a0a0a] rounded-lg sm:rounded-xl overflow-hidden border border-white/10 group-hover:border-white/30 transition-colors">
-                <Image
-                  src="/images/products/radiicato-skull-cap-black.jpg"
-                  alt="Radiicato Skull Caps"
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-                <div className="absolute top-3 left-3">
-                  <span className="glass-pill px-2.5 py-1 text-[9px] font-mono tracking-widest uppercase text-white font-bold bg-black/60">
-                    LATEST DROP · CAPSULE 03
-                  </span>
-                </div>
-              </div>
-              <div className="pt-3.5 pb-1 flex items-baseline justify-between">
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold uppercase tracking-tight text-white group-hover:text-white/80 transition-colors">
-                    SKULL CAPS
-                  </h3>
-                  <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/50">
-                    3 COLORWAYS · STRETCH DOME
-                  </p>
-                </div>
-                <span className="text-[11px] sm:text-[13px] font-mono text-white/80 shrink-0">
-                  {formatKES(500)}
-                </span>
-              </div>
-            </Link>
-
-            {/* Capsule 01: Broken Record */}
-            <Link
-              href="/collections/broken-record"
-              className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col group transition-all duration-300 hover:border-white/40 block"
-            >
-              <div className="relative aspect-[4/5] w-full bg-[#0a0a0a] rounded-lg sm:rounded-xl overflow-hidden border border-white/10 group-hover:border-white/30 transition-colors">
-                <Image
-                  src="/images/products/broken-record-front.jpg"
-                  alt="Broken Record Atelier White Tee"
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-                <div className="absolute top-3 left-3">
-                  <span className="glass-pill px-2.5 py-1 text-[9px] font-mono tracking-widest uppercase text-white font-bold bg-black/60">
-                    CAPSULE 01
-                  </span>
-                </div>
-              </div>
-              <div className="pt-3.5 pb-1 flex items-baseline justify-between">
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold uppercase tracking-tight text-white group-hover:text-white/80 transition-colors">
-                    BROKEN RECORD
-                  </h3>
-                  <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/50">
-                    280 GSM COMBED COTTON · 3D BADGE
-                  </p>
-                </div>
-                <span className="text-[11px] sm:text-[13px] font-mono text-white/80 shrink-0">
-                  {formatKES(1000)}
-                </span>
-              </div>
-            </Link>
-
-            {/* Capsule 02: We Are Who We Are */}
-            <Link
-              href="/collections/we-are-who-we-are"
-              className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col group transition-all duration-300 hover:border-white/40 block"
-            >
-              <div className="relative aspect-[4/5] w-full bg-[#0a0a0a] rounded-lg sm:rounded-xl overflow-hidden border border-white/10 group-hover:border-white/30 transition-colors">
-                <Image
-                  src="/images/products/we-are-who-we-are-front.jpg"
-                  alt="We Are Who We Are Black Tee"
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-                <div className="absolute top-3 left-3">
-                  <span className="glass-pill px-2.5 py-1 text-[9px] font-mono tracking-widest uppercase text-white font-bold bg-black/60">
-                    CAPSULE 02
-                  </span>
-                </div>
-              </div>
-              <div className="pt-3.5 pb-1 flex items-baseline justify-between">
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold uppercase tracking-tight text-white group-hover:text-white/80 transition-colors">
-                    WE ARE WHO WE ARE
-                  </h3>
-                  <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/50">
-                    WASHED COTTON · MASCOT GRAFFITI
-                  </p>
-                </div>
-                <span className="text-[11px] sm:text-[13px] font-mono text-white/80 shrink-0">
-                  {formatKES(800)}
-                </span>
-              </div>
-            </Link>
-          </div>
-
-          {/* Primary Action Button */}
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+      <section id="shop-latest-collection" className="w-full bg-black py-20 sm:py-32 px-4 sm:px-10 border-b border-white/10 text-center">
+        <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8">
+          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase text-white/50 block">
+            EARLY 2026 COLLECTION // NAIROBI ATELIER
+          </span>
+          <h2 className="pesos-text-face text-[clamp(28px,5.5vw,72px)] font-bold uppercase tracking-[-0.04em] leading-[0.9] text-white">
+            WE ARE WHO WE ARE
+          </h2>
+          <p className="text-[13px] sm:text-[15px] font-mono uppercase tracking-[0.16em] text-white/70">
+            INDEPENDENT STREETWEAR ENGINEERED IN NAIROBI
+          </p>
+          <div className="pt-2">
             <Link
               href="/shop"
-              className="inline-flex items-center justify-center gap-3 glass-button w-full sm:w-auto px-8 py-4 text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.16em] rounded-xl text-center"
+              className="inline-flex items-center justify-center gap-3 glass-button px-8 sm:px-12 py-4 sm:py-5 text-[13px] sm:text-[15px] font-semibold uppercase tracking-[0.16em] rounded-xl text-center hover:bg-white hover:text-black transition-all"
             >
-              <span>EXPLORE ALL ARCHIVAL PIECES IN SHOP</span>
+              <span>SHOP THE LATEST COLLECTION</span>
               <ArrowRight size={16} />
             </Link>
           </div>

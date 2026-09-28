@@ -46,7 +46,7 @@ export default function AdminLookbookPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#111827]">Editorial Lookbook Archive</h1>
+          <h1 className="text-2xl font-bold text-[#111827]">Editorial Lookbook Gallery</h1>
           <p className="text-xs text-[#6B7280] mt-0.5">
             Curate high-fashion campaign photography shown in the fullscreen exhibition gallery.
           </p>

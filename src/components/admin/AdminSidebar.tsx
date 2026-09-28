@@ -46,7 +46,7 @@ export function AdminSidebar() {
       label: 'CONTENT & BRAND',
       items: [
         { name: 'Homepage CMS', href: '/admin/homepage', icon: Sliders },
-        { name: 'Lookbook Archive', href: '/admin/lookbook', icon: Camera },
+        { name: 'Lookbook Gallery', href: '/admin/lookbook', icon: Camera },
         { name: 'Customer Reviews', href: '/admin/reviews', icon: MessageSquare },
       ],
     },

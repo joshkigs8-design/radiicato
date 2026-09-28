@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { 
   SlidersHorizontal, LayoutGrid, Rows3, X, ChevronDown, Check, RotateCcw,
-  GalleryHorizontal, ChevronLeft, ChevronRight
+  GalleryHorizontal, ChevronLeft, ChevronRight, Clock, ArrowRight
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { ProductCard } from '@/components/product/ProductCard';
@@ -28,6 +28,28 @@ function ShopContent() {
     () => products.filter((product) => !isLegacySkullCapProduct(product)),
     [products]
   );
+
+  // Live Drop Time & Countdown
+  const [dropTime, setDropTime] = useState({ hours: 4, minutes: 28, seconds: 15 });
+  const [currentTimeStr, setCurrentTimeStr] = useState('');
+
+  React.useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTimeStr(now.toLocaleTimeString('en-GB', { timeZone: 'Africa/Nairobi' }));
+    };
+    updateTime();
+    const interval = setInterval(() => {
+      updateTime();
+      setDropTime((prev) => {
+        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
+        if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        return { hours: 4, minutes: 0, seconds: 0 };
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Filters State
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
@@ -148,18 +170,58 @@ function ShopContent() {
 
   return (
     <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1400px] mx-auto min-h-screen text-[#0A0A0A]">
-      {/* Editorial Header */}
-      <div className="pb-10 border-b border-[#E4E4E7] flex flex-col md:flex-row justify-between md:items-end gap-6">
+      {/* Pesos-Inspired Drop Header */}
+      <div className="mb-12 border border-[#E4E4E7] bg-[#FAFAFA] p-6 sm:p-10 md:p-12 text-center rounded-2xl relative overflow-hidden">
+        {/* Top: Live Time & Drop Countdown */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase text-[#71717A] font-bold">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>NAIROBI ATELIER TIME: {currentTimeStr || '12:00:00'} EAT</span>
+          </div>
+          <span className="hidden sm:inline text-zinc-300">|</span>
+          <div className="flex items-center gap-2">
+            <Clock size={12} className="text-[#0A0A0A]" />
+            <span>DROP LIVE · CLOSES IN: {String(dropTime.hours).padStart(2, '0')}:{String(dropTime.minutes).padStart(2, '0')}:{String(dropTime.seconds).padStart(2, '0')}</span>
+          </div>
+        </div>
+
+        {/* Center: Drop Title & Tagline */}
+        <div className="my-6 sm:my-8 max-w-2xl mx-auto space-y-2">
+          <span className="text-[10px] sm:text-xs font-mono tracking-[0.25em] uppercase text-[#71717A] font-semibold block">
+            LIMITED EDITION DROP
+          </span>
+          <h1 className="pesos-text-face text-[clamp(28px,6vw,64px)] font-black uppercase tracking-[-0.03em] leading-tight text-[#0A0A0A]">
+            EARLY 2026 COLLECTION
+          </h1>
+          <p className="text-xs sm:text-sm font-mono uppercase tracking-[0.15em] text-[#71717A]">
+            ALL 3 CAPSULES NOW AVAILABLE · 9 EXCLUSIVE PIECES
+          </p>
+        </div>
+
+        {/* Bottom: SHOP NOW Button leading to collections */}
+        <div className="pt-2">
+          <Link
+            href="/collections"
+            className="inline-flex items-center justify-center gap-3 bg-[#0A0A0A] hover:bg-black text-white text-xs sm:text-sm font-mono uppercase tracking-[0.2em] px-8 sm:px-10 py-4 rounded-xl transition-all shadow-sm hover:scale-[1.01]"
+          >
+            <span>SHOP NOW</span>
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+      </div>
+
+      {/* Catalog Section Header */}
+      <div className="pb-8 border-b border-[#E4E4E7] flex flex-col md:flex-row justify-between md:items-end gap-4">
         <div>
           <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] font-bold">
             ALL PRODUCTS
           </span>
-          <h1 className="text-display-md font-black uppercase mt-2">
+          <h2 className="text-2xl font-black uppercase mt-1">
             SHOP THE DROP
-          </h1>
+          </h2>
         </div>
         <p className="text-[11px] font-mono text-[#71717A] uppercase">
-          SHOWING {filteredProducts.length} OF {storefrontProducts.length} ARCHIVAL PIECES
+          SHOWING {filteredProducts.length} OF {storefrontProducts.length} COLLECTION PIECES
         </p>
       </div>
 
@@ -630,7 +692,7 @@ export default function ShopPage() {
   return (
     <Suspense fallback={
       <div className="pt-36 pb-32 px-6 text-center text-[10px] font-mono text-[#71717A] tracking-widest uppercase">
-        LOADING ARCHIVE...
+        LOADING COLLECTION...
       </div>
     }>
       <ShopContent />

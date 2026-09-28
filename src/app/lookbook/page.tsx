@@ -24,7 +24,7 @@ export default function LookbookPage() {
         <div className="pb-12 border-b border-[#E4E4E7] mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">
-              EDITORIAL ARCHIVE // NAIROBI ROOTS
+              EDITORIAL VISUALS // NAIROBI ROOTS
             </p>
             <h1 className="text-display-md font-black uppercase tracking-tight text-[#0A0A0A]">
               NAIROBI LOOKBOOK
@@ -99,7 +99,7 @@ export default function LookbookPage() {
         <div className="mt-20 border border-[#E4E4E7] bg-[#F4F4F5] p-8 sm:p-16 text-center max-w-3xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-widest uppercase text-[#0A0A0A] font-bold">
             <Sparkles size={12} />
-            <span>NAIROBI ATELIER ARCHIVE</span>
+            <span>NAIROBI ATELIER</span>
           </div>
           <blockquote className="text-xl sm:text-2xl font-black uppercase tracking-tight text-[#0A0A0A] leading-tight">
             "WE REJECT FAST-FASHION DILUTION. CUT FOR NAIROBI CREATIVES WHO REFUSE TO CONFORM."

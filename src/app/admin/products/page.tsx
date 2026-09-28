@@ -76,7 +76,7 @@ export default function AdminProductsPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#111827]">Products Catalog</h1>
           <p className="text-xs text-[#6B7280] mt-0.5">
-            Manage archival garments, sizing variants, inventory thresholds, and drop statuses.
+            Manage collection garments, sizing variants, inventory thresholds, and drop statuses.
           </p>
         </div>
 

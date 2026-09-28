@@ -27,7 +27,7 @@ const FAQS = [
   },
   {
     q: 'ARE LIMITED DROPS RESTOCKED?',
-    a: 'Garments marked as LIMITED DROP (e.g. numbered series of 50 pieces) are strictly archival and will never be reprinted or remanufactured once sold out.',
+    a: 'Garments marked as LIMITED DROP (e.g. numbered series of 50 pieces) are strictly one-time drops and will never be reprinted or remanufactured once sold out.',
   },
 ];
 

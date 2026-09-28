@@ -367,7 +367,7 @@ export default function CheckoutPage() {
           />
         </div>
         <h1 className="text-xl font-bold uppercase text-[#0A0A0A] font-display">No Items In Bag</h1>
-        <p className="text-xs text-[#71717A]">Add archival items to your bag before proceeding to checkout.</p>
+        <p className="text-xs text-[#71717A]">Add items to your bag before proceeding to checkout.</p>
         <Link 
           href="/shop" 
           className="inline-block px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-colors"

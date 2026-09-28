@@ -29,7 +29,7 @@ export default function CustomerOrdersPage() {
 
         <div className="space-y-8">
           <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A]">
-            ORDER HISTORY & DISPATCH ARCHIVES
+            ORDER HISTORY & DISPATCH RECORDS
           </h1>
 
           {orders.length === 0 ? (

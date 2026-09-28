@@ -378,7 +378,7 @@ class RadiicatoStore {
   private loadFromStorage() {
     if (this.initialized) return;
     try {
-      const CURRENT_STORE_VERSION = 'rad_v17_white_canvas_editorial';
+      const CURRENT_STORE_VERSION = 'rad_v20_early_2026_drop';
       const storedVersion = localStorage.getItem('rad_store_ver');
       if (storedVersion !== CURRENT_STORE_VERSION) {
         localStorage.clear();
@@ -802,7 +802,7 @@ class RadiicatoStore {
   }
 
   public getCollectionBySlug(slug: string): Collection | undefined {
-    return this.collections.find((c) => c.slug === slug);
+    return this.collections.find((c) => c.slug === slug) || this.collections[0];
   }
 
   public saveCollection(collection: Collection) {

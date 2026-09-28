@@ -111,7 +111,7 @@ export default function AdminAnalyticsPage() {
       {/* Top Products Breakdown */}
       <div className="bg-white border border-[#E5E7EB] rounded-lg shadow-sm overflow-hidden">
         <div className="p-5 border-b border-[#E5E7EB]">
-          <h3 className="text-sm font-bold text-[#111827]">Best-Selling Archival Pieces</h3>
+          <h3 className="text-sm font-bold text-[#111827]">Best-Selling Collection Pieces</h3>
           <p className="text-xs text-[#6B7280]">Ranked by total revenue generated</p>
         </div>
         <div className="overflow-x-auto">

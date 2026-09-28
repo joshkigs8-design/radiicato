@@ -66,7 +66,7 @@ export default function LoginPage() {
             ACCOUNT LOGIN
           </h1>
           <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#71717A]">
-            ACCESS YOUR ORDER ARCHIVE & DETAILS
+            ACCESS YOUR ORDER HISTORY & DETAILS
           </p>
         </div>
 

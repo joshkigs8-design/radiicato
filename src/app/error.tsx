@@ -24,7 +24,7 @@ export default function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
             ANOMALY DETECTED
           </h1>
           <p className="text-sm text-[#71717A] leading-relaxed">
-            The requested studio archive encounter met an unexpected rendering anomaly.
+            The requested studio catalog encounter met an unexpected rendering anomaly.
           </p>
         </div>
 

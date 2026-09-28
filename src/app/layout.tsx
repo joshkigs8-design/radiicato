@@ -15,7 +15,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://radiicato.co.ke';
 export const metadata: Metadata = {
   metadataBase: new URL('https://radiicato.co.ke'),
   title: {
-    default: 'RADIICATO | Premium Kenyan Streetwear — Nairobi Atelier Archive',
+    default: 'RADIICATO | Premium Kenyan Streetwear — Nairobi Atelier',
     template: '%s | RADIICATO',
   },
   description: 'Independent luxury streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM combed organic cotton tees, 3D chrome metallic badges, and underground graphic capsules. M-PESA checkout & Kenya-wide dispatch.',
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     locale: 'en_KE',
     url: 'https://radiicato.co.ke',
     siteName: 'RADIICATO',
-    title: 'RADIICATO | Premium Kenyan Streetwear — Nairobi Atelier Archive',
+    title: 'RADIICATO | Premium Kenyan Streetwear — Nairobi Atelier',
     description: 'Independent luxury streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM combed organic cotton tees, 3D chrome metallic badges, and underground graphic capsules. M-PESA checkout & Kenya-wide dispatch.',
     images: [
       {

@@ -49,7 +49,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
         {/* Top bar with close button */}
         <div className="flex justify-between items-center pb-6 border-b border-[#E4E4E7]">
           <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#71717A] font-semibold">
-            GLOBAL ARCHIVE SEARCH
+            SEARCH RADIICATO
           </span>
           <button
             onClick={onClose}

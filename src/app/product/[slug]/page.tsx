@@ -100,7 +100,7 @@ export default function ProductDetailPage() {
     return (
       <div className="pt-36 pb-32 px-6 text-center max-w-lg mx-auto space-y-4 bg-white text-[#0A0A0A]">
         <h1 className="text-2xl font-bold uppercase text-[#0A0A0A]">Product Not Found</h1>
-        <p className="text-xs text-[#71717A]">The requested garment could not be found in our current archives.</p>
+        <p className="text-xs text-[#71717A]">The requested garment could not be found in our current catalog.</p>
         <Link href="/shop" className="inline-block px-6 py-2.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase hover:bg-[#27272A]">
           Return to Shop
         </Link>
@@ -274,7 +274,7 @@ export default function ProductDetailPage() {
       {
         '@type': 'ListItem',
         position: 1,
-        name: 'Archive',
+        name: 'Home',
         item: 'https://radiicato.co.ke',
       },
       {
@@ -306,7 +306,7 @@ export default function ProductDetailPage() {
 
       {/* Breadcrumb */}
       <nav className="pb-8 text-[10px] font-mono tracking-[0.15em] uppercase text-[#A1A1AA] flex items-center gap-2">
-        <Link href="/" className="hover:text-black transition-colors">ARCHIVE</Link>
+        <Link href="/" className="hover:text-black transition-colors">HOME</Link>
         <span>/</span>
         <Link href="/shop" className="hover:text-black transition-colors">SHOP</Link>
         <span>/</span>
@@ -341,7 +341,7 @@ export default function ProductDetailPage() {
               )}
               {product.salePrice && (
                 <span className="bg-[#0A0A0A] text-white text-[10px] font-mono tracking-widest uppercase px-3 py-1 shadow-sm">
-                  SALE ARCHIVE
+                  SPECIAL DROP
                 </span>
               )}
             </div>
@@ -485,7 +485,7 @@ export default function ProductDetailPage() {
             <div className="pt-1">
               {isOutOfStock ? (
                 <p className="text-xs font-mono text-red-700 bg-red-50 border border-red-200 p-2.5 font-medium">
-                  CURRENTLY SOLD OUT IN THIS SIZE. Check back for archival restock.
+                  CURRENTLY SOLD OUT IN THIS SIZE. Check back for upcoming restock.
                 </p>
               ) : isLowStock ? (
                 <p className="text-xs font-mono text-amber-800 bg-amber-50 border border-amber-200 p-2.5 flex items-center gap-2 font-medium">

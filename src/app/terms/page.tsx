@@ -28,7 +28,7 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">3. LIMITED RUN ARCHIVES</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">3. LIMITED RUN DROPS</h2>
             <p>
               Due to the extreme scarcity of our limited drop runs (strictly capped at 50 pieces), purchases are allocated strictly on a verified first-completed transaction basis. Adding a piece to your cart does not reserve inventory until payment completes.
             </p>
