@@ -96,11 +96,11 @@ export default function CollectionsPage() {
               >
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3 bg-[#18181B]">
                   <Image
-                    src="/images/broken-record.jpg"
+                    src="/images/broken-record-card.jpg"
                     alt="Broken Record Capsule"
                     fill
                     unoptimized
-                    className="object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                   />
                 </div>
@@ -122,11 +122,11 @@ export default function CollectionsPage() {
               >
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3 bg-[#18181B]">
                   <Image
-                    src="/images/we-are-who-we-are.jpg"
+                    src="/images/we-are-who-we-are-card.jpg"
                     alt="We Are Who We Are Capsule"
                     fill
                     unoptimized
-                    className="object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                   />
                 </div>
