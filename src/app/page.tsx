@@ -388,7 +388,7 @@ export default function HomePage() {
               href="/shop"
               className="inline-flex items-center justify-center gap-3 glass-button px-8 sm:px-12 py-4 sm:py-5 text-[13px] sm:text-[15px] font-semibold uppercase tracking-[0.16em] rounded-xl text-center hover:bg-white hover:text-black transition-all"
             >
-              <span>SHOP THE LATEST COLLECTION</span>
+              <span>SHOP THE LAST COLLECTION</span>
               <ArrowRight size={16} />
             </Link>
           </div>

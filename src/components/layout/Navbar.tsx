@@ -60,7 +60,6 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Shop', href: '/shop' },
-    { name: 'Collections', href: '/collections' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];
