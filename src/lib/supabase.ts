@@ -354,7 +354,7 @@ export async function createOrderInSupabase(order: any) {
         discount_code: order.discountCode || null,
         shipping_fee: order.shippingFee,
         total: order.total,
-        payment_method: order.paymentMethod,
+        payment_method: order.paymentMethod === 'mpesa' ? 'manual_mpesa' : order.paymentMethod,
         payment_status: order.paymentStatus,
         fulfillment_status: order.fulfillmentStatus,
         mpesa_receipt_number: order.paymentDetails?.mpesaReceiptNumber || null,

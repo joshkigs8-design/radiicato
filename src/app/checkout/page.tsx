@@ -6,13 +6,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { 
   ShieldCheck, Lock, ArrowLeft, ArrowRight, Smartphone, 
-  CreditCard, CheckCircle2, AlertCircle, Loader2, Copy, Check, Info, HelpCircle
+  CheckCircle2, AlertCircle, Loader2, Copy, Check, Info, HelpCircle
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES } from '@/lib/utils';
-import { 
-  PaymentService, 
-  formatKenyanPhoneNumber, 
+import {
+  formatKenyanPhoneNumber,
   isValidKenyanPhone, 
   formatDisplayKenyanPhone 
 } from '@/lib/payment';
@@ -54,10 +53,6 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentProvider>('mpesa');
   const [useDifferentMpesaPhone, setUseDifferentMpesaPhone] = useState(false);
   const [mpesaPhone, setMpesaPhone] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvv, setCardCvv] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // Coupon State
@@ -65,9 +60,8 @@ export default function CheckoutPage() {
   const [appliedDiscount, setAppliedDiscount] = useState<{ amount: number; code: string } | null>(null);
   const [couponError, setCouponError] = useState('');
 
-  // Processing & Simulation State
+  // Order request state
   const [isProcessing, setIsProcessing] = useState(false);
-  const [stkPushStep, setStkPushStep] = useState<'idle' | 'prompting' | 'verifying' | 'success'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
   // Auth State
@@ -168,18 +162,16 @@ export default function CheckoutPage() {
       }
     }
 
-    // 3. M-PESA Phone Validation & Normalization (07XXXXXXXX, 01XXXXXXXX, 254XXXXXXXX, +254XXXXXXXX -> 2547XXXXXXXX or 2541XXXXXXXX)
+    // Record the customer's payment contact for the owner's manual confirmation call.
     const rawMpesaPhone = useDifferentMpesaPhone && mpesaPhone.trim() 
       ? mpesaPhone.trim() 
       : (mpesaPhone.trim() || phone.trim());
 
-    if (paymentMethod === 'mpesa') {
-      if (!isValidKenyanPhone(rawMpesaPhone)) {
-        setErrorMessage(
-          'Invalid M-PESA phone number. Safaricom STK Push requires a valid Kenyan line starting with 07, 01, or +254 (e.g. 0712 345 678 or +254 712 345 678).'
-        );
-        return;
-      }
+    if (!isValidKenyanPhone(rawMpesaPhone)) {
+      setErrorMessage(
+        'Invalid M-PESA contact number. Please enter a valid Kenyan line so the owner can call to confirm your order.'
+      );
+      return;
     }
 
     const normalizedCustomerPhone = formatKenyanPhoneNumber(phone.trim());
@@ -188,51 +180,6 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
-      let paymentRef = `RAD-TX-${Date.now()}`;
-      let mpesaReceipt = '';
-
-      if (paymentMethod === 'mpesa') {
-        setStkPushStep('prompting');
-
-        const mpesaResult = await PaymentService.initiateMpesaSTK({
-          phoneNumber: normalizedMpesaPhone,
-          amount: orderTotal,
-          orderNumber: `ORD-${Date.now()}`,
-          accountReference: 'RADIICATO',
-        });
-
-        if (!mpesaResult.success) {
-          setIsProcessing(false);
-          setStkPushStep('idle');
-          setErrorMessage(mpesaResult.message);
-          return;
-        }
-
-        setStkPushStep('verifying');
-        paymentRef = mpesaResult.reference;
-        mpesaReceipt = mpesaResult.mpesaReceiptNumber || `SK${Math.floor(100000 + Math.random() * 900000)}KES`;
-      } else if (paymentMethod === 'card') {
-        const cardResult = await PaymentService.processCardPayment(
-          `ORD-${Date.now()}`,
-          orderTotal,
-          {
-            cardNumber,
-            expiry: cardExpiry,
-            cvv: cardCvv,
-            name: cardHolder || fullName.trim(),
-          }
-        );
-
-        if (!cardResult.success) {
-          setIsProcessing(false);
-          setErrorMessage(cardResult.message);
-          return;
-        }
-        paymentRef = cardResult.reference;
-      }
-
-      setStkPushStep('success');
-
       // Place Order in reactive store with server-like validation and billing details captured
       const createdOrder = placeOrder({
         customerName: fullName.trim(),
@@ -287,14 +234,12 @@ export default function CheckoutPage() {
         shippingFee,
         total: orderTotal,
         paymentMethod,
-        paymentStatus: 'completed',
-        fulfillmentStatus: 'paid',
+        paymentStatus: 'pending',
+        fulfillmentStatus: 'pending',
         paymentDetails: {
-          provider: paymentMethod,
-          reference: paymentRef,
-          mpesaReceiptNumber: mpesaReceipt,
-          phoneNumber: paymentMethod === 'mpesa' ? normalizedMpesaPhone : undefined,
-          paidAt: new Date().toISOString(),
+          provider: 'mpesa',
+          reference: 'MANUAL-PAYMENT-PENDING',
+          phoneNumber: normalizedMpesaPhone,
         },
       });
 
@@ -304,7 +249,6 @@ export default function CheckoutPage() {
       }, 1200);
     } catch (err: unknown) {
       setIsProcessing(false);
-      setStkPushStep('idle');
       const msg = err instanceof Error ? err.message : 'Checkout transaction failed. Please try again.';
       setErrorMessage(msg);
     }
@@ -379,7 +323,8 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1200px] mx-auto min-h-screen">
+    <div className="relative min-h-screen bg-[#F7F5EF] text-[#0A0A0A] pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 max-w-[1200px] mx-auto">
+      <div className="fixed inset-0 -z-10 bg-[#F7F5EF]" />
       {/* Top Header with official logo and secure checkout indicators */}
       <div className="pb-8 border-b border-[#E4E4E7] mb-10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <Link
@@ -644,12 +589,12 @@ export default function CheckoutPage() {
                   4
                 </span>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
-                  PAYMENT GATEWAY
+                  ORDER CONFIRMATION
                 </h2>
               </div>
 
               {/* Selector Tabs */}
-              <div className="grid grid-cols-2 gap-4 pt-2">
+              <div className="grid grid-cols-1 gap-4 pt-2">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('mpesa')}
@@ -664,35 +609,14 @@ export default function CheckoutPage() {
                       <Smartphone size={16} className="text-[#0A0A0A]" /> SAFARICOM M-PESA
                     </span>
                     <span className="text-[9px] font-mono bg-[#E4E4E7] text-[#0A0A0A] font-bold px-1.5 py-0.5 rounded-none">
-                      INSTANT STK PUSH
+                      MANUAL PAYMENT
                     </span>
                   </div>
                   <p className="text-[11px] text-[#71717A] text-left">
-                    Pay securely via Safaricom SIM prompt or Paybill/Till.
+                    Submit your order first. The owner will call to confirm availability and payment.
                   </p>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('card')}
-                  className={`p-4 border flex flex-col items-start gap-2 transition-all ${
-                    paymentMethod === 'card'
-                      ? 'border-[#0A0A0A] bg-[#FAFAFA] text-[#0A0A0A] '
-                      : 'border-[#E4E4E7] bg-white text-[#71717A] hover:border-[#A1A1AA]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-[#0A0A0A]">
-                      <CreditCard size={16} className="text-[#0A0A0A]" /> CARD / PAYSTACK
-                    </span>
-                    <span className="text-[9px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded-none font-bold">
-                      VISA / MC
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#71717A] text-left">
-                    Direct local & international card checkout.
-                  </p>
-                </button>
               </div>
 
               {/* M-PESA specific input & instructions */}
@@ -701,7 +625,7 @@ export default function CheckoutPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <label className="text-[10px] font-mono uppercase text-[#71717A] font-bold">
-                        M-PESA PROMPT NUMBER (SAFARICOM)
+                        M-PESA CONTACT NUMBER
                       </label>
                       {(() => {
                         const target = useDifferentMpesaPhone && mpesaPhone.trim() ? mpesaPhone.trim() : (mpesaPhone.trim() || phone.trim());
@@ -731,7 +655,7 @@ export default function CheckoutPage() {
                       
                       <div className="flex items-center justify-between text-[10px] font-mono text-[#71717A]">
                         <span>
-                          Normalized STK target:{' '}
+                          Payment contact:{' '}
                           <strong className="text-[#0A0A0A]">
                             {formatKenyanPhoneNumber(useDifferentMpesaPhone && mpesaPhone ? mpesaPhone : (mpesaPhone || phone)) || '254XXXXXXXXX'}
                           </strong>
@@ -764,14 +688,12 @@ export default function CheckoutPage() {
                     {/* Step-by-step STK guidance */}
                     <div className="bg-white p-4 border border-[#E4E4E7] space-y-2.5 text-xs text-[#52525B]">
                       <span className="text-[10px] font-mono uppercase text-[#0A0A0A] font-bold block">
-                        OPTION A: INSTANT STK PUSH (RECOMMENDED)
+                        MANUAL PAYMENT CONFIRMATION
                       </span>
                       <ol className="space-y-1.5 list-decimal list-inside font-mono text-[11px] leading-relaxed">
-                        <li>Ensure your phone is unlocked and connected to Safaricom network.</li>
-                        <li>Click <strong>&quot;CONFIRM ORDER • {formatKES(orderTotal)}&quot;</strong> below.</li>
-                        <li>An instant SIM popup from <strong>RADIICATO</strong> will appear on your phone.</li>
-                        <li>Enter your <strong>4-digit secret M-PESA PIN</strong> to authorize the charge.</li>
-                        <li>Your payment confirms automatically within seconds without manual entry.</li>
+                        <li>Submit your order request with your preferred M-PESA contact number.</li>
+                        <li>The RADIICATO owner will call you to confirm stock, delivery, and payment.</li>
+                        <li>Do not send payment until the owner confirms the order by phone.</li>
                       </ol>
                     </div>
 
@@ -779,14 +701,14 @@ export default function CheckoutPage() {
                     <div className="bg-white p-4 border border-[#E4E4E7] space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] font-mono uppercase text-[#71717A] font-bold">
-                          OPTION B: MANUAL PAYBILL / TILL FALLBACK
+                          OPTIONAL PAYMENT DETAILS
                         </span>
                         <span className="text-[9px] font-mono bg-[#F4F4F5] text-[#71717A] px-1.5 py-0.5 rounded-none">
-                          IF STK DELAYS
+                          OWNER WILL CONFIRM
                         </span>
                       </div>
                       <p className="text-[11px] text-[#71717A] font-mono">
-                        If you prefer paying manually through your SIM Toolkit or M-PESA App, use either official channel:
+                        Keep these details for the confirmation call. Payment is not collected automatically at checkout.
                       </p>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
@@ -829,50 +751,6 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Card specific inputs */}
-              {paymentMethod === 'card' && (
-                <div className="p-5 bg-[#FAFAF9] border border-[#E4E4E7] space-y-3">
-                  <div>
-                    <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1 font-bold">
-                      CARD NUMBER
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="4000 1234 5678 9010"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1 font-bold">
-                        EXPIRY (MM/YY)
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="12/28"
-                        value={cardExpiry}
-                        onChange={(e) => setCardExpiry(e.target.value)}
-                        className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-mono uppercase text-[#71717A] block mb-1 font-bold">
-                        CVV
-                      </label>
-                      <input
-                        type="password"
-                        maxLength={4}
-                        placeholder="•••"
-                        value={cardCvv}
-                        onChange={(e) => setCardCvv(e.target.value)}
-                        className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-[11px] font-mono uppercase focus:border-[#0A0A0A] outline-none transition-colors text-[#0A0A0A] placeholder-[#A1A1AA]"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Error Message */}
@@ -893,11 +771,11 @@ export default function CheckoutPage() {
                 {isProcessing ? (
                   <>
                     <Loader2 size={16} className="animate-spin" />
-                    <span>PROCESSING ORDER TRANSACTION...</span>
+                    <span>SUBMITTING ORDER REQUEST...</span>
                   </>
                 ) : (
                   <>
-                    <span>CONFIRM ORDER • {formatKES(orderTotal)}</span>
+                    <span>REQUEST ORDER • {formatKES(orderTotal)}</span>
                     <ArrowRight size={16} />
                   </>
                 )}
@@ -1000,78 +878,6 @@ export default function CheckoutPage() {
         </div>
       </form>
 
-      {/* STK Push Simulation Modal */}
-      {stkPushStep !== 'idle' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-[#E4E4E7] shadow-2xl max-w-md w-full p-7 text-center space-y-5 transform transition-all duration-300">
-            {/* Stage Indicator */}
-            <div className="flex items-center justify-center gap-2 pb-2 border-b border-[#F4F4F5] text-[10px] font-mono uppercase tracking-widest text-[#71717A]">
-              <span className={`px-2 py-0.5 rounded-none ${stkPushStep === 'prompting' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
-                1. STK PROMPT
-              </span>
-              <span>→</span>
-              <span className={`px-2 py-0.5 rounded-none ${stkPushStep === 'verifying' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
-                2. DARAJA VERIFY
-              </span>
-              <span>→</span>
-              <span className={`px-2 py-0.5 rounded-none ${stkPushStep === 'success' ? 'bg-[#0A0A0A] text-white font-bold' : 'text-[#A1A1AA]'}`}>
-                3. CONFIRMED
-              </span>
-            </div>
-
-            <div className="w-16 h-16 rounded-none bg-[#0A0A0A]/10 border border-[#0A0A0A]/20 mx-auto flex items-center justify-center text-[#0A0A0A] transition-all">
-              {stkPushStep === 'success' ? (
-                <CheckCircle2 size={36} className="text-[#0A0A0A]" />
-              ) : stkPushStep === 'verifying' ? (
-                <Loader2 size={32} className="animate-spin text-[#0A0A0A]" />
-              ) : (
-                <Smartphone size={32} className="animate-pulse text-[#0A0A0A]" />
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">
-                {stkPushStep === 'prompting'
-                  ? 'Check Your Phone Handset'
-                  : stkPushStep === 'verifying'
-                  ? 'Verifying M-PESA Payment...'
-                  : 'M-PESA Payment Verified!'}
-              </h3>
-              <p className="text-[11px] font-mono text-[#0A0A0A] font-bold">
-                AMOUNT: {formatKES(orderTotal)}
-              </p>
-            </div>
-
-            <p className="text-xs text-[#71717A] leading-relaxed font-mono">
-              {stkPushStep === 'prompting' ? (
-                <>
-                  An instant M-PESA prompt was dispatched to{' '}
-                  <strong className="text-[#0A0A0A]">
-                    {formatDisplayKenyanPhone(
-                      useDifferentMpesaPhone && mpesaPhone ? mpesaPhone : (mpesaPhone || phone)
-                    )}
-                  </strong>
-                  . Please unlock your phone and enter your 4-digit PIN.
-                </>
-              ) : stkPushStep === 'verifying' ? (
-                'Connecting with Safaricom Daraja Gateway for instant transaction confirmation and cryptographic receipt validation...'
-              ) : (
-                'Transaction confirmed! Your order has been registered in the Radiicato Atelier and queued for dispatch.'
-              )}
-            </p>
-
-            <div className="pt-4 border-t border-[#F4F4F5] space-y-2">
-              <div className="flex justify-between items-center text-[10px] font-mono bg-[#FAFAF9] p-2.5 border border-[#E4E4E7]">
-                <span className="text-[#71717A]">SAFARICOM PAYBILL: <strong>729831</strong></span>
-                <span className="text-[#71717A]">ACC: <strong>RADIICATO</strong></span>
-              </div>
-              <p className="text-[10px] text-[#A1A1AA] font-mono">
-                Didn&apos;t get the prompt? Check that your Safaricom SIM has active network or pay manually using the Paybill above.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
