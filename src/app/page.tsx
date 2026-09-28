@@ -39,51 +39,8 @@ export default function HomePage() {
         <ChromeWebGLViewer />
       </section>
 
-
       {/* =========================================================================
-          02 — BROKEN RECORD (Collection 01 Introduction)
-          Editorial photograph with glassmorphism overlay card.
-          ========================================================================= */}
-      <section id="broken-record" className="relative w-full bg-black py-12 sm:py-24 px-4 sm:px-10 lg:px-14 border-b border-white/10">
-        <div className="max-w-[1600px] mx-auto">
-          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
-            <Image
-              src="/images/broken-record.jpg"
-              alt="Broken Record Collection 01"
-              fill
-              className="object-cover object-center brightness-90 contrast-105"
-              sizes="100vw"
-            />
-            {/* Glassmorphic editorial card overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-10 lg:p-16">
-              <motion.div {...motionFadeIn} className="glass-panel p-5 sm:p-10 rounded-xl sm:rounded-2xl max-w-xl text-white">
-                <span className="text-[10px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-1.5 sm:mb-2">
-                  COLLECTION 01
-                </span>
-                <h2 className="pesos-text-face text-[clamp(24px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-3 sm:mb-4 text-white">
-                  BROKEN RECORD
-                </h2>
-                <p className="text-[13px] sm:text-[16px] text-white/80 font-normal mb-6 sm:mb-8 leading-snug">
-                  A repetition worth breaking.
-                </p>
-                <div>
-                  <Link
-                    href="/collections/broken-record"
-                    className="inline-flex items-center justify-center gap-3 glass-button w-full sm:w-auto px-5 sm:px-6 py-3.5 sm:py-4 text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl text-center"
-                  >
-                    <span>EXPLORE BROKEN RECORD</span>
-                    <ArrowRight size={15} />
-                  </Link>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      {/* =========================================================================
-          03 — FULL-WIDTH TRANSITION IMAGE
+          02 — FULL-WIDTH TRANSITION IMAGE
           Nairobi Street Culture & Movement
           ========================================================================= */}
       <section className="relative w-full h-[60vh] sm:h-[90vh] bg-black overflow-hidden flex items-end p-4 sm:p-12 lg:p-20 border-b border-white/10">
@@ -109,92 +66,8 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-
       {/* =========================================================================
-          04 — WE ARE WHO WE ARE (Collection 02 Hero)
-          Obsidian atmosphere with glassmorphic editorial panel.
-          ========================================================================= */}
-      <section id="we-are-who-we-are" className="relative w-full bg-black py-12 sm:py-24 px-4 sm:px-10 lg:px-14 border-b border-white/10">
-        <div className="max-w-[1600px] mx-auto">
-          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
-            <Image
-              src="/images/we-are-who-we-are.jpg"
-              alt="We Are Who We Are Collection 02"
-              fill
-              className="object-cover object-center brightness-[0.85] contrast-110"
-              sizes="100vw"
-            />
-            {/* Glassmorphic Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-10 lg:p-16">
-              <motion.div {...motionFadeIn} className="glass-panel p-5 sm:p-10 rounded-xl sm:rounded-2xl max-w-xl text-white">
-                <span className="text-[10px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-1.5 sm:mb-2">
-                  COLLECTION 02
-                </span>
-                <h2 className="pesos-text-face text-[clamp(24px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-3 sm:mb-4 text-white">
-                  WE ARE WHO WE ARE
-                </h2>
-                <p className="text-[12px] sm:text-[14px] font-mono tracking-[0.16em] uppercase text-white/60 mb-6 sm:mb-8">
-                  NO EXPLANATION NECESSARY.
-                </p>
-                <div>
-                  <Link
-                    href="/collections/we-are-who-we-are"
-                    className="inline-flex items-center justify-center gap-3 glass-button w-full sm:w-auto px-5 sm:px-6 py-3.5 sm:py-4 text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl text-center"
-                  >
-                    <span>EXPLORE COLLECTION</span>
-                    <ArrowRight size={15} />
-                  </Link>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      {/* =========================================================================
-          05 — SKULL CAPS (Accessory Chapter 03 Editorial)
-          ========================================================================= */}
-      <section id="skull-caps" className="relative w-full bg-black py-12 sm:py-24 px-4 sm:px-10 lg:px-14 border-b border-white/10">
-        <div className="max-w-[1600px] mx-auto">
-          <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/11] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#0d0d0d] border border-white/15 shadow-2xl">
-            <Image
-              src="/images/skull-cap-model.jpg"
-              alt="Radiicato Skull Caps Nairobi Editorial"
-              fill
-              className="object-cover object-center brightness-90 contrast-105"
-              sizes="100vw"
-            />
-            {/* Glassmorphic editorial card overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-10 lg:p-16">
-              <motion.div {...motionFadeIn} className="glass-panel p-5 sm:p-10 rounded-xl sm:rounded-2xl max-w-xl text-white">
-                <span className="text-[10px] sm:text-[12px] font-mono tracking-[0.22em] uppercase text-white/60 block mb-1.5 sm:mb-2">
-                  ACCESSORY CHAPTER 03
-                </span>
-                <h2 className="pesos-text-face text-[clamp(24px,5vw,60px)] font-bold uppercase tracking-[-0.04em] leading-[0.88] mb-3 sm:mb-4 text-white">
-                  SKULL CAPS
-                </h2>
-                <p className="text-[13px] sm:text-[16px] text-white/80 font-normal mb-6 sm:mb-8 leading-snug">
-                  Snug ergonomic stretch dome silhouette with signature 3D cursive insignia. Onyx Black, Slate Grey, and Midnight Camo.
-                </p>
-                <div>
-                  <Link
-                    href="/collections/skull-caps"
-                    className="inline-flex items-center justify-center gap-3 glass-button w-full sm:w-auto px-5 sm:px-6 py-3.5 sm:py-4 text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.14em] rounded-xl text-center"
-                  >
-                    <span>EXPLORE SKULL CAPS</span>
-                    <ArrowRight size={15} />
-                  </Link>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      {/* =========================================================================
-          06 — RADIICATO MANIFESTO (Glassmorphic Plaque)
+          04 — RADIICATO MANIFESTO (Glassmorphic Plaque)
           ========================================================================= */}
       <section className="w-full bg-black py-12 sm:py-28 px-4 sm:px-12 border-b border-white/10">
         <div className="max-w-[1200px] mx-auto glass-panel p-6 sm:p-14 lg:p-20 rounded-2xl sm:rounded-3xl shadow-2xl">
@@ -228,9 +101,8 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* =========================================================================
-          07 — CAMPAIGN / LOOKBOOK
+          05 — CAMPAIGN / LOOKBOOK
           ========================================================================= */}
       <section className="w-full bg-black py-12 sm:py-24 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
@@ -314,9 +186,8 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* =========================================================================
-          08 — INSTAGRAM / SOCIAL
+          06 — INSTAGRAM / SOCIAL
           ========================================================================= */}
       <section className="w-full bg-black py-12 sm:py-20 px-4 sm:px-10 lg:px-14 border-b border-white/10">
         <div className="max-w-[1600px] mx-auto">
@@ -349,7 +220,7 @@ export default function HomePage() {
                 href="https://instagram.com/radiicato"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-card rounded-lg sm:rounded-xl p-1 sm:p-1.5 overflow-hidden block group"
+                className="glass-card rounded-lg sm:rounded-2xl p-1 sm:p-1.5 overflow-hidden block group"
               >
                 <div className="relative aspect-square w-full rounded-md sm:rounded-lg overflow-hidden">
                   <Image
@@ -367,9 +238,8 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* =========================================================================
-          09 — THE END: SHOP THE LATEST COLLECTION BUTTON
+          07 — THE END: SHOP THE LATEST COLLECTION BUTTON
           Directs shoppers straight to the shop
           ========================================================================= */}
       <section id="shop-latest-collection" className="w-full bg-black py-20 sm:py-32 px-4 sm:px-10 border-b border-white/10 text-center">
@@ -394,7 +264,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
 
       {/* LOOKBOOK MODAL LIGHTBOX */}
       <LookbookModal
