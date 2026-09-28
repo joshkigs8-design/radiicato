@@ -43,7 +43,7 @@ export default function CollectionsPage() {
           >
             <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] bg-[#18181B] img-zoom-container">
               <Image
-                src={primaryCollection.bannerImage || primaryCollection.coverImage}
+                src={primaryCollection.coverImage || primaryCollection.bannerImage}
                 alt={primaryCollection.name}
                 fill
                 priority
@@ -93,12 +93,12 @@ export default function CollectionsPage() {
                 href={`/collections/${primaryCollection.slug}?capsule=broken-record`}
                 className="p-4 border border-[#E4E4E7] bg-white rounded-xl hover:border-black transition-all group"
               >
-                <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3 bg-[#F4F4F5]">
+                <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3 bg-[#18181B]">
                   <Image
-                    src="/images/products/broken-record-front.jpg"
+                    src="/images/broken-record.jpg"
                     alt="Broken Record Capsule"
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform"
+                    className="object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
@@ -118,12 +118,12 @@ export default function CollectionsPage() {
                 href={`/collections/${primaryCollection.slug}?capsule=we-are-who-we-are`}
                 className="p-4 border border-[#E4E4E7] bg-white rounded-xl hover:border-black transition-all group"
               >
-                <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3 bg-[#F4F4F5]">
+                <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3 bg-[#18181B]">
                   <Image
-                    src="/images/products/we-are-who-we-are-front.jpg"
+                    src="/images/we-are-who-we-are.jpg"
                     alt="We Are Who We Are Capsule"
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform"
+                    className="object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
@@ -143,12 +143,12 @@ export default function CollectionsPage() {
                 href={`/collections/${primaryCollection.slug}?capsule=skull-caps`}
                 className="p-4 border border-[#E4E4E7] bg-white rounded-xl hover:border-black transition-all group"
               >
-                <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3 bg-[#F4F4F5]">
+                <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3 bg-[#18181B]">
                   <Image
-                    src="/images/products/radiicato-skull-cap-black.jpg"
+                    src="/images/skull-cap-model.jpg"
                     alt="Skull Caps Capsule"
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform"
+                    className="object-cover object-[center_15%] group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
