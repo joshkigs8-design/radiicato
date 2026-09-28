@@ -65,26 +65,18 @@ export default function CheckoutPage() {
   const [errorMessage, setErrorMessage] = useState('');
 
   // Auth State
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
-
   React.useEffect(() => {
     const checkUser = async () => {
       const { supabase } = await import('@/lib/supabase');
-      if (!supabase) {
-        setIsLoadingAuth(false);
-        return;
-      }
+      if (!supabase) return;
       
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
-        setIsAuthenticated(true);
         if (session.user.email) {
           setEmail(session.user.email);
         }
       }
-      setIsLoadingAuth(false);
     };
     checkUser();
   }, []);
@@ -253,49 +245,6 @@ export default function CheckoutPage() {
       setErrorMessage(msg);
     }
   };
-
-  if (isLoadingAuth) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#0A0A0A]" />
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="pt-36 pb-32 px-6 max-w-md mx-auto text-center space-y-6">
-        <div className="flex justify-center mb-6">
-          <Image
-            src="/logo.png"
-            alt="RADIICATO"
-            width={160}
-            height={55}
-            className="h-10 w-auto object-contain"
-            priority
-          />
-        </div>
-        <h1 className="text-xl font-bold uppercase text-[#0A0A0A] font-display">Authentication Required</h1>
-        <p className="text-xs text-[#71717A] font-mono leading-relaxed">
-          Please sign in or create an account to securely complete your order and access your order history.
-        </p>
-        <div className="flex flex-col gap-3 pt-4">
-          <Link 
-            href="/login" 
-            className="w-full px-8 py-3.5 bg-[#0A0A0A] text-white text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-colors"
-          >
-            SIGN IN
-          </Link>
-          <Link 
-            href="/signup" 
-            className="w-full px-8 py-3.5 bg-white border border-[#E4E4E7] text-[#0A0A0A] text-xs font-bold uppercase tracking-widest hover:border-[#0A0A0A] transition-colors"
-          >
-            CREATE ACCOUNT
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   if (cart.length === 0) {
     return (
