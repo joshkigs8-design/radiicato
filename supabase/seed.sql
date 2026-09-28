@@ -209,15 +209,7 @@ VALUES
     ('55555555-5555-5555-5555-000000000003', 'Rest of Kenya Dispatch', ARRAY['Nyeri', 'Meru', 'Kilifi', 'Uasin Gishu', 'Kakamega', 'Kericho', 'Trans Nzoia'], 650.00, 1100.00, 12000.00, '2 - 3 Business Days', 'G4S Kenya Tracked')
 ON CONFLICT (id) DO NOTHING;
 
--- 8. PROMOTIONAL COUPONS
-INSERT INTO public.coupons (id, code, discount_type, value, min_order, usage_limit, times_used, is_active, start_date)
-VALUES
-    ('66666666-6666-6666-6666-000000000001', 'FIRSTDROP', 'percentage', 10.00, 3500.00, 500, 42, true, '2026-01-01T00:00:00Z'),
-    ('66666666-6666-6666-6666-000000000002', 'NAIROBI500', 'fixed', 500.00, 5000.00, 200, 88, true, '2026-01-01T00:00:00Z'),
-    ('66666666-6666-6666-6666-000000000003', 'RADIICATOVIP', 'percentage', 15.00, 8000.00, 100, 19, true, '2026-01-01T00:00:00Z')
-ON CONFLICT (id) DO NOTHING;
-
--- 9. COMMUNITY REVIEWS (VERIFIED KENYAN BUYERS)
+-- 8. COMMUNITY REVIEWS (VERIFIED KENYAN BUYERS)
 INSERT INTO public.reviews (id, product_id, product_name, customer_name, customer_email, rating, title, comment, is_verified_purchase, status, created_at)
 VALUES
     (

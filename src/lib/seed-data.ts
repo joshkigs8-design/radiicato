@@ -57,10 +57,8 @@ export const INITIAL_COLLECTIONS: Collection[] = [
     displayOrder: 1,
     productIds: [
       'prod-broken-record-tee',
-      'prod-broken-record-doom',
       'prod-broken-record-arch',
       'prod-we-are-who-we-are-tee',
-      'prod-we-are-who-we-are-collage',
       'prod-we-are-who-we-are-mascot',
       'prod-skull-cap-teaser',
       'prod-skull-cap-grey-ed',
@@ -70,7 +68,7 @@ export const INITIAL_COLLECTIONS: Collection[] = [
   },
 ];
 
-export const INITIAL_PRODUCTS: Product[] = [
+export const INITIAL_PRODUCTS: Product[] = ([
   {
     id: 'prod-broken-record-tee',
     name: 'Radiicato "Broken Record" Heavyweight Tee',
@@ -557,7 +555,10 @@ Unisex one-size contoured crown with elastic memory retention.`,
     createdAt: '2026-03-05T10:00:00Z',
     updatedAt: '2026-03-12T08:00:00Z',
   },
-];
+].filter((product) => ![
+  'prod-broken-record-doom',
+  'prod-we-are-who-we-are-collage',
+].includes(product.id)) as Product[]);
 
 export const INITIAL_LOOKBOOK: LookbookItem[] = [
   {
@@ -649,41 +650,7 @@ export const INITIAL_SHIPPING_ZONES: ShippingZone[] = [
   },
 ];
 
-export const INITIAL_COUPONS: Coupon[] = [
-  {
-    id: 'coup-1',
-    code: 'FIRSTDROP',
-    discountType: 'percentage',
-    value: 10,
-    minOrder: 3500,
-    usageLimit: 500,
-    timesUsed: 42,
-    isActive: true,
-    startDate: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'coup-2',
-    code: 'NAIROBI500',
-    discountType: 'fixed',
-    value: 500,
-    minOrder: 5000,
-    usageLimit: 200,
-    timesUsed: 88,
-    isActive: true,
-    startDate: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'coup-3',
-    code: 'RADIICATOVIP',
-    discountType: 'percentage',
-    value: 15,
-    minOrder: 8000,
-    usageLimit: 100,
-    timesUsed: 19,
-    isActive: true,
-    startDate: '2026-01-01T00:00:00Z',
-  },
-];
+export const INITIAL_COUPONS: Coupon[] = [];
 
 export const INITIAL_REVIEWS: Review[] = [];
 

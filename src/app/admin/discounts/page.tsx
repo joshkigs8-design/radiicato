@@ -116,6 +116,13 @@ export default function AdminDiscountsPage() {
             </div>
           </div>
         ))}
+        {!couponsList.length && (
+          <div className="col-span-full border border-dashed border-[#D1D5DB] bg-white p-12 text-center">
+            <Tag size={24} className="mx-auto text-[#9CA3AF]" />
+            <p className="mt-3 text-sm font-semibold text-[#374151]">No discounts yet</p>
+            <p className="mt-1 text-xs text-[#6B7280]">Create a promotion when you are ready to offer one.</p>
+          </div>
+        )}
       </div>
 
       {/* Modal Form */}

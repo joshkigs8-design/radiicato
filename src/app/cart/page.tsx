@@ -196,7 +196,7 @@ export default function CartPage() {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="E.G. FIRSTDROP"
+                  placeholder="ENTER PROMO CODE"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
                   className="flex-1 bg-white border border-[#E4E4E7] px-3 py-2 text-[11px] uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"

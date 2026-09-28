@@ -378,7 +378,7 @@ class RadiicatoStore {
   private loadFromStorage() {
     if (this.initialized) return;
     try {
-      const CURRENT_STORE_VERSION = 'rad_v21_supabase_orders';
+      const CURRENT_STORE_VERSION = 'rad_v23_catalog_deduped';
       const storedVersion = localStorage.getItem('rad_store_ver');
       if (storedVersion !== CURRENT_STORE_VERSION) {
         localStorage.clear();
