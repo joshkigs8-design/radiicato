@@ -707,7 +707,16 @@ CREATE POLICY "Public can submit reviews"
     WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
+CREATE POLICY "Public can submit order requests"
+    ON public.orders FOR INSERT
+    TO anon, authenticated
+    WITH CHECK (payment_status = 'pending' AND fulfillment_status = 'pending');
+
 DROP POLICY IF EXISTS "Public can create order items" ON public.order_items;
+CREATE POLICY "Public can submit order items"
+    ON public.order_items FOR INSERT
+    TO anon, authenticated
+    WITH CHECK (true);
 
 -- 3. Authenticated Staff / Admin Full Access Policies
 DROP POLICY IF EXISTS "Admins have full access to products" ON public.products;

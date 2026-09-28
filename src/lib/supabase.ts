@@ -334,13 +334,15 @@ export async function fetchProductsFromSupabase() {
  * Create order and order items in Supabase
  */
 export async function createOrderInSupabase(order: any) {
-  const client = supabaseAdmin || supabase;
+  const client = supabase;
   if (!client) return { success: false, error: 'Supabase not initialized' };
 
   try {
+    const orderId = crypto.randomUUID();
     const { data: orderData, error: orderError } = await (client as any)
       .from('orders')
       .insert({
+        id: orderId,
         order_number: order.orderNumber,
         customer_name: order.customerName,
         email: order.email,
@@ -358,9 +360,7 @@ export async function createOrderInSupabase(order: any) {
         payment_status: order.paymentStatus,
         fulfillment_status: order.fulfillmentStatus,
         mpesa_receipt_number: order.paymentDetails?.mpesaReceiptNumber || null,
-      })
-      .select()
-      .single();
+      });
 
     if (orderError) {
       console.warn('Supabase Order Insert note:', orderError.message);
@@ -368,7 +368,7 @@ export async function createOrderInSupabase(order: any) {
     }
 
     // Insert line items if order items array is present
-    if (order.items && Array.isArray(order.items) && order.items.length > 0 && orderData?.id) {
+    if (order.items && Array.isArray(order.items) && order.items.length > 0) {
       const itemsToInsert = order.items.map((item: any) => {
         let validProductId = item.productId;
         if (item.productId === 'prod-broken-record-tee') {
@@ -380,7 +380,7 @@ export async function createOrderInSupabase(order: any) {
         }
 
         return {
-          order_id: orderData.id,
+          order_id: orderId,
           product_id: typeof validProductId === 'string' && validProductId.length === 36 ? validProductId : null,
           variant_id: null,
           product_name: item.productName || 'Radiicato Garment',
@@ -402,7 +402,7 @@ export async function createOrderInSupabase(order: any) {
       }
     }
 
-    return { success: true, data: orderData };
+    return { success: true, data: { id: orderId } };
   } catch (err: any) {
     console.warn('Supabase order creation note:', err);
     return { success: false, error: err.message };
