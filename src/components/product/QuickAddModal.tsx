@@ -16,18 +16,25 @@ interface QuickAddModalProps {
 export function QuickAddModal({ product, onClose, onAddedToCart }: QuickAddModalProps) {
   const { addToCart } = useStore();
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
+  const [selectedColor, setSelectedColor] = useState<string>('');
   const [added, setAdded] = useState(false);
 
   if (!product) return null;
 
   // Default to first variant with available stock, or first variant
-  const availableVariants = product.variants;
+  const colorways = Array.from(
+    new Map(product.variants.map((variant) => [variant.colorName, variant])).values()
+  );
+  const currentColor = selectedColor || colorways[0]?.colorName || '';
+  const availableVariants = product.variants.filter((variant) => variant.colorName === currentColor);
   const activeVariant =
     availableVariants.find((v) => v.id === selectedVariantId) ||
     availableVariants.find((v) => v.stockQuantity > 0) ||
     availableVariants[0];
 
-  const primaryImage = product.images.find((i) => i.isPrimary) || product.images[0];
+  const primaryImage = product.images.find((image) =>
+    image.altText.toLowerCase().includes(currentColor.toLowerCase())
+  ) || product.images.find((i) => i.isPrimary) || product.images[0];
 
   const handleAddToCart = () => {
     if (!activeVariant || activeVariant.stockQuantity <= 0) return;
@@ -85,6 +92,30 @@ export function QuickAddModal({ product, onClose, onAddedToCart }: QuickAddModal
             </p>
           </div>
         </div>
+
+        {colorways.length > 1 && (
+          <div className="mt-6 space-y-3">
+            <span className="block text-xs tracking-wider uppercase text-[#71717A]">Select Colour</span>
+            <div className="flex flex-wrap gap-2">
+              {colorways.map((colorway) => (
+                <button
+                  key={colorway.colorName}
+                  type="button"
+                  onClick={() => {
+                    setSelectedColor(colorway.colorName);
+                    setSelectedVariantId('');
+                  }}
+                  className={`flex items-center gap-2 border px-3 py-2 text-[10px] font-mono uppercase ${
+                    currentColor === colorway.colorName ? 'border-[#0A0A0A] bg-[#0A0A0A] text-white' : 'border-[#E4E4E7] text-[#0A0A0A]'
+                  }`}
+                >
+                  <span className="h-3 w-3 rounded-full border border-black/10" style={{ backgroundColor: colorway.colorHex }} />
+                  {colorway.colorName}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Variant Size Matrix */}
         <div className="mt-6 space-y-3">

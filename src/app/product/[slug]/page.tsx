@@ -116,7 +116,10 @@ export default function ProductDetailPage() {
     );
   }
 
-  const primaryImage = product.images[selectedImageIndex] || product.images[0];
+  const colorImage = product.images.find((image) =>
+    image.altText.toLowerCase().includes(currentColor.toLowerCase())
+  );
+  const primaryImage = colorImage || product.images[selectedImageIndex] || product.images[0];
   const totalStock = activeVariant?.stockQuantity ?? 0;
   const isOutOfStock = totalStock <= 0;
   const isLowStock = totalStock > 0 && totalStock <= (activeVariant?.lowStockThreshold ?? 3);
