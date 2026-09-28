@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -73,6 +73,14 @@ export default function ProductDetailPage() {
 
   // Set default color if not set
   const currentColor = selectedColor || (availableColors[0]?.name ?? '');
+
+  useEffect(() => {
+    if (!product || !currentColor) return;
+    const matchingImageIndex = product.images.findIndex((image) =>
+      image.altText.toLowerCase().includes(currentColor.toLowerCase())
+    );
+    if (matchingImageIndex >= 0) setSelectedImageIndex(matchingImageIndex);
+  }, [currentColor, product]);
 
   // Available sizes for the selected color
   const variantsForColor = useMemo(() => {

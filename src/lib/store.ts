@@ -538,7 +538,7 @@ class RadiicatoStore {
       }
 
       const orders = await fetchOrdersFromSupabase();
-      if (orders) {
+      if (orders && (orders.length > 0 || this.orders.length === 0)) {
         this.orders = orders;
         this.notify();
       }
