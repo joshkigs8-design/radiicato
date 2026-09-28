@@ -3,7 +3,7 @@ import { Product, Category, Collection, Coupon, LookbookItem, ShippingZone, Stor
 export const INITIAL_SETTINGS: StoreSettings = {
   storeName: 'RADIICATO',
   tagline: 'Independent streetwear engineered in Nairobi for those who refuse to blend in.',
-  contactEmail: 'concierge@radiicato.co.ke',
+  contactEmail: 'radiicato8@gmail.com',
   contactPhone: '+254 706 528 908',
   currency: 'KES',
   country: 'Kenya',
