@@ -62,10 +62,11 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
                   src={colorway.image.url}
                   alt={`Radiicato Skull Cap in ${colorway.colorName}`}
                   fill
+                  quality={90}
                   className={`object-cover object-center transition-opacity duration-700 ease-out ${
                     skullCap.selectedIndex === index ? 'opacity-100' : 'opacity-0'
                   }`}
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               ))
             ) : primaryImg && (
@@ -73,10 +74,11 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
                 src={primaryImg.url}
                 alt={product.name}
                 fill
+                quality={90}
                 className={`object-cover object-center transition-all duration-700 ease-out ${
                   hoverImg && isHovered ? 'opacity-0 scale-[1.035]' : 'opacity-100 scale-100'
                 }`}
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             )}
             {!isSkullCap && hoverImg && (
@@ -84,10 +86,11 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
                 src={hoverImg.url}
                 alt={`${product.name} alternate view`}
                 fill
+                quality={90}
                 className={`object-cover object-center transition-all duration-700 ease-out ${
                   isHovered ? 'opacity-100 scale-[1.035]' : 'opacity-0 scale-100'
                 }`}
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             )}
           </Link>

@@ -47,6 +47,7 @@ export default function CollectionsPage() {
                 alt={primaryCollection.name}
                 fill
                 priority
+                unoptimized
                 className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
                 sizes="100vw"
               />
@@ -98,8 +99,9 @@ export default function CollectionsPage() {
                     src="/images/broken-record.jpg"
                     alt="Broken Record Capsule"
                     fill
+                    unoptimized
                     className="object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                   />
                 </div>
                 <span className="text-[9px] font-mono uppercase tracking-widest text-[#71717A] block">
@@ -123,8 +125,9 @@ export default function CollectionsPage() {
                     src="/images/we-are-who-we-are.jpg"
                     alt="We Are Who We Are Capsule"
                     fill
+                    unoptimized
                     className="object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                   />
                 </div>
                 <span className="text-[9px] font-mono uppercase tracking-widest text-[#71717A] block">
@@ -148,8 +151,9 @@ export default function CollectionsPage() {
                     src="/images/skull-cap-model.jpg"
                     alt="Skull Caps Capsule"
                     fill
+                    unoptimized
                     className="object-cover object-[center_15%] group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                   />
                 </div>
                 <span className="text-[9px] font-mono uppercase tracking-widest text-[#71717A] block">
