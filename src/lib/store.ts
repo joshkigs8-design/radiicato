@@ -371,6 +371,7 @@ class RadiicatoStore {
   private isAdminAuthenticated: boolean = false;
   private listeners: Set<() => void> = new Set();
   private initialized = false;
+  private supabaseSyncInProgress = false;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -503,6 +504,9 @@ class RadiicatoStore {
   }
 
   public async syncWithSupabase() {
+    if (this.supabaseSyncInProgress) return;
+    this.supabaseSyncInProgress = true;
+
     try {
       // 1. Sync storefront announcements from Supabase
       const announcements = await fetchStoreAnnouncementsFromSupabase();
@@ -540,6 +544,8 @@ class RadiicatoStore {
       }
     } catch (err) {
       console.warn('Supabase sync note:', err);
+    } finally {
+      this.supabaseSyncInProgress = false;
     }
   }
 

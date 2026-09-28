@@ -241,6 +241,9 @@ export async function upsertCouponInSupabase(coupon: Coupon) {
 }
 
 export async function fetchOrdersFromSupabase() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return null;
+
   const { data, error } = await (supabase as any)
     .from('orders')
     .select('*, order_items(*)')

@@ -15,6 +15,7 @@ export function useStore() {
     const unsubscribe = store.subscribe(() => {
       setTick((t) => t + 1);
     });
+    void store.syncWithSupabase();
     return unsubscribe;
   }, []);
 
