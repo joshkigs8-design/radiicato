@@ -7,12 +7,12 @@ import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, Package, FolderTree, Tag, Boxes, Image as ImageIcon, 
   ShoppingCart, Users, Percent, Sliders, Camera, MessageSquare, 
-  BarChart3, Bell, Shield, History, Settings, ExternalLink, ChevronDown, LogOut 
+  BarChart3, Bell, Shield, History, Settings, ExternalLink, LogOut, X
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { AdminRole } from '@/types';
 
-export function AdminSidebar() {
+export function AdminSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const pathname = usePathname();
   const { currentAdmin, switchAdminRole, notifications, logoutAdmin } = useStore();
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -68,40 +68,47 @@ export function AdminSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-[#FFFFFF] border-r border-[#E5E7EB] text-[#111827] flex flex-col h-screen fixed top-0 left-0 z-30 select-none shadow-sm">
+    <>
+      <button
+        aria-label="Close navigation"
+        onClick={onClose}
+        className={`fixed inset-0 z-40 bg-black/70 transition-opacity lg:hidden ${isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+      />
+    <aside className={`fixed left-0 top-0 z-50 flex h-screen w-72 select-none flex-col border-r border-white/10 bg-[#171914] text-[#F1F0EA] shadow-2xl shadow-black/30 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       {/* Brand Header */}
-      <div className="p-4 border-b border-[#E5E7EB] flex items-center justify-between bg-[#FAFAFA]">
+      <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
         <div className="flex items-center gap-3">
           <div className="relative w-10 h-7 flex-shrink-0">
             <Image
               src="/logo.png"
               alt="RADIICATO"
               fill
-              className="object-contain"
+              className="object-contain brightness-0 invert"
               sizes="40px"
               priority
             />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-display font-black tracking-wider text-base text-[#0A0A0A]">RADIICATO</span>
-              <span className="text-[9px] font-mono px-1 py-0.5 bg-[#4D5936] text-white rounded font-bold">OS</span>
+              <span className="font-display font-black tracking-wider text-base text-white">RADIICATO</span>
+              <span className="rounded bg-[#D8E2B8] px-1.5 py-0.5 text-[9px] font-mono font-bold text-[#24291B]">OS</span>
             </div>
-            <p className="text-[10px] text-[#6B7280] font-mono">Commerce System</p>
+            <p className="text-[10px] font-mono text-white/40">Commerce System</p>
           </div>
         </div>
+        <button onClick={onClose} className="rounded p-2 text-white/40 hover:bg-white/10 hover:text-white lg:hidden" aria-label="Close navigation"><X size={18} /></button>
       </div>
 
       {/* Role Switcher Widget */}
-      <div className="p-3 mx-3 mt-3 bg-[#F3F4F6] border border-[#E5E7EB] rounded-md">
+      <div className="mx-4 mt-5 rounded border border-white/10 bg-white/[0.04] p-3">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Active Role</span>
-          <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-white/45">Active Role</span>
+          <span className="h-2 w-2 rounded-full bg-[#B9D477]"></span>
         </div>
         <select
           value={currentAdmin.role}
           onChange={(e) => switchAdminRole(e.target.value as AdminRole)}
-          className="mt-1 w-full bg-white border border-[#D1D5DB] rounded text-xs font-mono font-semibold text-[#111827] p-1.5 focus:outline-none focus:border-[#4D5936]"
+          className="mt-2 w-full rounded border border-white/10 bg-[#10110F] p-2 text-xs font-mono font-semibold text-white focus:border-[#B9D477] focus:outline-none"
         >
           <option value="SUPER_ADMIN">SUPER ADMIN (Full Access)</option>
           <option value="ADMIN">ADMIN (Catalog & Sales)</option>
@@ -109,17 +116,17 @@ export function AdminSidebar() {
           <option value="ORDER_MANAGER">ORDER DISPATCHER</option>
           <option value="CONTENT_MANAGER">CONTENT & CMS MGR</option>
         </select>
-        <p className="text-[10px] text-[#6B7280] mt-1 truncate">User: {currentAdmin.name}</p>
+        <p className="mt-2 truncate text-[10px] text-white/40">User: {currentAdmin.name}</p>
       </div>
 
       {/* Nav List */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+      <div className="flex-1 space-y-7 overflow-y-auto px-4 py-6">
         {navGroups.map((group) => (
           <div key={group.label} className="space-y-1">
-            <span className="px-3 text-[10px] font-bold tracking-wider text-[#9CA3AF] uppercase">
+            <span className="px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">
               {group.label}
             </span>
-            <div className="space-y-0.5 pt-1">
+            <div className="space-y-1 pt-2">
               {group.items.map((item) => {
                 const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
                 const Icon = item.icon;
@@ -128,18 +135,19 @@ export function AdminSidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                    onClick={onClose}
+                    className={`flex items-center justify-between rounded px-3 py-2.5 text-xs font-medium transition-colors ${
                       isActive
-                        ? 'bg-[#4D5936] text-white font-semibold'
-                        : 'text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#111827]'
+                        ? 'bg-[#D8E2B8] font-semibold text-[#24291B]'
+                        : 'text-white/55 hover:bg-white/[0.06] hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Icon size={16} className={isActive ? 'text-white' : 'text-[#6B7280]'} />
+                      <Icon size={16} className={isActive ? 'text-[#24291B]' : 'text-white/35'} />
                       <span>{item.name}</span>
                     </div>
                     {item.badge ? (
-                      <span className="bg-[#DC2626] text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full">
+                      <span className="rounded-full bg-[#E27B62] px-1.5 py-0.5 text-[10px] font-bold text-[#21110D]">
                         {item.badge}
                       </span>
                     ) : null}
@@ -152,11 +160,11 @@ export function AdminSidebar() {
       </div>
 
       {/* Bottom Actions */}
-      <div className="p-3 border-t border-[#E5E7EB] bg-[#FAFAFA] space-y-2">
+      <div className="space-y-2 border-t border-white/10 p-4">
         <Link
           href="/admin/login"
           onClick={() => logoutAdmin()}
-          className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-[#4B5563] hover:text-[#DC2626] hover:bg-[#FEE2E2]/60 rounded-md transition-colors"
+          className="flex items-center justify-between rounded px-3 py-2.5 text-xs font-semibold text-white/50 transition-colors hover:bg-[#E27B62]/10 hover:text-[#E27B62]"
         >
           <div className="flex items-center gap-2">
             <LogOut size={13} />
@@ -168,13 +176,14 @@ export function AdminSidebar() {
         <Link
           href="/"
           target="_blank"
-          className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-[#4D5936] bg-[#4D5936]/10 hover:bg-[#4D5936]/15 border border-[#4D5936]/30 rounded-md transition-colors"
+          className="flex items-center justify-between rounded border border-[#B9D477]/30 bg-[#B9D477]/10 px-3 py-2.5 text-xs font-semibold text-[#D8E2B8] transition-colors hover:bg-[#B9D477]/20"
         >
           <span>View Live Storefront</span>
           <ExternalLink size={13} />
         </Link>
       </div>
     </aside>
+    </>
   );
 }
 

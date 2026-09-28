@@ -14,6 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { isAdminAuthenticated } = useStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isAuthRoute =
     pathname === '/admin/login' ||
@@ -106,14 +107,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Authenticated Admin Canvas
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-[#111827] flex">
-      {/* Fixed Admin Sidebar */}
-      <AdminSidebar />
+    <div className="min-h-screen bg-[#10110F] text-[#F1F0EA] selection:bg-[#D8E2B8] selection:text-[#161812]">
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main Admin Scrollable Canvas */}
-      <div className="ml-64 flex-1 flex flex-col min-w-0">
-        <AdminHeader />
-        <main className="flex-1 p-8 overflow-y-auto">
+      <div className="min-h-screen lg:ml-72">
+        <AdminHeader onMenuOpen={() => setSidebarOpen(true)} />
+        <main className="min-h-[calc(100vh-76px)] overflow-y-auto px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
           {children}
         </main>
       </div>
