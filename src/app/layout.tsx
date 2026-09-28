@@ -79,8 +79,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@radiicato',
-    creator: '@radiicato',
+    site: '@_radiicato',
+    creator: '@_radiicato',
     title: 'RADIICATO | Premium Kenyan Streetwear — Nairobi',
     description: 'Independent luxury streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM cotton and subversive underground aesthetics.',
     images: ['/images/broken-record.jpg'],
@@ -147,7 +147,7 @@ const organizationSchema = {
     },
   ],
   sameAs: [
-    'https://instagram.com/radiicato',
+    'https://instagram.com/_radiicato',
     'https://tiktok.com/@radiicato',
     'https://wa.me/254706528908',
   ],

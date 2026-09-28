@@ -14,7 +14,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
   paystackPublicKey: 'pk_test_radiicato_9837198273891723',
   enableMpesa: true,
   enablePaystack: true,
-  socialInstagram: 'https://instagram.com/radiicato',
+  socialInstagram: 'https://instagram.com/_radiicato',
   socialTiktok: 'https://tiktok.com/@radiicato',
   socialTwitter: 'https://twitter.com/radiicato',
 };
@@ -691,7 +691,7 @@ export const INITIAL_ADMIN_USERS: AdminUser[] = [
   {
     id: 'adm-owner-1',
     name: 'Joshua Kigen',
-    email: 'joshkigs8@gmail.com',
+    email: 'radiicato8@gmail.com',
     role: 'SUPER_ADMIN',
     lastLogin: '2026-09-10T10:00:00Z',
     status: 'active',

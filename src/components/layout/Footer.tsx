@@ -76,7 +76,7 @@ export function Footer() {
           {/* Social */}
           <nav aria-label="Social" className="flex flex-wrap gap-x-5 gap-y-2 md:justify-center">
             <a
-              href={settings.socialInstagram || 'https://instagram.com/radiicato'}
+              href={settings.socialInstagram || 'https://instagram.com/_radiicato'}
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/60 transition-colors hover:text-white focus-visible:text-white"

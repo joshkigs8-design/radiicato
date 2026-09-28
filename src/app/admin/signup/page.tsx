@@ -103,7 +103,7 @@ export default function AdminSignUpPage() {
     setLoading(true);
 
     const trimmedEmail = email.trim().toLowerCase();
-    const isSuperAdminEmail = trimmedEmail === 'joshkigs8@gmail.com';
+    const isSuperAdminEmail = trimmedEmail === 'radiicato8@gmail.com';
     const assignedRole = isSuperAdminEmail ? 'SUPER_ADMIN' : role;
 
     // 1. Authenticate & Register with Supabase Auth
@@ -239,7 +239,7 @@ export default function AdminSignUpPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="joshkigs8@gmail.com"
+                  placeholder="radiicato8@gmail.com"
                   className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all"
                 />
               </div>

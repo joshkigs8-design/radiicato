@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
             router.push('/admin');
           }, 400);
           return;
-        } else if (authError && trimmedEmail === 'joshkigs8@gmail.com' && password === 'Josh3940.') {
+        } else if (authError && trimmedEmail === 'radiicato8@gmail.com' && password === 'Josh3940.') {
           // Auto-provision in Supabase Auth on first login if not yet registered
           try {
             const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
     }
 
     // 2. Direct verification for owner credentials
-    if (trimmedEmail === 'joshkigs8@gmail.com' && password === 'Josh3940.') {
+    if (trimmedEmail === 'radiicato8@gmail.com' && password === 'Josh3940.') {
       loginAdmin(trimmedEmail, 'SUPER_ADMIN');
       setSuccess(true);
       setTimeout(() => {
@@ -163,7 +163,7 @@ export default function AdminLoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="joshkigs8@gmail.com"
+                  placeholder="radiicato8@gmail.com"
                   className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all"
                 />
               </div>
