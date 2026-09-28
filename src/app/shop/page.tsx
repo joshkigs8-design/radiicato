@@ -79,6 +79,7 @@ function ShopEditorialLanding() {
           </div>
         </div>
       </div>
+    </div>
 
 
 
