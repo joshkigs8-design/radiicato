@@ -10,11 +10,14 @@ import { LookbookModal } from '@/components/lookbook/LookbookModal';
 import { ChromeWebGLViewer } from '@/components/home/ChromeWebGLViewer';
 import { formatKES } from '@/lib/utils';
 import { Product, Size } from '@/types';
+import { SkullCapColorSwatches, useSkullCapVariants } from '@/components/product/SkullCapVariants';
 
 export default function HomePage() {
   const { products, lookbook, addToCart } = useStore();
   const [lookbookModalOpen, setLookbookModalOpen] = useState(false);
   const [selectedLookbookIndex, setSelectedLookbookIndex] = useState(0);
+  const skullCapProduct = products.find((product) => product.slug === 'radiicato-heavyweight-ribbed-knit-skull-cap');
+  const skullCap = useSkullCapVariants(skullCapProduct, Boolean(skullCapProduct));
 
   // Hover states for product cards
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
@@ -356,10 +359,10 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Model Rocking Skull Cap + 3 Colorways in 2x2 Mobile / 1x4 Desktop Grid */}
+          {/* Model editorial and one skull-cap product with selectable colorways */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
             {/* Model Editorial Shot */}
-            <div className="glass-card rounded-xl sm:rounded-2xl p-2.5 sm:p-3 flex flex-col group">
+            <div className="glass-card rounded-xl sm:rounded-2xl p-2.5 sm:p-3 flex flex-col group lg:col-span-2">
               <div className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-lg sm:rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden">
                 <Image
                   src="/images/skull-cap-model.jpg"
@@ -380,30 +383,51 @@ export default function HomePage() {
               </div>
             </div>
 
-            {[
-              { href: '/product/radiicato-heavyweight-ribbed-knit-skull-cap', src: '/images/products/radiicato-skull-cap-black.jpg', name: 'ONYX BLACK' },
-              { href: '/product/radiicato-skull-cap-slate-grey', src: '/images/products/radiicato-skull-cap-grey.jpg', name: 'SLATE GREY' },
-              { href: '/product/radiicato-skull-cap-midnight-camo', src: '/images/products/radiicato-skull-cap-camo.jpg', name: 'NIGHT CAMO' },
-            ].map((cap) => (
-              <div key={cap.name} className="glass-card rounded-xl sm:rounded-2xl p-2.5 sm:p-3 flex flex-col group">
+            {skullCapProduct && (
+              <div
+                className="glass-card rounded-xl sm:rounded-2xl p-2.5 sm:p-3 flex flex-col group lg:col-span-2"
+                onMouseEnter={() => skullCap.setIsHovered(true)}
+                onMouseLeave={() => skullCap.setIsHovered(false)}
+                onTouchStart={skullCap.pauseForTouch}
+              >
                 <Link
-                  href={cap.href}
+                  href={`/product/${skullCapProduct.slug}`}
                   className="relative aspect-[3/4] w-full bg-[#0a0a0a] rounded-lg sm:rounded-xl border border-white/10 group-hover:border-white/30 transition-colors duration-300 overflow-hidden"
                 >
-                  <Image
-                    src={cap.src}
-                    alt={`Radiicato Skull Cap ${cap.name}`}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 640px) 50vw, 25vw"
-                  />
+                  {skullCap.colorways.map((colorway, index) => colorway.image && (
+                    <Image
+                      key={colorway.colorName}
+                      src={colorway.image.url}
+                      alt={`Radiicato Skull Cap in ${colorway.colorName}`}
+                      fill
+                      className={`object-cover transition-opacity duration-700 ease-out ${
+                        skullCap.selectedIndex === index ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      sizes="(max-width: 640px) 50vw, 50vw"
+                    />
+                  ))}
                 </Link>
-                <div className="pt-2.5 sm:pt-3.5 flex items-baseline justify-between text-[11px] sm:text-[13px] font-mono uppercase px-0.5 sm:px-1">
-                  <span className="font-bold text-white truncate">{cap.name}</span>
-                  <span className="text-white/70 shrink-0 ml-1">{formatKES(500)}</span>
+                <div className="pt-2.5 sm:pt-3.5 px-0.5 sm:px-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[9px] sm:text-[10px] font-mono tracking-widest uppercase text-white/60">COLOUR</span>
+                    <span className="text-[11px] sm:text-[13px] font-mono text-white/70">{formatKES(skullCapProduct.price)}</span>
+                  </div>
+                  <SkullCapColorSwatches
+                    colorways={skullCap.colorways}
+                    selectedIndex={skullCap.selectedIndex}
+                    onSelect={skullCap.selectColor}
+                  />
+                  <div className="pt-1.5 sm:pt-2 flex items-baseline justify-between gap-2 text-[11px] sm:text-[13px] font-mono uppercase">
+                    <Link href={`/product/${skullCapProduct.slug}`} className="font-bold text-white truncate hover:opacity-70 transition-opacity">
+                      SKULL CAPS
+                    </Link>
+                    <Link href={`/product/${skullCapProduct.slug}`} className="text-white/70 shrink-0 hover:text-white transition-colors">
+                      VIEW PRODUCT
+                    </Link>
+                  </div>
                 </div>
               </div>
-            ))}
+            )}
           </div>
 
           {/* Action Button */}

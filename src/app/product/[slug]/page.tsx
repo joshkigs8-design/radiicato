@@ -10,7 +10,7 @@ import {
   AlertCircle, Loader2
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
-import { formatKES } from '@/lib/utils';
+import { formatKES, isLegacySkullCapProduct } from '@/lib/utils';
 import { ProductCard } from '@/components/product/ProductCard';
 import { Size } from '@/types';
 import { createReviewInSupabase } from '@/lib/supabase';
@@ -226,7 +226,7 @@ export default function ProductDetailPage() {
 
   // Related products
   const relatedProducts = products
-    .filter((p) => p.id !== product.id && p.categoryId === product.categoryId)
+    .filter((p) => !isLegacySkullCapProduct(p) && p.id !== product.id && p.categoryId === product.categoryId)
     .slice(0, 4);
 
   // SEO Schema.org Structured Data

@@ -8,6 +8,7 @@ import { Product } from '@/types';
 import { useStore } from '@/lib/use-store';
 import { formatKES } from '@/lib/utils';
 import { QuickAddModal } from './QuickAddModal';
+import { SkullCapColorSwatches, useSkullCapVariants } from './SkullCapVariants';
 
 interface ProductCardProps {
   product: Product;
@@ -20,6 +21,8 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const inWish = isInWishlist(product.id);
+  const isSkullCap = product.slug === 'radiicato-heavyweight-ribbed-knit-skull-cap';
+  const skullCap = useSkullCapVariants(product, isSkullCap);
 
   // Determine images
   const primaryImg = product.images.find((i) => i.isPrimary) || product.images[0];
@@ -38,14 +41,34 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
     <>
       <div
         className="group relative flex flex-col"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={() => {
+          setIsHovered(true);
+          skullCap.setIsHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          skullCap.setIsHovered(false);
+        }}
+        onTouchStart={isSkullCap ? skullCap.pauseForTouch : undefined}
       >
         {/* Image Container */}
         <div className="relative aspect-[3/4] w-full bg-[#F4F4F5] overflow-hidden border border-transparent group-hover:border-[#0A0A0A] transition-all duration-500">
           {/* Primary & Hover Image Crossfade */}
           <Link href={`/product/${product.slug}`} className="absolute inset-0">
-            {primaryImg && (
+            {isSkullCap ? (
+              skullCap.colorways.map((colorway, index) => colorway.image && (
+                <Image
+                  key={colorway.colorName}
+                  src={colorway.image.url}
+                  alt={`Radiicato Skull Cap in ${colorway.colorName}`}
+                  fill
+                  className={`object-cover object-center transition-opacity duration-700 ease-out ${
+                    skullCap.selectedIndex === index ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                />
+              ))
+            ) : primaryImg && (
               <Image
                 src={primaryImg.url}
                 alt={product.name}
@@ -56,7 +79,7 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
             )}
-            {hoverImg && (
+            {!isSkullCap && hoverImg && (
               <Image
                 src={hoverImg.url}
                 alt={`${product.name} alternate view`}
@@ -129,7 +152,14 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
         <div className="pt-3.5 pb-2 space-y-1.5">
           {/* Swatches */}
           <div className="flex items-center gap-1.5">
-            {distinctColors.map((color) => (
+            {isSkullCap ? (
+              <SkullCapColorSwatches
+                colorways={skullCap.colorways}
+                selectedIndex={skullCap.selectedIndex}
+                onSelect={skullCap.selectColor}
+                appearance="light"
+              />
+            ) : distinctColors.map((color) => (
               <span
                 key={color.id}
                 title={color.colorName}
@@ -137,15 +167,17 @@ export function ProductCard({ product, onOpenCart }: ProductCardProps) {
                 style={{ backgroundColor: color.colorHex }}
               />
             ))}
-            <span className="text-[10px] font-mono text-[#71717A] ml-1 uppercase">
-              {product.variants.length} SIZES
-            </span>
+            {!isSkullCap && (
+              <span className="text-[10px] font-mono text-[#71717A] ml-1 uppercase">
+                {product.variants.length} SIZES
+              </span>
+            )}
           </div>
 
           {/* Title */}
           <Link href={`/product/${product.slug}`} className="block group-hover:opacity-70 transition-opacity">
             <h3 className="text-[11px] font-mono font-semibold tracking-[0.12em] uppercase text-[#0A0A0A] line-clamp-1">
-              {product.name}
+              {isSkullCap ? 'SKULL CAPS' : product.name}
             </h3>
           </Link>
 

@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Product } from '@/types';
 import { ProductCard } from '@/components/product/ProductCard';
+import { isLegacySkullCapProduct } from '@/lib/utils';
 
 interface JumiaProductSliderProps {
 	products: Product[];
@@ -12,7 +13,7 @@ interface JumiaProductSliderProps {
 export function JumiaProductSlider({ products }: JumiaProductSliderProps) {
 	const sliderRef = useRef<HTMLDivElement>(null);
 	const featuredProducts = products
-		.filter((product) => product.status === 'active')
+		.filter((product) => product.status === 'active' && !isLegacySkullCapProduct(product))
 		.sort((first, second) => Number(second.isFeatured || second.isLimitedDrop) - Number(first.isFeatured || first.isLimitedDrop))
 		.slice(0, 10);
 

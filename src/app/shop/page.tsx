@@ -12,7 +12,7 @@ import { useStore } from '@/lib/use-store';
 import { ProductCard } from '@/components/product/ProductCard';
 import { JumiaProductSlider } from '@/components/shop/JumiaProductSlider';
 import { Size } from '@/types';
-import { formatKES } from '@/lib/utils';
+import { formatKES, isLegacySkullCapProduct } from '@/lib/utils';
 
 const SIZES: Size[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
@@ -24,6 +24,10 @@ function ShopContent() {
 
   const { products, categories, collections } = useStore();
   const filteredSliderRef = useRef<HTMLDivElement>(null);
+  const storefrontProducts = useMemo(
+    () => products.filter((product) => !isLegacySkullCapProduct(product)),
+    [products]
+  );
 
   // Filters State
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
@@ -40,7 +44,7 @@ function ShopContent() {
   // Available unique colors across products
   const availableColors = useMemo(() => {
     const map = new Map<string, string>();
-    products.forEach((p) => {
+    storefrontProducts.forEach((p) => {
       p.variants.forEach((v) => {
         if (!map.has(v.colorName)) {
           map.set(v.colorName, v.colorHex);
@@ -48,11 +52,11 @@ function ShopContent() {
       });
     });
     return Array.from(map.entries()).map(([name, hex]) => ({ name, hex }));
-  }, [products]);
+  }, [storefrontProducts]);
 
   // Filtered & Sorted Products
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
+    return storefrontProducts.filter((product) => {
       // Category filter
       if (selectedCategory !== 'all') {
         const cat = categories.find((c) => c.slug === selectedCategory);
@@ -109,7 +113,7 @@ function ShopContent() {
       return 0; // featured default
     });
   }, [
-    products,
+    storefrontProducts,
     categories,
     collections,
     selectedCategory,
@@ -155,13 +159,13 @@ function ShopContent() {
           </h1>
         </div>
         <p className="text-[11px] font-mono text-[#71717A] uppercase">
-          SHOWING {filteredProducts.length} OF {products.length} ARCHIVAL PIECES
+          SHOWING {filteredProducts.length} OF {storefrontProducts.length} ARCHIVAL PIECES
         </p>
       </div>
 
       {/* Jumia-Style Featured Sliding Product Rail */}
       <div className="pt-8">
-        <JumiaProductSlider products={products} />
+        <JumiaProductSlider products={storefrontProducts} />
       </div>
 
       {/* Control Toolbar (Search, Filter toggles, Layout & Sort) */}

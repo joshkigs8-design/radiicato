@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import type { Product } from '@/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -7,6 +8,15 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatKES(amount: number): string {
   return `KES ${amount.toLocaleString('en-KE')}`;
+}
+
+export function isLegacySkullCapProduct(product: Pick<Product, 'id' | 'slug'>): boolean {
+  return (
+    product.id === 'prod-skull-cap-grey-ed' ||
+    product.id === 'prod-skull-cap-camo-ed' ||
+    product.slug === 'radiicato-skull-cap-slate-grey' ||
+    product.slug === 'radiicato-skull-cap-midnight-camo'
+  );
 }
 
 export function formatDate(dateString: string): string {

@@ -9,7 +9,7 @@ import {
   ExternalLink, Clock, ShoppingBag, Loader2 
 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
-import { formatKES, formatDate } from '@/lib/utils';
+import { formatKES, formatDate, isLegacySkullCapProduct } from '@/lib/utils';
 import { ProductCard } from '@/components/product/ProductCard';
 import { supabase } from '@/lib/supabase';
 
@@ -41,7 +41,9 @@ export default function AccountDashboardPage() {
   }, [router]);
 
   const recentOrders = orders.slice(0, 3);
-  const wishlistedProducts = products.filter((p) => wishlist.includes(p.id));
+  const wishlistedProducts = products.filter(
+    (p) => !isLegacySkullCapProduct(p) && wishlist.includes(p.id)
+  );
 
   const handleLogout = async () => {
     if (supabase) {

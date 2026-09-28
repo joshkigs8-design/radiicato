@@ -7,6 +7,7 @@ import { useParams, notFound } from 'next/navigation';
 import { ArrowLeft, Clock, ShieldCheck, Sparkles } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { ProductCard } from '@/components/product/ProductCard';
+import { isLegacySkullCapProduct } from '@/lib/utils';
 
 export default function SingleCollectionPage() {
   const params = useParams();
@@ -53,7 +54,9 @@ export default function SingleCollectionPage() {
 
   // Get products for this collection
   const collectionProducts = products.filter(
-    (p) => p.collectionId === collection.id || collection.productIds.includes(p.id)
+    (p) =>
+      !isLegacySkullCapProduct(p) &&
+      (p.collectionId === collection.id || collection.productIds.includes(p.id))
   );
 
   return (
