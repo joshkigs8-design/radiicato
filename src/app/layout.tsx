@@ -134,7 +134,7 @@ const organizationSchema = {
     latitude: -1.2618,
     longitude: 36.8042,
   },
-  telephone: '+254712904883',
+  telephone: '+254706528908',
   priceRange: 'KES 500 - KES 1000',
   currenciesAccepted: 'KES',
   paymentAccepted: 'M-PESA, Cash, Credit Card',
@@ -149,7 +149,7 @@ const organizationSchema = {
   sameAs: [
     'https://instagram.com/radiicato',
     'https://tiktok.com/@radiicato',
-    'https://wa.me/254712904883',
+    'https://wa.me/254706528908',
   ],
 };
 

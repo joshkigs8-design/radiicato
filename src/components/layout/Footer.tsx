@@ -101,10 +101,9 @@ export function Footer() {
             >
               {settings.contactEmail || 'info@radiicato.co.ke'}
             </a>
-            <a href="tel:+254712904883" className="text-white/60 transition-colors hover:text-white focus-visible:text-white">
-              +254 712 904 883
+            <a href="tel:+254706528908" className="text-white/60 transition-colors hover:text-white focus-visible:text-white">
+              +254 706 528 908
             </a>
-            <span>Nairobi, Kenya</span>
             <span className="text-white/35">
               RADIICATO: all rights reserved © 2026
             </span>

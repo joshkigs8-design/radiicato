@@ -330,7 +330,9 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
             </div>
 
             <div className="text-[11px] font-mono tracking-[0.14em] uppercase text-white/50 space-y-1 pt-1">
-              <p className="text-white/80 font-bold">NAIROBI, KENYA</p>
+              <a href="tel:+254706528908" className="text-white/80 font-bold block hover:text-white transition-colors">
+                +254 706 528 908
+              </a>
               <p className="text-[10px]">WE ARE WHO WE ARE.</p>
               <p className="text-[9px] text-white/40">© 2026 RADIICATO ATELIER</p>
             </div>

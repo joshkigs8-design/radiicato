@@ -249,7 +249,7 @@ export default function AccountDashboardPage() {
               </p>
               <div className="pt-2">
                 <a
-                  href="https://wa.me/254712904883"
+                  href="https://wa.me/254706528908"
                   target="_blank"
                   rel="noreferrer"
                   className="btn-primary inline-flex"

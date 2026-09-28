@@ -105,14 +105,16 @@ export default function ContactPage() {
               </div>
               <div className="space-y-1">
                 <span className="text-[10px] font-mono tracking-[0.12em] uppercase text-[#71717A]">CONCIERGE HOTLINE & WHATSAPP</span>
-                <a href="https://wa.me/254712904883" target="_blank" rel="noreferrer" className="block text-sm text-[#0A0A0A] hover:underline font-mono">
-                  {settings.contactPhone}
+                <a href="https://wa.me/254706528908" target="_blank" rel="noreferrer" className="block text-sm text-[#0A0A0A] hover:underline font-mono">
+                  {settings.contactPhone || '+254 706 528 908'}
                 </a>
               </div>
-              <div className="space-y-1">
-                <span className="text-[10px] font-mono tracking-[0.12em] uppercase text-[#71717A]">NAIROBI ATELIER & STUDIO</span>
-                <p className="text-sm text-[#0A0A0A] font-mono">{settings.address}</p>
-              </div>
+              {settings.address ? (
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono tracking-[0.12em] uppercase text-[#71717A]">ATELIER & STUDIO</span>
+                  <p className="text-sm text-[#0A0A0A] font-mono">{settings.address}</p>
+                </div>
+              ) : null}
             </div>
             
             <div className="bg-[#F4F4F5] border border-[#E4E4E7] p-6 h-fit">
