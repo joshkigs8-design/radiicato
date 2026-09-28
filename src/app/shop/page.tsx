@@ -72,13 +72,74 @@ function ShopEditorialLanding() {
             </h1>
 
             <p className="text-xs sm:text-sm md:text-base font-mono uppercase tracking-[0.14em] text-zinc-300 max-w-2xl leading-relaxed">
-              INDEPENDENT LUXURY STREETWEAR ENGINEERED IN NAIROBI. THE INAUGURAL STATEMENT UNITING BROKEN RECORD, WE ARE WHO WE ARE, AND SIGNATURE SKULL CAPS.
+              INDEPENDENT LUXURY STREETWEAR ENGINEERED IN NAIROBI.
             </p>
-
-
+            <Link
+              href="#collection-edits"
+              className="inline-flex items-center gap-3 bg-white px-7 py-3.5 text-xs sm:text-sm font-mono font-bold uppercase tracking-[0.18em] text-black rounded-lg hover:bg-zinc-200 transition-colors"
+            >
+              SHOP <ArrowRight size={15} />
+            </Link>
           </div>
         </div>
       </div>
+
+      <section id="collection-edits" className="pt-12 sm:pt-16">
+        <div className="flex items-end justify-between gap-4 border-b border-[#E4E4E7] pb-4 mb-6 sm:mb-8">
+          <h2 className="pesos-text-face text-2xl sm:text-4xl font-black uppercase tracking-tight text-[#0A0A0A]">
+            EARLY 2026 COLLECTION — EDITS
+          </h2>
+          <span className="hidden sm:block text-[10px] font-mono uppercase tracking-[0.2em] text-[#71717A]">
+            03 CHAPTERS
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          {[
+            {
+              name: 'BROKEN RECORD',
+              image: '/images/broken-record.jpg',
+              capsule: 'broken-record',
+            },
+            {
+              name: 'WE ARE WHO WE ARE',
+              image: '/images/we-are-who-we-are.jpg',
+              capsule: 'we-are-who-we-are',
+            },
+            {
+              name: 'SKULL CAPS',
+              image: '/images/skull-cap-banner.jpg',
+              capsule: 'skull-caps',
+            },
+          ].map((edit, index) => (
+            <Link
+              key={edit.capsule}
+              href={`/collections/early-2026?capsule=${edit.capsule}`}
+              className="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-[#E4E4E7] bg-black text-white"
+            >
+              <Image
+                src={edit.image}
+                alt={edit.name}
+                fill
+                className="object-cover opacity-80 transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5 sm:p-6">
+                <div>
+                  <span className="mb-2 block text-[10px] font-mono uppercase tracking-[0.22em] text-white/70">
+                    EDIT 0{index + 1}
+                  </span>
+                  <h3 className="pesos-text-face text-xl sm:text-2xl font-black uppercase leading-tight">
+                    {edit.name}
+                  </h3>
+                </div>
+                <ArrowRight size={18} className="shrink-0 transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
 
 
