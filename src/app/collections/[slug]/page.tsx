@@ -38,7 +38,7 @@ const EDITS: EditGroup[] = [
     name: 'WE ARE WHO WE ARE',
     tagline: 'NAIROBI STREET CULTURE · HAND-LETTERED TYPOGRAPHY · UNCOMPROMISING DRAPE',
     description: 'Raw Nairobi street culture and uncompromising streetwear silhouette. Cut from heavyweight deep onyx fleece and organic cotton, designed locally for creatives who refuse to blend in.',
-    bannerImage: '/images/we-are-who-we-are.jpg',
+    bannerImage: '/images/products/we-are-who-we-are-front.jpg',
     filterFn: (p: Product) => p.slug.includes('we-are-who-we-are') || p.id.includes('we-are-who-we-are'),
   },
   {
@@ -47,7 +47,7 @@ const EDITS: EditGroup[] = [
     name: 'SIGNATURE SKULL CAPS',
     tagline: 'CONTOURED RIBBED KNIT · LIQUID CHROME SCRIPT INSIGNIA · THREE COLORWAYS',
     description: 'Engineered for the cold Nairobi sets. Cut from heavyweight stretch ribbing that hugs the head securely without slippage. Available in Onyx Black, Slate Grey, and Midnight Camo.',
-    bannerImage: '/images/skull-cap-banner.jpg',
+    bannerImage: '/images/skull-cap-model.jpg',
     filterFn: (p: Product) => p.slug.includes('skull-cap') || p.id.includes('skull-cap'),
   },
 ];
