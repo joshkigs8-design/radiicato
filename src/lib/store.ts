@@ -400,6 +400,17 @@ class RadiicatoStore {
 
       const savedProducts = localStorage.getItem('rad_products');
       if (savedProducts) this.products = JSON.parse(savedProducts);
+      const updatedPrices: Record<string, number> = {
+        'prod-broken-record-tee': 1200,
+        'prod-broken-record-doom': 1200,
+        'prod-broken-record-arch': 1200,
+        'prod-we-are-who-we-are-tee': 1000,
+        'prod-we-are-who-we-are-collage': 1000,
+        'prod-we-are-who-we-are-mascot': 1000,
+      };
+      this.products = this.products.map((product) => updatedPrices[product.id]
+        ? { ...product, price: updatedPrices[product.id] }
+        : product);
 
       const savedOrders = localStorage.getItem('rad_orders');
       if (savedOrders) this.orders = JSON.parse(savedOrders);
