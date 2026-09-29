@@ -193,7 +193,7 @@ export default function CheckoutPage() {
       }
 
       // Place Order in reactive store with server-like validation and billing details captured
-      const createdOrder = placeOrder({
+      const createdOrder = await placeOrder({
         customerId: user.id,
         customerName: fullName.trim(),
         email: email.trim(),

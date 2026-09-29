@@ -718,7 +718,7 @@ class RadiicatoStore {
     return this.orders.find((o) => o.id === id || o.orderNumber === id);
   }
 
-  public placeOrder(newOrder: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt' | 'timeline'>): Order {
+  public async placeOrder(newOrder: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt' | 'timeline'>): Promise<Order> {
     if (!newOrder.customerId) {
       throw new Error('An authenticated customer account is required to place an order.');
     }
@@ -726,18 +726,6 @@ class RadiicatoStore {
     const seq = Math.floor(100000 + Math.random() * 900000);
     const orderNumber = `RAD-2026-${seq}`;
     const timestamp = new Date().toISOString();
-
-    // Decrement inventory for each ordered item
-    for (const item of newOrder.items) {
-      for (const prod of this.products) {
-        if (prod.id === item.productId) {
-          const v = prod.variants.find((vr) => vr.id === item.variantId);
-          if (v) {
-            v.stockQuantity = Math.max(0, v.stockQuantity - item.quantity);
-          }
-        }
-      }
-    }
 
     const createdOrder: Order = {
       ...newOrder,
@@ -753,6 +741,23 @@ class RadiicatoStore {
       createdAt: timestamp,
       updatedAt: timestamp,
     };
+
+    const persistenceResult = await createOrderInSupabase(createdOrder);
+    if (!persistenceResult.success) {
+      throw new Error(persistenceResult.error || 'Unable to save the order. Please try again.');
+    }
+
+    // Decrement inventory only after the authenticated order is persisted.
+    for (const item of newOrder.items) {
+      for (const prod of this.products) {
+        if (prod.id === item.productId) {
+          const v = prod.variants.find((vr) => vr.id === item.variantId);
+          if (v) {
+            v.stockQuantity = Math.max(0, v.stockQuantity - item.quantity);
+          }
+        }
+      }
+    }
 
     this.orders.unshift(createdOrder);
     this.clearCart();
@@ -770,11 +775,6 @@ class RadiicatoStore {
 
     this.logAudit('CREATE_ORDER', 'Order', createdOrder.id, `Placed order ${orderNumber} (KES ${newOrder.total})`);
     this.notify();
-
-    // Async sync order to Supabase
-    createOrderInSupabase(createdOrder).catch((err) => {
-      console.warn('Supabase order sync note:', err);
-    });
 
     return createdOrder;
   }

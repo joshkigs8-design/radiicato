@@ -340,6 +340,10 @@ export async function createOrderInSupabase(order: any) {
     const orderId = crypto.randomUUID();
     const { data: { user } } = await supabase.auth.getUser();
 
+    if (!user || user.is_anonymous || !user.email || order.customerId !== user.id) {
+      return { success: false, error: 'An authenticated customer account is required to place an order.' };
+    }
+
     const { data: orderData, error: orderError } = await (client as any)
       .from('orders')
       .insert({
