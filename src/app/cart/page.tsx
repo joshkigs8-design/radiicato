@@ -4,10 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Trash2, Plus, Minus, ArrowRight, ShieldCheck, Tag } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/use-store';
 import { formatKES } from '@/lib/utils';
 
 export default function CartPage() {
+  const router = useRouter();
   const { 
     cart, 
     cartSummary, 
@@ -242,13 +245,21 @@ export default function CartPage() {
 
             {/* Checkout Button */}
             <div className="pt-4">
-              <Link
-                href="/checkout"
+              <button
+                type="button"
+                onClick={async () => {
+                  const { data, error } = await supabase.auth.getUser();
+                  if (error || !data?.user || data.user.is_anonymous || !data.user.email) {
+                    router.push('/signup?redirect=/checkout');
+                  } else {
+                    router.push('/checkout');
+                  }
+                }}
                 className="w-full bg-[#0A0A0A] text-white py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
               >
                 <span>PROCEED TO CHECKOUT</span>
                 <ArrowRight size={14} />
-              </Link>
+              </button>
             </div>
           </div>
         </div>
