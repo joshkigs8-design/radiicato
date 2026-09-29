@@ -4,11 +4,12 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ChevronRight, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, ChevronRight, X, Loader2, Download } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES, formatDateTime } from '@/lib/utils';
 import { Order } from '@/types';
 import { supabase } from '@/lib/supabase';
+import { downloadOrderInvoicePDF } from '@/lib/invoice';
 
 export default function CustomerOrdersPage() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function CustomerOrdersPage() {
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [downloadingOrderId, setDownloadingOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -190,10 +192,40 @@ export default function CustomerOrdersPage() {
                 </div>
               </div>
 
-              {/* Total */}
-              <div className="pt-2 flex justify-between items-center text-sm font-bold font-mono">
-                <span className="uppercase text-[#0A0A0A]">TOTAL PAID</span>
-                <span className="text-base text-[#0A0A0A]">{formatKES(selectedOrder.total)}</span>
+              {/* Total & PDF Invoice Action */}
+              <div className="pt-4 border-t border-[#E4E4E7] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div className="flex justify-between items-center text-sm font-bold font-mono w-full sm:w-auto gap-4">
+                  <span className="uppercase text-[#0A0A0A]">TOTAL PAID</span>
+                  <span className="text-base text-[#0A0A0A]">{formatKES(selectedOrder.total)}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!selectedOrder) return;
+                    setDownloadingOrderId(selectedOrder.id);
+                    try {
+                      await downloadOrderInvoicePDF(selectedOrder);
+                    } catch (err) {
+                      console.error('Invoice download failed:', err);
+                    } finally {
+                      setDownloadingOrderId(null);
+                    }
+                  }}
+                  disabled={downloadingOrderId === selectedOrder.id}
+                  className="w-full sm:w-auto px-4 py-2.5 bg-[#0A0A0A] text-white text-[11px] font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:opacity-85 transition-opacity disabled:opacity-50"
+                >
+                  {downloadingOrderId === selectedOrder.id ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>Generating PDF...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download size={13} />
+                      <span>Download PDF Invoice</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>

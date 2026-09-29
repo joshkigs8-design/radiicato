@@ -9,6 +9,7 @@ import { useStore } from '@/lib/use-store';
 import { formatKES, formatDateTime } from '@/lib/utils';
 import confetti from 'canvas-confetti';
 import { supabase } from '@/lib/supabase';
+import { downloadOrderInvoicePDF } from '@/lib/invoice';
 
 function OrderSuccessContent() {
   const router = useRouter();
@@ -20,6 +21,7 @@ function OrderSuccessContent() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const invoiceRef = useRef<HTMLDivElement>(null);
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
 
   const order = orderNumber ? getOrderById(orderNumber) : undefined;
 
@@ -65,22 +67,16 @@ function OrderSuccessContent() {
     }
   };
 
-  const handleDownload = () => {
-    if (!invoiceRef.current || !order) return;
-
-    const invoiceHtml = `<!doctype html>
-<html><head><meta charset="utf-8"><title>RADIICATO Invoice ${order.orderNumber}</title>
-<style>body{font-family:Arial,sans-serif;color:#0A0A0A;padding:40px;max-width:800px;margin:auto}img{max-width:140px;height:auto}.invoice{border:1px solid #E4E4E7;padding:32px}.muted{color:#71717A}table{width:100%;border-collapse:collapse;margin-top:24px}td,th{border-bottom:1px solid #E4E4E7;padding:12px 4px;text-align:left}td:last-child,th:last-child{text-align:right}.total{font-weight:700;font-size:18px;text-align:right;margin-top:24px}</style></head>
-<body><div class="invoice"><img src="${window.location.origin}/logo.png" alt="RADIICATO"><h1>RADIICATO INVOICE</h1><p class="muted">Order ${order.orderNumber}</p>${invoiceRef.current.innerHTML}</div></body></html>`;
-    const blob = new Blob([invoiceHtml], { type: 'text/html;charset=utf-8' });
-    const downloadUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `radiicato-invoice-${order.orderNumber}.html`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(downloadUrl);
+  const handleDownload = async () => {
+    if (!order) return;
+    try {
+      setIsDownloadingPDF(true);
+      await downloadOrderInvoicePDF(order);
+    } catch (err) {
+      console.error('Failed to generate PDF invoice:', err);
+    } finally {
+      setIsDownloadingPDF(false);
+    }
   };
 
   if (isLoadingAuth || !userId) {
@@ -175,9 +171,20 @@ function OrderSuccessContent() {
             </button>
             <button
               onClick={handleDownload}
-              className="px-4 py-2 bg-[#0A0A0A] hover:bg-[#27272A] text-white text-xs font-mono uppercase flex items-center gap-2 transition-colors"
+              disabled={isDownloadingPDF}
+              className="px-4 py-2 bg-[#0A0A0A] hover:bg-[#27272A] text-white text-xs font-mono uppercase flex items-center gap-2 transition-colors disabled:opacity-50"
             >
-              <Download size={13} /> Download Invoice
+              {isDownloadingPDF ? (
+                <>
+                  <Loader2 size={13} className="animate-spin" />
+                  <span>Preparing PDF...</span>
+                </>
+              ) : (
+                <>
+                  <Download size={13} />
+                  <span>Download PDF Invoice</span>
+                </>
+              )}
             </button>
           </div>
         </div>
