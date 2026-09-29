@@ -29,16 +29,18 @@ export default function AboutPage() {
               We&apos;re not here to follow every trend. We&apos;re here to create our own language.
             </p>
           </div>
-          <div className="relative aspect-square md:aspect-[4/5] bg-[#F4F4F5] border border-[#E4E4E7] rounded-xl overflow-hidden group">
-            <Image
-              src="/images/radiicato-chrome-logo-badge.jpg"
-              alt="Radiicato Signature Chrome Insignia"
-              fill
-              unoptimized
-              className="object-contain p-6 sm:p-10 group-hover:scale-105 transition-transform duration-700"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
+          <div className="relative aspect-square w-full max-w-lg mx-auto bg-white border border-[#E4E4E7] rounded-2xl overflow-hidden shadow-sm flex items-center justify-center p-4 sm:p-8 group">
+            <div className="relative w-full h-full">
+              <Image
+                src="/images/radiicato-chrome-logo-badge.jpg"
+                alt="Radiicato Signature Chrome Insignia"
+                fill
+                unoptimized
+                className="object-contain group-hover:scale-105 transition-transform duration-700"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+            </div>
           </div>
         </div>
 

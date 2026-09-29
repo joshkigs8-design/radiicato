@@ -103,12 +103,12 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
           {/* Left — 3D Logo */}
           <Link href="/" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
             <Image
-              src="/images/radiicato-3d-chrome.png"
+              src="/logo.png"
               alt="RADIICATO"
-              width={180}
-              height={70}
+              width={160}
+              height={87}
               priority
-              className="h-9 sm:h-12 w-auto object-contain transition-transform duration-300 hover:scale-105"
+              className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 hover:scale-105 drop-shadow-[0_2px_12px_rgba(255,255,255,0.15)]"
             />
           </Link>
 
@@ -233,11 +233,11 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
               className="flex items-center"
             >
               <Image
-                src="/images/radiicato-3d-chrome.png"
+                src="/logo.png"
                 alt="RADIICATO"
-                width={130}
-                height={45}
-                className="h-8 w-auto object-contain"
+                width={140}
+                height={76}
+                className="h-8 w-auto object-contain drop-shadow-[0_2px_10px_rgba(255,255,255,0.12)]"
               />
             </Link>
 

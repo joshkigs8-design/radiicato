@@ -45,7 +45,10 @@ export async function downloadOrderInvoicePDF(order: Order): Promise<void> {
         img.onerror = () => resolve(false);
       });
       if (logoLoaded) {
-        doc.addImage(img, 'PNG', margin, currentY - 5, 38, 12);
+        const logoHeight = 14;
+        const aspect = (img.naturalWidth || img.width || 829) / (img.naturalHeight || img.height || 453);
+        const logoWidth = logoHeight * aspect;
+        doc.addImage(img, 'PNG', margin, currentY - 5, logoWidth, logoHeight);
       }
     } catch {
       logoLoaded = false;
@@ -63,7 +66,7 @@ export async function downloadOrderInvoicePDF(order: Order): Promise<void> {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7.5);
   doc.setTextColor(...grayMuted);
-  doc.text('ATELIER // NAIROBI FLAGSHIP STUDIO', margin, currentY + 12);
+  doc.text('ATELIER // NAIROBI FLAGSHIP STUDIO', margin, currentY + 13);
 
   // Document Type & Number (Right Aligned)
   doc.setFont('helvetica', 'bold');
