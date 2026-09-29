@@ -178,15 +178,6 @@ The front features our underground character mascot wearing a green bucket hat a
         isHover: false,
         displayOrder: 3,
       },
-      {
-        id: 'img-waw-4',
-        productId: 'prod-we-are-who-we-are-tee',
-        url: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1000&auto=format&fit=crop',
-        altText: 'Editorial Street Culture Model Shot in Nairobi',
-        isPrimary: false,
-        isHover: false,
-        displayOrder: 4,
-      },
     ],
     variants: [
       { id: 'v-waw-blk-xs', productId: 'prod-we-are-who-we-are-tee', colorName: 'Washed Obsidian Black', colorHex: '#0A0A0A', size: 'XS', sku: 'RAD-TEE-WAW-BLK-XS', stockQuantity: 5, lowStockThreshold: 2 },
