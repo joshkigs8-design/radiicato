@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CheckCircle2, Printer, ArrowRight, Package, Truck, Calendar, ShieldCheck, Loader2 } from 'lucide-react';
+import { CheckCircle2, Printer, Download, ArrowRight, Package, Truck, Calendar, ShieldCheck, Loader2 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES, formatDateTime } from '@/lib/utils';
 import confetti from 'canvas-confetti';
@@ -17,7 +17,9 @@ function OrderSuccessContent() {
   const { getOrderById } = useStore();
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const invoiceRef = useRef<HTMLDivElement>(null);
 
   const order = orderNumber ? getOrderById(orderNumber) : undefined;
 
@@ -29,6 +31,13 @@ function OrderSuccessContent() {
       } else {
         setUserId(session.user.id);
         setUserEmail(session.user.email?.toLowerCase() || '');
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        setIsAdmin(profile?.role === 'super_admin');
       }
       setIsLoadingAuth(false);
     };
@@ -55,6 +64,24 @@ function OrderSuccessContent() {
     }
   };
 
+  const handleDownload = () => {
+    if (!invoiceRef.current || !order) return;
+
+    const invoiceHtml = `<!doctype html>
+<html><head><meta charset="utf-8"><title>RADIICATO Invoice ${order.orderNumber}</title>
+<style>body{font-family:Arial,sans-serif;color:#0A0A0A;padding:40px;max-width:800px;margin:auto}img{max-width:140px;height:auto}.invoice{border:1px solid #E4E4E7;padding:32px}.muted{color:#71717A}table{width:100%;border-collapse:collapse;margin-top:24px}td,th{border-bottom:1px solid #E4E4E7;padding:12px 4px;text-align:left}td:last-child,th:last-child{text-align:right}.total{font-weight:700;font-size:18px;text-align:right;margin-top:24px}</style></head>
+<body><div class="invoice"><img src="${window.location.origin}/logo.png" alt="RADIICATO"><h1>RADIICATO INVOICE</h1><p class="muted">Order ${order.orderNumber}</p>${invoiceRef.current.innerHTML}</div></body></html>`;
+    const blob = new Blob([invoiceHtml], { type: 'text/html;charset=utf-8' });
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `radiicato-invoice-${order.orderNumber}.html`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(downloadUrl);
+  };
+
   if (isLoadingAuth || !userId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -64,7 +91,7 @@ function OrderSuccessContent() {
   }
 
   const isOrderOwner = Boolean(
-    order && (order.customerId === userId || order.email.toLowerCase() === userEmail)
+    order && (isAdmin || order.customerId === userId || order.email.toLowerCase() === userEmail)
   );
 
   if (!order || !isOrderOwner) {
@@ -119,7 +146,7 @@ function OrderSuccessContent() {
       </div>
 
       {/* Printable Invoice Container */}
-      <div className="mt-12 border border-[#E4E4E7] p-6 sm:p-10 space-y-8 max-w-4xl mx-auto">
+      <div ref={invoiceRef} className="mt-12 border border-[#E4E4E7] p-6 sm:p-10 space-y-8 max-w-4xl mx-auto">
         {/* Invoice Top Strip with Official Logo */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center pb-6 border-b border-[#E4E4E7] gap-4">
           <div className="flex items-center gap-4">
@@ -144,6 +171,12 @@ function OrderSuccessContent() {
               className="px-4 py-2 border border-[#E4E4E7] bg-white hover:border-[#0A0A0A] text-xs font-mono uppercase text-[#0A0A0A] flex items-center gap-2 transition-colors"
             >
               <Printer size={13} /> Print / Save PDF Invoice
+            </button>
+            <button
+              onClick={handleDownload}
+              className="px-4 py-2 bg-[#0A0A0A] hover:bg-[#27272A] text-white text-xs font-mono uppercase flex items-center gap-2 transition-colors"
+            >
+              <Download size={13} /> Download Invoice
             </button>
           </div>
         </div>
