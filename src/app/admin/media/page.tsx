@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Upload, Trash2, Copy, Check, Search, Filter } from 'lucide-react';
 import { MediaItem } from '@/types';
 import { ImageUploadDropzone } from '@/components/admin/ImageUploadDropzone';
-import { StorageBucket } from '@/lib/supabase';
+import { deleteStorageObject, StorageBucket } from '@/lib/supabase';
+
+const MEDIA_STORAGE_KEY = 'rad_admin_media_library';
 
 const INITIAL_MEDIA: MediaItem[] = [
   {
@@ -60,11 +62,31 @@ const INITIAL_MEDIA: MediaItem[] = [
 
 export default function AdminMediaPage() {
   const [mediaList, setMediaList] = useState<MediaItem[]>(INITIAL_MEDIA);
+  const [mediaLoaded, setMediaLoaded] = useState(false);
   const [selectedBucket, setSelectedBucket] = useState<StorageBucket>('collections');
   const [search, setSearch] = useState('');
   const [uploadUrl, setUploadUrl] = useState('');
   const [uploadFileName, setUploadFileName] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const savedMedia = window.localStorage.getItem(MEDIA_STORAGE_KEY);
+      if (savedMedia) {
+        const parsedMedia = JSON.parse(savedMedia);
+        if (Array.isArray(parsedMedia)) setMediaList(parsedMedia);
+      }
+    } catch (error) {
+      console.warn('Media library persistence read failed:', error);
+    } finally {
+      setMediaLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!mediaLoaded) return;
+    window.localStorage.setItem(MEDIA_STORAGE_KEY, JSON.stringify(mediaList));
+  }, [mediaList, mediaLoaded]);
 
   const handleUpload = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,8 +112,17 @@ export default function AdminMediaPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleDelete = (id: string) => {
-    setMediaList(mediaList.filter((m) => m.id !== id));
+  const handleDelete = async (item: MediaItem) => {
+    setMediaList((currentMedia) => currentMedia.filter((media) => media.id !== item.id));
+
+    const storagePathMatch = item.url.match(/\/storage\/v1\/object\/public\/(collections|products|lookbook|media)\/(.+)$/);
+    if (storagePathMatch) {
+      const [, bucket, path] = storagePathMatch;
+      const result = await deleteStorageObject(bucket as StorageBucket, decodeURIComponent(path));
+      if (!result.success) {
+        console.warn('Media storage delete failed:', result.error);
+      }
+    }
   };
 
   const filtered = mediaList.filter((m) =>
@@ -226,7 +257,7 @@ export default function AdminMediaPage() {
                 <span>{copiedId === item.id ? 'Copied' : 'Copy URL'}</span>
               </button>
               <button
-                onClick={() => handleDelete(item.id)}
+                onClick={() => void handleDelete(item)}
                 className="text-red-500 hover:text-red-700 p-1"
                 title="Delete"
               >

@@ -420,6 +420,8 @@ export async function createOrderInSupabase(order: any) {
 
       if (itemsError) {
         console.warn('Supabase Order Items Insert note:', itemsError.message);
+        await (client as any).from('orders').delete().eq('id', orderId);
+        return { success: false, error: `Unable to save ordered products: ${itemsError.message}` };
       }
     }
 
