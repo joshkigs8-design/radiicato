@@ -32,11 +32,12 @@ function OrderSuccessContent() {
         setUserId(session.user.id);
         setUserEmail(session.user.email?.toLowerCase() || '');
 
-        const { data: profile } = await supabase
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
           .maybeSingle();
+        const profile = profileData as unknown as { role?: string } | null;
         setIsAdmin(profile?.role === 'super_admin');
       }
       setIsLoadingAuth(false);
