@@ -22,6 +22,7 @@ export default function AdminForgotPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(3);
+  const [requestCooldown, setRequestCooldown] = useState(0);
 
   useEffect(() => {
     if (!supabase) return;
@@ -30,6 +31,14 @@ export default function AdminForgotPasswordPage() {
     });
     return () => data.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (requestCooldown <= 0) return;
+    const interval = window.setInterval(() => {
+      setRequestCooldown((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [requestCooldown]);
 
   // Live Password Strength Calculation
   const passwordStrength = useMemo(() => {
@@ -54,9 +63,15 @@ export default function AdminForgotPasswordPage() {
   }, [passwordStrength]);
 
   // Handle Step 1: Request Code
-  const handleRequestToken = (e: React.FormEvent) => {
+  const handleRequestToken = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (requestCooldown > 0) {
+      setError(`Please wait ${requestCooldown}s before requesting another reset link.`);
+      return;
+    }
+
     setLoading(true);
 
     const trimmedEmail = email.trim().toLowerCase();
@@ -67,16 +82,31 @@ export default function AdminForgotPasswordPage() {
       return;
     }
 
-    supabase.auth.resetPasswordForEmail(trimmedEmail, {
-      redirectTo: `${window.location.origin}/admin/forgot-password`,
-    }).then(({ error: resetError }) => {
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (
+        window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? window.location.origin
+          : 'https://radiicato.store'
+      );
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
+        redirectTo: `${siteUrl}/admin/forgot-password`,
+      });
       setLoading(false);
       if (resetError) {
-        setError(resetError.message);
+        if (resetError.status === 429) {
+          setRequestCooldown(60);
+          setError('Too many reset requests. Please wait about one minute before trying again, then check your inbox or spam folder.');
+        } else {
+          setError(resetError.message);
+        }
         return;
       }
+      setRequestCooldown(60);
       setSuccessMsg('A secure password reset link has been sent to the owner email address.');
-    });
+    } catch {
+      setLoading(false);
+      setError('Unable to contact the recovery service. Please try again shortly.');
+    }
   };
 
   // Handle Step 2: Set New Password
@@ -222,79 +252,102 @@ export default function AdminForgotPasswordPage() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || requestCooldown > 0}
                 className="w-full py-3 bg-[#4D5936] hover:bg-[#3D472B] disabled:opacity-50 text-white rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#4D5936]/20 group mt-2"
               >
-                <span>{loading ? 'Dispatching Token...' : 'Dispatch Security Code'}</span>
+                <span>
+                  {loading ? 'Dispatching Token...' : requestCooldown > 0 ? `Try Again in ${requestCooldown}s` : 'Dispatch Security Code'}
+                </span>
                 <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
               </button>
             </form>
           )}
 
-          {/* STEP 2: Enter Token & New Password */}
+          {/* STEP 2: Create a new password */}
           {step === 2 && (
-            <form onSubmit={handleResetPassword} className="space-y-4">
+            <form onSubmit={handleResetPassword} className="space-y-5">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-[#4D5936]/10 border border-[#4D5936]/30">
+                <div className="shrink-0 w-9 h-9 rounded-lg bg-[#4D5936]/25 flex items-center justify-center text-[#A3BE75]">
+                  <KeyRound size={18} />
+                </div>
+                <div className="space-y-1">
+                  <h2 className="text-sm font-bold text-white">Create a new password</h2>
+                  <p className="text-[11px] leading-relaxed text-[#A1A1AA]">
+                    Your recovery link is verified. Choose a strong password for your admin account.
+                  </p>
+                </div>
+              </div>
 
-              {/* New Password Field */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA]">
-                  <span>New Master Password</span>
-                  <span className={`text-[10px] ${strengthLabel.color}`}>{strengthLabel.text}</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="new-password" className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA]">
+                    New password
+                  </label>
+                  {newPassword && <span className={`text-[10px] font-mono uppercase ${strengthLabel.color}`}>{strengthLabel.text}</span>}
                 </div>
                 <div className="relative">
                   <input
+                    id="new-password"
                     type={showPassword ? 'text' : 'password'}
                     required
+                    autoComplete="new-password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Min 8 characters"
-                    className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 pr-10 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all font-mono"
+                    placeholder="Enter a new password"
+                    className="w-full bg-[#18181B] border border-[#27272A] rounded-xl px-4 py-3.5 pr-12 text-sm text-white placeholder-[#52525B] focus:outline-none focus:border-[#A3BE75] focus:ring-1 focus:ring-[#A3BE75]/40 transition-all font-mono"
                   />
                   <button
                     type="button"
+                    aria-label={showPassword ? 'Hide passwords' : 'Show passwords'}
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#71717A] hover:text-[#EDEDED] transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-[#71717A] hover:text-white transition-colors"
                   >
-                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                {/* Strength Meter Bar */}
-                {newPassword && (
-                  <div className="w-full bg-zinc-800 h-1 rounded-full overflow-hidden flex gap-1 mt-1">
-                    {[1, 2, 3, 4].map((s) => (
-                      <div
-                        key={s}
-                        className={`h-full flex-1 transition-all ${
-                          passwordStrength >= s ? strengthLabel.bar : 'bg-zinc-800'
-                        }`}
-                      />
-                    ))}
-                  </div>
+                <div className="flex gap-1.5" aria-label="Password strength">
+                  {[1, 2, 3, 4].map((level) => (
+                    <div key={level} className={`h-1 flex-1 rounded-full transition-colors ${passwordStrength >= level ? strengthLabel.bar : 'bg-zinc-800'}`} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="confirm-password" className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] block">
+                  Confirm password
+                </label>
+                <input
+                  id="confirm-password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter your new password"
+                  className={`w-full bg-[#18181B] border rounded-xl px-4 py-3.5 text-sm text-white placeholder-[#52525B] focus:outline-none focus:ring-1 transition-all font-mono ${confirmPassword && confirmPassword !== newPassword ? 'border-red-800 focus:border-red-500 focus:ring-red-500/30' : 'border-[#27272A] focus:border-[#A3BE75] focus:ring-[#A3BE75]/40'}`}
+                />
+                {confirmPassword && (
+                  <p className={`text-[10px] font-mono ${confirmPassword === newPassword ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {confirmPassword === newPassword ? 'Passwords match' : 'Passwords do not match'}
+                  </p>
                 )}
               </div>
 
-              {/* Confirm Password Field */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA] block">
-                  Confirm New Password
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat new password"
-                  className="w-full bg-[#18181B] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-[#52525B] focus:outline-none focus:border-[#4D5936] focus:ring-1 focus:ring-[#4D5936] transition-all font-mono"
-                />
+              <div className="grid grid-cols-2 gap-x-3 gap-y-2 px-1 text-[10px] font-mono text-[#71717A]">
+                <span className={newPassword.length >= 8 ? 'text-emerald-400' : ''}>{newPassword.length >= 8 ? '✓' : '○'} 8+ characters</span>
+                <span className={/[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) ? 'text-emerald-400' : ''}>{/[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) ? '✓' : '○'} Upper + lowercase</span>
+                <span className={/\d/.test(newPassword) ? 'text-emerald-400' : ''}>{/\d/.test(newPassword) ? '✓' : '○'} At least one number</span>
+                <span className={/[^A-Za-z0-9]/.test(newPassword) ? 'text-emerald-400' : ''}>{/[^A-Za-z0-9]/.test(newPassword) ? '✓' : '○'} One special character</span>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-[#4D5936] hover:bg-[#3D472B] disabled:opacity-50 text-white rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#4D5936]/20 group mt-3"
+                className="w-full py-3.5 bg-[#A3BE75] hover:bg-[#B8D38B] disabled:opacity-50 text-[#10130C] rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#4D5936]/25 group mt-1"
               >
-                <span>{loading ? 'Rotating Credentials...' : 'Rotate Master Password'}</span>
-                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                <Lock size={14} />
+                <span>{loading ? 'Saving password...' : 'Save new password'}</span>
+                {!loading && <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />}
               </button>
             </form>
           )}
