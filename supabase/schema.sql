@@ -708,17 +708,23 @@ CREATE POLICY "Public can submit reviews"
     WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
+DROP POLICY IF EXISTS "Public can submit order requests" ON public.orders;
 DROP POLICY IF EXISTS "Customers can view own orders" ON public.orders;
 CREATE POLICY "Customers can view own orders"
     ON public.orders FOR SELECT TO authenticated
     USING (user_id = auth.uid() OR public.is_owner());
 
-CREATE POLICY "Public can submit order requests"
+CREATE POLICY "Authenticated customers can submit order requests"
     ON public.orders FOR INSERT
-    TO anon, authenticated
-    WITH CHECK (payment_status = 'pending' AND fulfillment_status = 'pending' AND (user_id IS NULL OR user_id = auth.uid()));
+    TO authenticated
+    WITH CHECK (
+        payment_status = 'pending'
+        AND fulfillment_status = 'pending'
+        AND user_id = auth.uid()
+    );
 
 DROP POLICY IF EXISTS "Public can create order items" ON public.order_items;
+DROP POLICY IF EXISTS "Public can submit order items" ON public.order_items;
 DROP POLICY IF EXISTS "Customers can view own order items" ON public.order_items;
 CREATE POLICY "Customers can view own order items"
     ON public.order_items FOR SELECT TO authenticated
@@ -728,13 +734,13 @@ CREATE POLICY "Customers can view own order items"
           AND (orders.user_id = auth.uid() OR public.is_owner())
     ));
 
-CREATE POLICY "Public can submit order items"
+CREATE POLICY "Authenticated customers can submit order items"
     ON public.order_items FOR INSERT
-    TO anon, authenticated
+    TO authenticated
     WITH CHECK (EXISTS (
         SELECT 1 FROM public.orders
         WHERE orders.id = order_items.order_id
-            AND (orders.user_id IS NULL OR orders.user_id = auth.uid())
+            AND orders.user_id = auth.uid()
     ));
 
 -- 3. Authenticated Staff / Admin Full Access Policies

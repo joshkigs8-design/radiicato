@@ -719,6 +719,10 @@ class RadiicatoStore {
   }
 
   public placeOrder(newOrder: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt' | 'timeline'>): Order {
+    if (!newOrder.customerId) {
+      throw new Error('An authenticated customer account is required to place an order.');
+    }
+
     const seq = Math.floor(100000 + Math.random() * 900000);
     const orderNumber = `RAD-2026-${seq}`;
     const timestamp = new Date().toISOString();
