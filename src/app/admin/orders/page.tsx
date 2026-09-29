@@ -381,8 +381,8 @@ export default function AdminOrdersPage() {
                         <span className="font-semibold text-[#111827]">
                           {order.items.reduce((acc, it) => acc + it.quantity, 0)} pcs
                         </span>
-                        <p className="text-[10px] truncate max-w-[130px]" title={order.items.map(i => i.productName).join(', ')}>
-                          {order.items[0]?.productName}
+                        <p className="text-[10px] truncate max-w-[180px]" title={order.items.map(i => `${i.productName} (${i.variantTitle})`).join(', ')}>
+                          {order.items.length > 0 ? order.items.map((item) => item.productName).join(', ') : 'Product details unavailable'}
                         </p>
                       </td>
                       <td className="py-3.5 px-4">

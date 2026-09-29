@@ -242,13 +242,29 @@ export async function fetchOrdersFromSupabase() {
 
   const { data, error } = await (supabase as any)
     .from('orders')
-    .select('*, order_items(*)')
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
     console.warn('Supabase orders query note:', error.message);
     return null;
   }
+
+  const orderIds = (data || []).map((order: any) => order.id);
+  const { data: orderItems, error: itemsError } = orderIds.length > 0
+    ? await (supabase as any).from('order_items').select('*').in('order_id', orderIds)
+    : { data: [], error: null };
+
+  if (itemsError) {
+    console.warn('Supabase order items query note:', itemsError.message);
+  }
+
+  const itemsByOrderId = new Map<string, any[]>();
+  (orderItems || []).forEach((item: any) => {
+    const items = itemsByOrderId.get(item.order_id) || [];
+    items.push(item);
+    itemsByOrderId.set(item.order_id, items);
+  });
 
   return (data || []).map((order: any) => ({
     id: order.id,
@@ -266,7 +282,7 @@ export async function fetchOrdersFromSupabase() {
       streetAddress: order.shipping_address,
       deliveryInstructions: order.delivery_instructions || undefined,
     },
-    items: (order.order_items || []).map((item: any) => ({
+    items: (itemsByOrderId.get(order.id) || []).map((item: any) => ({
       id: item.id,
       orderId: order.id,
       productId: item.product_id || '',
