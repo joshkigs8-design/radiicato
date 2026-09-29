@@ -87,6 +87,9 @@ export default function CheckoutPage() {
         if (userEmail) {
           setEmail(userEmail);
         }
+        if (session.user.user_metadata?.full_name) {
+          setFullName(session.user.user_metadata.full_name);
+        }
       }
       setIsLoadingAuth(false);
     };
@@ -334,13 +337,21 @@ export default function CheckoutPage() {
           <div className="lg:col-span-7 space-y-10">
             {/* Step 1: Customer Info */}
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 border border-[#0A0A0A] flex items-center justify-center text-[10px] font-mono bg-[#0A0A0A] text-white">
-                  1
-                </span>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
-                  CUSTOMER DETAILS
-                </h2>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 border border-[#0A0A0A] flex items-center justify-center text-[10px] font-mono bg-[#0A0A0A] text-white">
+                    1
+                  </span>
+                  <h2 className="text-sm font-bold uppercase tracking-widest text-[#0A0A0A]">
+                    CUSTOMER DETAILS
+                  </h2>
+                </div>
+                {authUser?.email && (
+                  <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase bg-[#E4E4E7]/50 px-2.5 py-1 text-[#0A0A0A] border border-[#E4E4E7]">
+                    <CheckCircle2 size={12} className="text-green-600" />
+                    <span>Signed in: <strong className="font-semibold">{authUser.email}</strong></span>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">

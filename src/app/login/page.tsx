@@ -1,18 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { ArrowRight, Lock, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowRight, Lock, Loader2, AlertCircle, ShoppingBag } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/checkout';
+  const initialEmail = searchParams.get('email') || '';
+  const isForCheckout = redirectPath.includes('checkout');
+
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // If already logged in, redirect directly
+  useEffect(() => {
+    const checkActiveSession = async () => {
+      if (!supabase) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user && !session.user.is_anonymous && session.user.email) {
+        router.replace(redirectPath);
+      }
+    };
+    checkActiveSession();
+  }, [redirectPath, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,10 +45,31 @@ export default function LoginPage() {
         return;
       }
       
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      let { data, error: authError } = await supabase.auth.signInWithPassword({
         email: trimmedEmail,
         password,
       });
+
+      // If email was not confirmed, attempt auto-confirm through register API
+      if (authError && authError.message.toLowerCase().includes('email not confirmed')) {
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: trimmedEmail, password }),
+          });
+          if (res.ok) {
+            const retry = await supabase.auth.signInWithPassword({
+              email: trimmedEmail,
+              password,
+            });
+            data = retry.data;
+            authError = retry.error;
+          }
+        } catch {
+          // ignore fallback error
+        }
+      }
 
       if (authError) {
         setError(authError.message);
@@ -39,11 +77,12 @@ export default function LoginPage() {
         return;
       }
 
-      if (data.user) {
-        router.push('/checkout');
+      if (data?.user) {
+        router.push(redirectPath);
       }
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
+      setError(msg);
       setLoading(false);
     }
   };
@@ -63,12 +102,19 @@ export default function LoginPage() {
             />
           </Link>
           <h1 className="text-display-sm font-black uppercase tracking-tight text-[#0A0A0A]">
-            ACCOUNT LOGIN
+            {isForCheckout ? 'CUSTOMER SIGN IN' : 'ACCOUNT LOGIN'}
           </h1>
           <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#71717A]">
-            ACCESS YOUR ORDER HISTORY & DETAILS
+            {isForCheckout ? 'SIGN IN TO COMPLETE YOUR ORDER' : 'ACCESS YOUR ORDER HISTORY & DETAILS'}
           </p>
         </div>
+
+        {isForCheckout && (
+          <div className="p-3.5 bg-[#F7F5EF] border border-[#E4E4E7] text-xs font-mono text-[#0A0A0A] flex items-center gap-2.5">
+            <ShoppingBag size={16} className="text-[#0A0A0A] shrink-0" />
+            <span>Sign in to proceed to secure checkout.</span>
+          </div>
+        )}
 
         {error && (
           <div className="p-4 bg-white border border-[#E4E4E7] text-sm text-red-600 flex items-center gap-2">
@@ -85,6 +131,7 @@ export default function LoginPage() {
             <input
               type="email"
               required
+              placeholder="YOU@EXAMPLE.COM"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm uppercase text-[#0A0A0A] placeholder-[#A1A1AA] font-mono focus:outline-none focus:border-[#0A0A0A] transition-colors"
@@ -106,6 +153,7 @@ export default function LoginPage() {
             <input
               type="password"
               required
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-transparent border-b border-[#E4E4E7] py-3 text-sm font-mono text-[#0A0A0A] placeholder-[#A1A1AA] focus:outline-none focus:border-[#0A0A0A] transition-colors"
@@ -115,13 +163,13 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full flex items-center justify-center gap-3 disabled:opacity-50 mt-6"
+            className="btn-primary w-full flex items-center justify-center gap-3 disabled:opacity-50 mt-6 py-4 text-xs font-mono font-bold tracking-widest uppercase bg-[#0A0A0A] text-white hover:opacity-85 transition-opacity"
           >
             {loading ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
               <>
-                <span>SIGN IN</span>
+                <span>{isForCheckout ? 'SIGN IN & PROCEED' : 'SIGN IN'}</span>
                 <ArrowRight size={16} />
               </>
             )}
@@ -131,8 +179,11 @@ export default function LoginPage() {
         <div className="pt-6 border-t border-[#E4E4E7] text-center">
           <p className="text-[11px] font-mono uppercase tracking-wider text-[#71717A]">
             DON'T HAVE AN ACCOUNT?{' '}
-            <Link href="/signup" className="text-[#0A0A0A] font-bold hover:underline">
-              SIGN UP
+            <Link
+              href={`/signup?redirect=${encodeURIComponent(redirectPath)}`}
+              className="text-[#0A0A0A] font-bold hover:underline"
+            >
+              CREATE ONE HERE
             </Link>
           </p>
         </div>
@@ -145,3 +196,14 @@ export default function LoginPage() {
   );
 }
 
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0A0A0A]" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
+  );
+}

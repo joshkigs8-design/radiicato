@@ -13,7 +13,7 @@ import { useStore } from '@/lib/use-store';
 import { formatKES, isLegacySkullCapProduct } from '@/lib/utils';
 import { ProductCard } from '@/components/product/ProductCard';
 import { Size } from '@/types';
-import { createReviewInSupabase } from '@/lib/supabase';
+import { supabase, createReviewInSupabase } from '@/lib/supabase';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -150,9 +150,18 @@ export default function ProductDetailPage() {
     setTimeout(() => setIsAdded(false), 1200);
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     handleAddToCart();
-    router.push('/checkout');
+    if (!supabase) {
+      router.push('/signup?redirect=/checkout');
+      return;
+    }
+    const { data } = await supabase.auth.getUser();
+    if (!data?.user || data.user.is_anonymous || !data.user.email) {
+      router.push('/signup?redirect=/checkout');
+    } else {
+      router.push('/checkout');
+    }
   };
 
   const handleSubmitReview = async (e: React.FormEvent) => {

@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { X, Plus, Minus, Trash2, ArrowRight, ShieldCheck, Tag } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 import { useStore } from '@/lib/use-store';
 import { formatKES } from '@/lib/utils';
 
@@ -13,6 +15,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+  const router = useRouter();
   const { 
     cart, 
     cartSummary, 
@@ -21,6 +24,20 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     toggleWishlist,
     validateCoupon 
   } = useStore();
+
+  const handleProceedToCheckout = async () => {
+    onClose();
+    if (!supabase) {
+      router.push('/signup?redirect=/checkout');
+      return;
+    }
+    const { data } = await supabase.auth.getUser();
+    if (!data?.user || data.user.is_anonymous || !data.user.email) {
+      router.push('/signup?redirect=/checkout');
+    } else {
+      router.push('/checkout');
+    }
+  };
 
   const [promoCode, setPromoCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState<{ amount: number; code: string } | null>(null);
@@ -253,14 +270,14 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
               {/* Actions */}
               <div className="space-y-2 pt-4">
-                <Link
-                  href="/checkout"
-                  onClick={onClose}
+                <button
+                  type="button"
+                  onClick={handleProceedToCheckout}
                   className="w-full bg-[#0A0A0A] text-white py-4 text-[11px] font-mono font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
                 >
                   <span>Checkout</span>
                   <ArrowRight size={14} />
-                </Link>
+                </button>
                 <Link
                   href="/cart"
                   onClick={onClose}
