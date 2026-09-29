@@ -23,7 +23,7 @@ const FAQS = [
   },
   {
     q: 'CAN I EXCHANGE SIZES IF IT DOES NOT FIT?',
-    a: 'Yes. We offer a hassle-free 7-day exchange window for all unworn garments with original metallic tags attached. Contact concierge@radiicato.co.ke or message our WhatsApp helpline.',
+    a: 'Yes. We offer a hassle-free 7-day exchange window for all unworn garments with original metallic tags attached. Contact concierge@radiicato.store or message our WhatsApp helpline.',
   },
   {
     q: 'ARE LIMITED DROPS RESTOCKED?',

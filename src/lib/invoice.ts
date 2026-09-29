@@ -102,7 +102,7 @@ export async function downloadOrderInvoicePDF(order: Order): Promise<void> {
   doc.text('RADIICATO KENYA LTD', margin, currentY + 4.5);
   doc.text('Nairobi Flagship Studio, Kenya', margin, currentY + 8.5);
   doc.text('Official Contact: +254 706 528 908', margin, currentY + 12.5);
-  doc.text('Online Storefront: radiicato.co.ke', margin, currentY + 16.5);
+  doc.text('Online Storefront: radiicato.store', margin, currentY + 16.5);
 
   // Payment Metadata (Right Column)
   const metaRightX = margin + contentWidth;
@@ -327,7 +327,7 @@ export async function downloadOrderInvoicePDF(order: Order): Promise<void> {
     { align: 'center' }
   );
   doc.text(
-    'Studio Support Hotline: +254 706 528 908 • Nairobi, Kenya • radiicato.co.ke',
+    'Studio Support Hotline: +254 706 528 908 • Nairobi, Kenya • radiicato.store',
     pageWidth / 2,
     footerY + 7.5,
     { align: 'center' }

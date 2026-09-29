@@ -96,10 +96,10 @@ export function Footer() {
           {/* Identity & Copyright */}
           <div className="flex flex-col gap-2 text-white/60 md:items-end md:text-right">
             <a
-              href={`mailto:${settings.contactEmail || 'info@radiicato.co.ke'}`}
+              href={`mailto:${settings.contactEmail || 'info@radiicato.store'}`}
               className="text-white/60 transition-colors hover:text-white focus-visible:text-white"
             >
-              {settings.contactEmail || 'info@radiicato.co.ke'}
+              {settings.contactEmail || 'info@radiicato.store'}
             </a>
             <a href="tel:+254706528908" className="text-white/60 transition-colors hover:text-white focus-visible:text-white">
               +254 706 528 908

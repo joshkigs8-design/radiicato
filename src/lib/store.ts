@@ -433,7 +433,7 @@ class RadiicatoStore {
 
       const savedSettings = localStorage.getItem('rad_settings');
       if (savedSettings) this.settings = JSON.parse(savedSettings);
-      if (this.settings.contactEmail === 'concierge@radiicato.co.ke') {
+      if (this.settings.contactEmail && this.settings.contactEmail.includes('radiicato.co.ke')) {
         this.settings = { ...this.settings, contactEmail: 'radiicato8@gmail.com' };
       }
 

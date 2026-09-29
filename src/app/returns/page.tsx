@@ -32,7 +32,7 @@ export default function ReturnsPage() {
           <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-[#0A0A0A]">HOW TO INITIATE AN EXCHANGE</h3>
             <p>
-              Contact our concierge via WhatsApp (+254 706 528 908) or email concierge@radiicato.co.ke with your order number (e.g. RAD-2026-000123) and the replacement size required. In Nairobi, our rider will conduct a doorstep swap.
+              Contact our concierge via WhatsApp (+254 706 528 908) or email concierge@radiicato.store with your order number (e.g. RAD-2026-000123) and the replacement size required. In Nairobi, our rider will conduct a doorstep swap.
             </p>
           </div>
         </div>

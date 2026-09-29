@@ -259,7 +259,7 @@ VALUES
     ('general', '{
         "storeName": "RADIICATO",
         "tagline": "Independent streetwear engineered in Nairobi for those who refuse to blend in.",
-        "contactEmail": "concierge@radiicato.co.ke",
+        "contactEmail": "concierge@radiicato.store",
         "contactPhone": "+254 712 904 883",
         "currency": "KES",
         "country": "Kenya",

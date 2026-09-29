@@ -10,10 +10,10 @@ const inter = Inter({
   weight: ['400', '500', '600', '700', '900'],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://radiicato.co.ke';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://radiicato.store';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://radiicato.co.ke'),
+  metadataBase: new URL('https://radiicato.store'),
   title: {
     default: 'RADIICATO | Premium Kenyan Streetwear — Nairobi Atelier',
     template: '%s | RADIICATO',
@@ -41,18 +41,18 @@ export const metadata: Metadata = {
     'african streetwear designers',
     'urban fashion nairobi'
   ],
-  authors: [{ name: 'RADIICATO', url: 'https://radiicato.co.ke' }],
+  authors: [{ name: 'RADIICATO', url: 'https://radiicato.store' }],
   creator: 'RADIICATO',
   publisher: 'RADIICATO',
   category: 'Fashion & Apparel',
   applicationName: 'RADIICATO',
   alternates: {
-    canonical: 'https://radiicato.co.ke',
+    canonical: 'https://radiicato.store',
   },
   openGraph: {
     type: 'website',
     locale: 'en_KE',
-    url: 'https://radiicato.co.ke',
+    url: 'https://radiicato.store',
     siteName: 'RADIICATO',
     title: 'RADIICATO | Premium Kenyan Streetwear — Nairobi Atelier',
     description: 'Independent luxury streetwear engineered in Nairobi, Kenya. Heavyweight 280 GSM combed organic cotton tees, 3D chrome metallic badges, and underground graphic capsules. M-PESA checkout & Kenya-wide dispatch.',

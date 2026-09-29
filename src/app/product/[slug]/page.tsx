@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
     }
 
     // 4. Validate Email (if provided)
-    const emailToUse = reviewEmail.trim() || 'shopper@radiicato.co.ke';
+    const emailToUse = reviewEmail.trim() || 'shopper@radiicato.store';
     if (reviewEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reviewEmail.trim())) {
       setReviewError('Please enter a valid email address.');
       return;
@@ -255,7 +255,7 @@ export default function ProductDetailPage() {
     '@type': 'Product',
     name: product.name,
     description: product.shortDescription || product.description,
-    image: product.images.map((img) => (img.url.startsWith('http') ? img.url : `https://radiicato.co.ke${img.url}`)),
+    image: product.images.map((img) => (img.url.startsWith('http') ? img.url : `https://radiicato.store${img.url}`)),
     sku: product.sku,
     brand: {
       '@type': 'Brand',
@@ -269,7 +269,7 @@ export default function ProductDetailPage() {
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
       itemCondition: 'https://schema.org/NewCondition',
-      url: `https://radiicato.co.ke/product/${product.slug}`,
+      url: `https://radiicato.store/product/${product.slug}`,
       priceValidUntil: '2027-12-31',
       seller: {
         '@type': 'Organization',
@@ -295,19 +295,19 @@ export default function ProductDetailPage() {
         '@type': 'ListItem',
         position: 1,
         name: 'Home',
-        item: 'https://radiicato.co.ke',
+        item: 'https://radiicato.store',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Shop',
-        item: 'https://radiicato.co.ke/shop',
+        item: 'https://radiicato.store/shop',
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: product.name,
-        item: `https://radiicato.co.ke/product/${product.slug}`,
+        item: `https://radiicato.store/product/${product.slug}`,
       },
     ],
   };
