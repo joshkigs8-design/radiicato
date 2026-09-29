@@ -390,19 +390,28 @@ export async function createOrderInSupabase(order: any) {
 
     // Insert line items if order items array is present
     if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+      const productIdAliases: Record<string, string> = {
+        'prod-broken-record-tee': '11111111-1111-1111-1111-111111111111',
+        'prod-we-are-who-we-are-tee': '22222222-2222-2222-2222-222222222222',
+        'prod-skull-cap-teaser': '33333333-3333-3333-3333-333333333333',
+      };
+      const candidateProductIds = order.items
+        .map((item: any) => productIdAliases[item.productId] || item.productId)
+        .filter((productId: unknown): productId is string =>
+          typeof productId === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId)
+        );
+      const { data: existingProducts } = candidateProductIds.length > 0
+        ? await (client as any).from('products').select('id').in('id', candidateProductIds)
+        : { data: [] };
+      const existingProductIds = new Set((existingProducts || []).map((product: any) => product.id));
+
       const itemsToInsert = order.items.map((item: any) => {
-        let validProductId = item.productId;
-        if (item.productId === 'prod-broken-record-tee') {
-          validProductId = '11111111-1111-1111-1111-111111111111';
-        } else if (item.productId === 'prod-we-are-who-we-are-tee') {
-          validProductId = '22222222-2222-2222-2222-222222222222';
-        } else if (item.productId === 'prod-skull-cap-teaser') {
-          validProductId = '33333333-3333-3333-3333-333333333333';
-        }
+        const candidateProductId = productIdAliases[item.productId] || item.productId;
+        const validProductId = existingProductIds.has(candidateProductId) ? candidateProductId : null;
 
         return {
           order_id: orderId,
-          product_id: typeof validProductId === 'string' && validProductId.length === 36 ? validProductId : null,
+          product_id: validProductId,
           variant_id: null,
           product_name: item.productName || 'Radiicato Garment',
           variant_title: item.variantTitle || 'Standard',
