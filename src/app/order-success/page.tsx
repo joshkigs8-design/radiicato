@@ -1,20 +1,39 @@
 'use client';
 
-import React, { useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CheckCircle2, Printer, ArrowRight, Package, Truck, Calendar, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Printer, ArrowRight, Package, Truck, Calendar, ShieldCheck, Loader2 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES, formatDateTime } from '@/lib/utils';
 import confetti from 'canvas-confetti';
+import { supabase } from '@/lib/supabase';
 
 function OrderSuccessContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get('orderNumber');
   const { getOrderById } = useStore();
+  const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
   const order = orderNumber ? getOrderById(orderNumber) : undefined;
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        router.replace('/login');
+      } else {
+        setUserId(session.user.id);
+        setUserEmail(session.user.email?.toLowerCase() || '');
+      }
+      setIsLoadingAuth(false);
+    };
+    checkUser();
+  }, [router]);
 
   useEffect(() => {
     // Fire celebratory confetti on initial render
@@ -36,7 +55,19 @@ function OrderSuccessContent() {
     }
   };
 
-  if (!order) {
+  if (isLoadingAuth || !userId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0A0A0A]" />
+      </div>
+    );
+  }
+
+  const isOrderOwner = Boolean(
+    order && (order.customerId === userId || order.email.toLowerCase() === userEmail)
+  );
+
+  if (!order || !isOrderOwner) {
     return (
       <div className="pt-36 pb-32 px-6 max-w-md mx-auto text-center space-y-5">
         <div className="flex justify-center mb-4">

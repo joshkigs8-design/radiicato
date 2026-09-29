@@ -1,16 +1,48 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, ChevronRight, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, ChevronRight, X, Loader2 } from 'lucide-react';
 import { useStore } from '@/lib/use-store';
 import { formatKES, formatDateTime } from '@/lib/utils';
 import { Order } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 export default function CustomerOrdersPage() {
+  const router = useRouter();
   const { orders } = useStore();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        router.replace('/signup?redirect=/account/orders');
+      } else {
+        setUserId(session.user.id);
+        setUserEmail(session.user.email?.toLowerCase() || '');
+      }
+      setIsLoadingAuth(false);
+    };
+    checkUser();
+  }, [router]);
+
+  const customerOrders = orders.filter((order) =>
+    order.customerId === userId || order.email.toLowerCase() === userEmail
+  );
+
+  if (isLoadingAuth || !userId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0A0A0A]" />
+      </div>
+    );
+  }
 
   return (
     <main className="pt-28 sm:pt-36 pb-32 px-5 sm:px-8 lg:px-12 bg-white min-h-screen">
@@ -23,7 +55,7 @@ export default function CustomerOrdersPage() {
             <ArrowLeft size={14} /> Back to Account
           </Link>
           <span className="text-[10px] font-mono text-[#71717A] uppercase tracking-[0.2em]">
-            SHOWING {orders.length} REGISTERED ORDERS
+            SHOWING {customerOrders.length} REGISTERED ORDERS
           </span>
         </div>
 
@@ -32,13 +64,13 @@ export default function CustomerOrdersPage() {
             ORDER HISTORY & DISPATCH RECORDS
           </h1>
 
-          {orders.length === 0 ? (
+          {customerOrders.length === 0 ? (
             <div className="py-20 text-center text-sm text-[#71717A] bg-[#F4F4F5] border border-[#E4E4E7]">
               No previous orders found.
             </div>
           ) : (
             <div className="space-y-4">
-              {orders.map((order) => (
+              {customerOrders.map((order) => (
                 <div
                   key={order.id}
                   className="p-6 bg-white border border-[#E4E4E7] hover:border-[#0A0A0A] transition-colors space-y-4"

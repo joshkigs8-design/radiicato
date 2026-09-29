@@ -253,7 +253,7 @@ export async function fetchOrdersFromSupabase() {
   return (data || []).map((order: any) => ({
     id: order.id,
     orderNumber: order.order_number,
-    customerId: order.customer_id || undefined,
+    customerId: order.user_id || order.customer_id || undefined,
     customerName: order.customer_name,
     email: order.email || '',
     phone: order.phone,

@@ -41,8 +41,9 @@ export default function SignupPage() {
       }
 
       setSuccess(true);
+      const redirectPath = new URLSearchParams(window.location.search).get('redirect');
       setTimeout(() => {
-        router.push('/checkout');
+        router.push(redirectPath || '/checkout');
       }, 1500);
       
     } catch (err) {

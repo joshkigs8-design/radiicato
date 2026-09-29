@@ -65,21 +65,32 @@ export default function CheckoutPage() {
   const [errorMessage, setErrorMessage] = useState('');
 
   // Auth State
+  const [authUser, setAuthUser] = useState<{ id: string; email: string } | null>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+
   React.useEffect(() => {
     const checkUser = async () => {
       const { supabase } = await import('@/lib/supabase');
-      if (!supabase) return;
+      if (!supabase) {
+        setIsLoadingAuth(false);
+        return;
+      }
       
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (session?.user) {
-        if (session.user.email) {
-          setEmail(session.user.email);
+      if (!session?.user) {
+        router.replace('/signup?redirect=/checkout');
+      } else {
+        const userEmail = session.user.email || '';
+        setAuthUser({ id: session.user.id, email: userEmail });
+        if (userEmail) {
+          setEmail(userEmail);
         }
       }
+      setIsLoadingAuth(false);
     };
     checkUser();
-  }, []);
+  }, [router]);
 
   // Calculate Shipping fee based on selected County
   const shippingFee = useMemo(() => {
@@ -174,6 +185,7 @@ export default function CheckoutPage() {
     try {
       // Place Order in reactive store with server-like validation and billing details captured
       const createdOrder = placeOrder({
+        customerId: authUser?.id,
         customerName: fullName.trim(),
         email: email.trim(),
         phone: normalizedCustomerPhone,
@@ -245,6 +257,14 @@ export default function CheckoutPage() {
       setErrorMessage(msg);
     }
   };
+
+  if (isLoadingAuth || !authUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0A0A0A]" />
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (

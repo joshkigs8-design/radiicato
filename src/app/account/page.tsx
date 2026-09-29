@@ -19,6 +19,7 @@ export default function AccountDashboardPage() {
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function AccountDashboardPage() {
         router.push('/login');
       } else {
         setIsAuthenticated(true);
+        setUserId(session.user.id);
         setUserEmail(session.user.email || '');
       }
       setIsLoadingAuth(false);
@@ -40,7 +42,10 @@ export default function AccountDashboardPage() {
     checkUser();
   }, [router]);
 
-  const recentOrders = orders.slice(0, 3);
+  const customerOrders = orders.filter((order) =>
+    order.customerId === userId || order.email.toLowerCase() === userEmail.toLowerCase()
+  );
+  const recentOrders = customerOrders.slice(0, 3);
   const wishlistedProducts = products.filter(
     (p) => !isLegacySkullCapProduct(p) && wishlist.includes(p.id)
   );
@@ -89,7 +94,7 @@ export default function AccountDashboardPage() {
               href="/account/orders"
               className="px-4 py-2 border border-[#E4E4E7] hover:border-[#0A0A0A] text-[#0A0A0A] bg-white transition-colors"
             >
-              ALL ORDERS ({orders.length})
+              ALL ORDERS ({customerOrders.length})
             </Link>
             <Link
               href="/account/profile"
@@ -104,7 +109,7 @@ export default function AccountDashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16">
           <div className="p-6 border border-[#E4E4E7]">
             <p className="label-mono mb-2">TOTAL ORDERS</p>
-            <p className="text-3xl font-black font-mono text-[#0A0A0A]">{orders.length}</p>
+            <p className="text-3xl font-black font-mono text-[#0A0A0A]">{customerOrders.length}</p>
           </div>
           <div className="p-6 border border-[#E4E4E7]">
             <p className="label-mono mb-2">SAVED IN WISHLIST</p>
