@@ -29,6 +29,18 @@ export default function AdminForgotPasswordPage() {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') setStep(2);
     });
+
+    const detectRecoverySession = async () => {
+      const recoveryRequested = window.location.hash.includes('type=recovery') ||
+        new URLSearchParams(window.location.search).get('type') === 'recovery';
+
+      if (!recoveryRequested) return;
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData.session) setStep(2);
+    };
+
+    void detectRecoverySession();
     return () => data.subscription.unsubscribe();
   }, []);
 
