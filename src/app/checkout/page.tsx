@@ -16,6 +16,7 @@ import {
   formatDisplayKenyanPhone 
 } from '@/lib/payment';
 import { PaymentProvider } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 const KENYAN_COUNTIES = [
   'Nairobi',
@@ -78,7 +79,7 @@ export default function CheckoutPage() {
       
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session?.user) {
+      if (!session?.user || session.user.is_anonymous || !session.user.email) {
         router.replace('/signup?redirect=/checkout');
       } else {
         const userEmail = session.user.email || '';
@@ -183,9 +184,17 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user || user.is_anonymous || !user.email) {
+        setIsProcessing(false);
+        setErrorMessage('Please sign up or sign in before placing an order.');
+        router.replace('/signup?redirect=/checkout');
+        return;
+      }
+
       // Place Order in reactive store with server-like validation and billing details captured
       const createdOrder = placeOrder({
-        customerId: authUser?.id,
+        customerId: user.id,
         customerName: fullName.trim(),
         email: email.trim(),
         phone: normalizedCustomerPhone,
