@@ -12,8 +12,8 @@ import {
 import { useStore } from '@/lib/use-store';
 import { formatKES, isLegacySkullCapProduct } from '@/lib/utils';
 import { ProductCard } from '@/components/product/ProductCard';
-import { Size } from '@/types';
 import { supabase, createReviewInSupabase } from '@/lib/supabase';
+import { Size } from '@/types';
 
 export default function ProductDetailPage() {
   const params = useParams();

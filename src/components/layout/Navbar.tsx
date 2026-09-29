@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingBag, Search, X, ChevronRight, User } from 'lucide-react';
+import { ShoppingBag, Search, X, ChevronRight, User, LogIn, LogOut } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 import { useStore } from '@/lib/use-store';
 
 interface NavbarProps {
@@ -17,6 +18,7 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
   const { cartSummary } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -43,6 +45,24 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  useEffect(() => {
+    const loadSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsSignedIn(Boolean(session?.user && !session.user.is_anonymous && session.user.email));
+    };
+    loadSession();
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsSignedIn(Boolean(session?.user && !session.user.is_anonymous && session.user.email));
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setIsSignedIn(false);
+    setMobileMenuOpen(false);
+  };
 
   // Handle scroll effect — transparent → solid
   useEffect(() => {
@@ -128,6 +148,16 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
             >
               <Search className="h-5 w-5" aria-hidden />
             </button>
+
+            {isSignedIn ? (
+              <button onClick={handleSignOut} className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider hover:opacity-60" title="Sign out">
+                <LogOut size={15} /> SIGN OUT
+              </button>
+            ) : (
+              <Link href="/login" className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider hover:opacity-60">
+                <LogIn size={15} /> SIGN IN
+              </Link>
+            )}
 
             {/* Shopping Bag */}
             <button
@@ -305,10 +335,19 @@ export function Navbar({ onOpenCart, onOpenSearch }: NavbarProps) {
               >
                 <div className="flex items-center gap-2.5 text-xs font-mono uppercase">
                   <User size={15} className="text-white" />
-                  <span>My Account / Sign In</span>
+                  <span>{isSignedIn ? 'My Account' : 'Sign In'}</span>
                 </div>
                 <ChevronRight size={14} className="text-white/30" />
               </Link>
+              {isSignedIn && (
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-white/75 hover:text-white hover:bg-white/5 transition-all text-xs font-mono uppercase"
+                >
+                  <LogOut size={15} /> SIGN OUT
+                </button>
+              )}
             </div>
           </div>
 

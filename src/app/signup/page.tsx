@@ -41,44 +41,27 @@ function SignupForm() {
     const trimmedName = fullName.trim();
 
     try {
-      // 1. Call server API to register & confirm user in Supabase
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: trimmedEmail,
-          password,
-          fullName: trimmedName,
-        }),
+      if (!supabase) {
+        throw new Error('Supabase is not configured.');
+      }
+
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: trimmedEmail,
+        password,
+        options: {
+          data: { full_name: trimmedName },
+          emailRedirectTo: `${window.location.origin}${redirectPath}`,
+        },
       });
 
-      const resData = await res.json();
+      if (signUpError) throw signUpError;
 
-      if (!res.ok) {
-        if (resData.code === 'user_exists') {
-          setError('An account with this email already exists. Please sign in below.');
-          setLoading(false);
-          return;
-        }
-        throw new Error(resData.error || 'Failed to create account.');
-      }
-
-      // 2. Log in with the registered credentials to establish active browser session
-      if (supabase) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: trimmedEmail,
-          password,
-        });
-
-        if (signInError) {
-          throw new Error(signInError.message);
-        }
-      }
-
-      setSuccess(true);
-      setTimeout(() => {
+      if (data.session) {
         router.push(redirectPath);
-      }, 1000);
+      } else {
+        setSuccess(true);
+        setLoading(false);
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
       setError(msg);
@@ -137,7 +120,7 @@ function SignupForm() {
         {success && (
           <div className="p-4 bg-white border border-[#E4E4E7] text-sm text-[#0A0A0A] flex items-center gap-2">
             <CheckCircle2 size={16} className="text-green-600" />
-            <span>Account created and verified! Redirecting to checkout...</span>
+            <span>Account created. Check your email and confirm your address before signing in.</span>
           </div>
         )}
 

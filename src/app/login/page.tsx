@@ -45,34 +45,15 @@ function LoginForm() {
         return;
       }
       
-      let { data, error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: trimmedEmail,
         password,
       });
 
-      // If email was not confirmed, attempt auto-confirm through register API
-      if (authError && authError.message.toLowerCase().includes('email not confirmed')) {
-        try {
-          const res = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: trimmedEmail, password }),
-          });
-          if (res.ok) {
-            const retry = await supabase.auth.signInWithPassword({
-              email: trimmedEmail,
-              password,
-            });
-            data = retry.data;
-            authError = retry.error;
-          }
-        } catch {
-          // ignore fallback error
-        }
-      }
-
       if (authError) {
-        setError(authError.message);
+        setError(authError.message.toLowerCase().includes('email not confirmed')
+          ? 'Please confirm your email address before signing in.'
+          : authError.message);
         setLoading(false);
         return;
       }
